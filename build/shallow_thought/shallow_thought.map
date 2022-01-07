@@ -2,7 +2,6 @@ Modules list:
 -------------
 shallow_thought.o:
     CODE              Offs=000000  Size=0000FA  Align=00001  Fill=0000
-    ZEROPAGE          Offs=000000  Size=000006  Align=00001  Fill=0000
 via.o:
 acia.o:
 screen.o:
@@ -13,7 +12,6 @@ Segment list:
 -------------
 Name                   Start     End    Size  Align
 ----------------------------------------------------
-ZEROPAGE              000000  000005  000006  00001
 CODE                  000700  00086B  00016C  00001
 
 
@@ -30,7 +28,7 @@ init_screen               0007FA RLA    send_byte_to_screen       000821 RLA
 Exports list by value:
 ----------------------
 init_screen               0007FA RLA    send_byte_to_screen       000821 RLA    
-ACIA_DATA                 004800 REA    __ACIA_START__            004800 RLA    
+__ACIA_START__            004800 RLA    ACIA_DATA                 004800 REA    
 ACIA_CMD                  004802 REA    VIA1_PORTB                006000 REA    
 __VIA1_START__            006000 RLA    VIA1_PORTA                006001 REA    
 VIA1_DDRB                 006002 REA    VIA1_DDRA                 006003 REA    

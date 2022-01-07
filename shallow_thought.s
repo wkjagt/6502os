@@ -20,10 +20,10 @@ KB_ACK          =       %01000000
 RD_SRL_B        =       $838D
 
                 .zeropage
-
-tmp1:           .res 2
-tmp2:           .res 2
-tmp3:           .res 2
+                ; todo: use .res 2 without it being output in the binary file
+tmp1            = $02
+tmp2            = $04
+tmp3            = $06
 
                 .code
 

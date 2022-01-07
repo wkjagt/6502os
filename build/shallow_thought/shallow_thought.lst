@@ -25,11 +25,11 @@ Current file: shallow_thought.s
 000000r 1               
 000000r 1                               .zeropage
 000000r 1               
-000000r 1  xx xx        tmp1:           .res 2
-000002r 1  xx xx        tmp2:           .res 2
-000004r 1  xx xx        tmp3:           .res 2
-000006r 1               
-000006r 1                               .code
+000000r 1               tmp1            = $02
+000000r 1               tmp2            = $04
+000000r 1               tmp3            = $06
+000000r 1               
+000000r 1                               .code
 000000r 1               
 000000r 1               screen_init:
 000000r 1  20 rr rr                     jsr     init_screen
@@ -187,14 +187,14 @@ Current file: shallow_thought.s
 0000AEr 1  0A                           asl                     ; multiply by 2 because size of memory address is 2 bytes
 0000AFr 1  A8                           tay
 0000B0r 1  B9 rr rr                     lda     string_table,y  ; string index into string table
-0000B3r 1  85 rr                        sta     tmp3            ; LSB
+0000B3r 1  85 06                        sta     tmp3            ; LSB
 0000B5r 1  C8                           iny
 0000B6r 1  B9 rr rr                     lda     string_table,y
-0000B9r 1  85 rr                        sta     tmp3+1          ; MSB
+0000B9r 1  85 07                        sta     tmp3+1          ; MSB
 0000BBr 1               
 0000BBr 1  A0 00                        ldy #0
 0000BDr 1               @next_char:
-0000BDr 1  B1 rr                        lda (tmp3),y
+0000BDr 1  B1 06                        lda (tmp3),y
 0000BFr 1  F0 06                        beq @done
 0000C1r 1               
 0000C1r 1  20 rr rr                     jsr send_byte_to_screen
