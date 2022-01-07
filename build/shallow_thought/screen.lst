@@ -1,0 +1,104 @@
+ca65 V2.18 - N/A
+Main file   : screen.s
+Current file: screen.s
+
+000000r 1                               .import VIA1_DDRA
+000000r 1                               .import VIA1_PORTA
+000000r 1               
+000000r 1                               .export init_screen
+000000r 1                               .export send_byte_to_screen
+000000r 1               
+000000r 1               
+000000r 1               CLEAR_SCREEN    =       $0c
+000000r 1               CHOOSE_CURSOR   =       2               ; choose cursor command to screen
+000000r 1               CURSOR_CHAR     =       $db             ; solid block
+000000r 1               CURSOR_BLINK    =       3
+000000r 1               
+000000r 1               SCRN_DATA_PINS  =       %11110000       ; In 4 bit mode: send 4 bits of data at a time
+000000r 1               SCRN_AVAILABLE  =       %00000100       ; To tell the screen that new data is available
+000000r 1               SCRN_ACK        =       %00001000       ; Input pin for the screen to ack the data
+000000r 1               SCRN_OUT_PINS   =       SCRN_DATA_PINS | SCRN_AVAILABLE
+000000r 1               SCRN_UNUSED     =       %00000011       ; unused pins on this port
+000000r 1               
+000000r 1                               .code
+000000r 1               
+000000r 1               init_screen:
+000000r 1                               ; Set up data pins to communicate with the screen controller
+000000r 1  AD rr rr                     lda     VIA1_DDRA
+000003r 1  09 F4                        ora     #SCRN_OUT_PINS
+000005r 1  29 F7                        and     #(SCRN_OUT_PINS | SCRN_UNUSED)
+000007r 1  8D rr rr                     sta     VIA1_DDRA
+00000Ar 1               
+00000Ar 1                               ; start with all pins low. Not needed (maybe) but
+00000Ar 1                               ; it's nice to start with clean outputs
+00000Ar 1  AD rr rr                     lda     VIA1_PORTA
+00000Dr 1  29 03                        and     #SCRN_UNUSED
+00000Fr 1  8D rr rr                     sta     VIA1_PORTA
+000012r 1               
+000012r 1  A9 0C                        lda     #CLEAR_SCREEN
+000014r 1  20 rr rr                     jsr     send_byte_to_screen
+000017r 1  A9 02                        lda     #CHOOSE_CURSOR
+000019r 1  20 rr rr                     jsr     send_byte_to_screen
+00001Cr 1  A9 DB                        lda     #CURSOR_CHAR
+00001Er 1  20 rr rr                     jsr     send_byte_to_screen
+000021r 1  A9 03                        lda     #CURSOR_BLINK
+000023r 1  20 rr rr                     jsr     send_byte_to_screen
+000026r 1               
+000026r 1  60                           rts
+000027r 1               
+000027r 1               send_byte_to_screen:
+000027r 1  48                           pha                     ; we pull off the arg twice, once for high
+000028r 1  48                           pha                     ; nibble and once for low nibble
+000029r 1               
+000029r 1  AD rr rr                     lda     VIA1_PORTA
+00002Cr 1  29 00                        and     #!SCRN_DATA_PINS; clear data
+00002Er 1  8D rr rr                     sta     VIA1_PORTA
+000031r 1               
+000031r 1  20 rr rr                     jsr     wait_ack_low
+000034r 1  68                           pla
+000035r 1  29 F0                        and     #%11110000      ; mask out low nibble
+000037r 1  0D rr rr                     ora     VIA1_PORTA
+00003Ar 1  8D rr rr                     sta     VIA1_PORTA
+00003Dr 1               
+00003Dr 1  09 04                        ora     #SCRN_AVAILABLE ; flip available = high
+00003Fr 1  8D rr rr                     sta     VIA1_PORTA
+000042r 1               
+000042r 1  20 rr rr                     jsr     wait_ack_high
+000045r 1               
+000045r 1  29 0F                        and     #%00001111      ; clear data so we can ora with high nibble
+000047r 1  8D rr rr                     sta     VIA1_PORTA
+00004Ar 1               
+00004Ar 1  68                           pla                     ; get the original byte back
+00004Br 1  0A                           asl                     ; shift low nibble into high nibble
+00004Cr 1  0A                           asl
+00004Dr 1  0A                           asl
+00004Er 1  0A                           asl
+00004Fr 1               
+00004Fr 1  0D rr rr                     ora     VIA1_PORTA
+000052r 1  8D rr rr                     sta     VIA1_PORTA
+000055r 1               
+000055r 1  29 FB                        and     #(SCRN_AVAILABLE ^ $FF)     ; flip available = low
+000057r 1  8D rr rr                     sta     VIA1_PORTA
+00005Ar 1               
+00005Ar 1  20 rr rr                     jsr     wait_ack_low
+00005Dr 1               
+00005Dr 1  60                           rts
+00005Er 1               
+00005Er 1               
+00005Er 1               wait_ack_high:
+00005Er 1  48                           pha
+00005Fr 1               @loop:
+00005Fr 1  AD rr rr                     lda     VIA1_PORTA
+000062r 1  29 08                        and     #SCRN_ACK
+000064r 1  F0 F9                        beq     @loop
+000066r 1  68                           pla
+000067r 1  60                           rts
+000068r 1               wait_ack_low:
+000068r 1  48                           pha
+000069r 1               @loop:
+000069r 1  AD rr rr                     lda     VIA1_PORTA
+00006Cr 1  29 08                        and     #SCRN_ACK
+00006Er 1  D0 F9                        bne     @loop
+000070r 1  68                           pla
+000071r 1  60                           rts
+000071r 1               

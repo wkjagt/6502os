@@ -1,0 +1,62 @@
+Modules list:
+-------------
+shallow_thought.o:
+    CODE              Offs=000000  Size=0000FA  Align=00001  Fill=0000
+    ZEROPAGE          Offs=000000  Size=000006  Align=00001  Fill=0000
+via.o:
+acia.o:
+screen.o:
+    CODE              Offs=0000FA  Size=000072  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000000  000005  000006  00001
+CODE                  000700  00086B  00016C  00001
+
+
+Exports list by name:
+---------------------
+ACIA_CMD                  004802 REA    ACIA_DATA                 004800 REA    
+VIA1_DDRA                 006003 REA    VIA1_DDRB                 006002 REA    
+VIA1_PORTA                006001 REA    VIA1_PORTB                006000 REA    
+__ACIA_START__            004800 RLA    __VIA1_START__            006000 RLA    
+init_screen               0007FA RLA    send_byte_to_screen       000821 RLA    
+
+
+
+Exports list by value:
+----------------------
+init_screen               0007FA RLA    send_byte_to_screen       000821 RLA    
+ACIA_DATA                 004800 REA    __ACIA_START__            004800 RLA    
+ACIA_CMD                  004802 REA    VIA1_PORTB                006000 REA    
+__VIA1_START__            006000 RLA    VIA1_PORTA                006001 REA    
+VIA1_DDRB                 006002 REA    VIA1_DDRA                 006003 REA    
+
+
+
+Imports list:
+-------------
+ACIA_CMD (acia.o):
+    shallow_thought.o         shallow_thought.s(7)
+ACIA_DATA (acia.o):
+    shallow_thought.o         shallow_thought.s(6)
+VIA1_DDRA (via.o):
+    screen.o                  screen.s(1)
+VIA1_DDRB (via.o):
+    shallow_thought.o         shallow_thought.s(3)
+VIA1_PORTA (via.o):
+    screen.o                  screen.s(2)
+VIA1_PORTB (via.o):
+    shallow_thought.o         shallow_thought.s(4)
+__ACIA_START__ ([linker generated]):
+    acia.o                    acia.s(1)
+__VIA1_START__ ([linker generated]):
+    via.o                     via.s(1)
+init_screen (screen.o):
+    shallow_thought.o         shallow_thought.s(9)
+send_byte_to_screen (screen.o):
+    shallow_thought.o         shallow_thought.s(10)
+
