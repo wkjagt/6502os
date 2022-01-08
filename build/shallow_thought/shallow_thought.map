@@ -1,20 +1,22 @@
 Modules list:
 -------------
 shallow_thought.o:
-    CODE              Offs=000000  Size=0000D3  Align=00001  Fill=0000
+    CODE              Offs=000000  Size=000091  Align=00001  Fill=0000
 via.o:
 acia.o:
 screen.o:
-    CODE              Offs=0000D3  Size=000072  Align=00001  Fill=0000
+    CODE              Offs=000091  Size=000072  Align=00001  Fill=0000
 keyboard.o:
-    CODE              Offs=000145  Size=00003A  Align=00001  Fill=0000
+    CODE              Offs=000103  Size=00003A  Align=00001  Fill=0000
+xmodem.o:
+    CODE              Offs=00013D  Size=000045  Align=00001  Fill=0000
 
 
 Segment list:
 -------------
 Name                   Start     End    Size  Align
 ----------------------------------------------------
-CODE                  000700  00087E  00017F  00001
+CODE                  000700  000881  000182  00001
 
 
 Exports list by name:
@@ -23,28 +25,28 @@ ACIA_CMD                  004802 REA    ACIA_DATA                 004800 REA
 VIA1_DDRA                 006003 REA    VIA1_DDRB                 006002 REA    
 VIA1_PORTA                006001 REA    VIA1_PORTB                006000 REA    
 __ACIA_START__            004800 RLA    __VIA1_START__            006000 RLA    
-init_keyboard             000845 RLA    init_screen               0007D3 RLA    
-send_byte_to_screen       0007FA RLA    wait_for_key_press        00084B RLA    
-
+init_keyboard             000803 RLA    init_screen               000791 RLA    
+send_byte_to_screen       0007B8 RLA    wait_for_key_press        000809 RLA    
+xmodem_receive            00083D RLA    
 
 
 Exports list by value:
 ----------------------
-init_screen               0007D3 RLA    send_byte_to_screen       0007FA RLA    
-init_keyboard             000845 RLA    wait_for_key_press        00084B RLA    
-__ACIA_START__            004800 RLA    ACIA_DATA                 004800 REA    
-ACIA_CMD                  004802 REA    VIA1_PORTB                006000 REA    
-__VIA1_START__            006000 RLA    VIA1_PORTA                006001 REA    
-VIA1_DDRB                 006002 REA    VIA1_DDRA                 006003 REA    
-
+init_screen               000791 RLA    send_byte_to_screen       0007B8 RLA    
+init_keyboard             000803 RLA    wait_for_key_press        000809 RLA    
+xmodem_receive            00083D RLA    __ACIA_START__            004800 RLA    
+ACIA_DATA                 004800 REA    ACIA_CMD                  004802 REA    
+VIA1_PORTB                006000 REA    __VIA1_START__            006000 RLA    
+VIA1_PORTA                006001 REA    VIA1_DDRB                 006002 REA    
+VIA1_DDRA                 006003 REA    
 
 
 Imports list:
 -------------
 ACIA_CMD (acia.o):
-    shallow_thought.o         shallow_thought.s(2)
+    xmodem.o                  xmodem.s(2)
 ACIA_DATA (acia.o):
-    shallow_thought.o         shallow_thought.s(1)
+    xmodem.o                  xmodem.s(1)
 VIA1_DDRA (via.o):
     screen.o                  screen.s(1)
 VIA1_DDRB (via.o):
@@ -65,4 +67,6 @@ send_byte_to_screen (screen.o):
     shallow_thought.o         shallow_thought.s(7)
 wait_for_key_press (keyboard.o):
     shallow_thought.o         shallow_thought.s(6)
+xmodem_receive (xmodem.o):
+    shallow_thought.o         shallow_thought.s(8)
 

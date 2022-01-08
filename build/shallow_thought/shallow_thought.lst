@@ -9,13 +9,14 @@ Current file: shallow_thought.s
 000000r 1                               .import init_keyboard
 000000r 1                               .import wait_for_key_press
 000000r 1                               .import send_byte_to_screen
+000000r 1                               .import xmodem_receive
 000000r 1               
-000000r 1               NAK             =       $15
-000000r 1               ACK             =       $06
-000000r 1               EOT             =       $04
-000000r 1               SOH             =       $01
+000000r 1               ; NAK             =       $15
+000000r 1               ; ACK             =       $06
+000000r 1               ; EOT             =       $04
+000000r 1               ; SOH             =       $01
 000000r 1               
-000000r 1               RD_SRL_B        =       $838D
+000000r 1               ; RD_SRL_B        =       $838D
 000000r 1               
 000000r 1                               .zeropage
 000000r 1                               ; todo: use .res 2 without it being output in the binary file
@@ -38,6 +39,7 @@ Current file: shallow_thought.s
 00000Br 1  A9 01                        lda     #str_any_key
 00000Dr 1  20 rr rr                     jsr     print_string
 000010r 1               
+000010r 1                               ; set the vector for what to do with each byte coming in through xmodem
 000010r 1  A9 rr                        lda     #<print_formatted_byte_as_hex
 000012r 1  85 08                        sta     xmodem_byte_sink_vector
 000014r 1  A9 rr                        lda     #>print_formatted_byte_as_hex
@@ -51,147 +53,147 @@ Current file: shallow_thought.s
 000018r 1                               ; 2. Press any key on the receiver to start the
 000018r 1                               ;    transmission
 000018r 1  20 rr rr                     jsr     wait_for_key_press
-00001Br 1               
-00001Br 1               xmodem_receive:
-00001Br 1                               ; tell the sender to start sending
-00001Br 1  A9 15                        lda     #NAK
-00001Dr 1  8D rr rr                     sta     ACIA_DATA
-000020r 1               
-000020r 1               ; Receiving bytes are done in two nested loops:
-000020r 1               ; @next_packet receives xmodem packets of 131 bytes long,
-000020r 1               ; including the 128 data bytes, and loops until an EOT byte
-000020r 1               ; is received right after a
-000020r 1               ; @next_data_byte receives each of the 128 data bytes
-000020r 1               @next_packet:
-000020r 1  20 rr rr                     jsr     receive_byte    ; receive SOH or EOT
-000023r 1  C9 04                        cmp     #EOT
-000025r 1  F0 20                        beq     @eot
+00001Br 1  20 rr rr                     jsr     xmodem_receive
+00001Er 1               
+00001Er 1               ; xmodem_receive:
+00001Er 1               ;                 ; tell the sender to start sending
+00001Er 1               ;                 lda     #NAK
+00001Er 1               ;                 sta     ACIA_DATA
+00001Er 1               
+00001Er 1               ; ; Receiving bytes are done in two nested loops:
+00001Er 1               ; ; @next_packet receives xmodem packets of 131 bytes long,
+00001Er 1               ; ; including the 128 data bytes, and loops until an EOT byte
+00001Er 1               ; ; is received right after a
+00001Er 1               ; ; @next_data_byte receives each of the 128 data bytes
+00001Er 1               ; @next_packet:
+00001Er 1               ;                 jsr     receive_byte    ; receive SOH or EOT
+00001Er 1               ;                 cmp     #EOT
+00001Er 1               ;                 beq     @eot
+00001Er 1               
+00001Er 1               ;                 cmp     #SOH
+00001Er 1               ;                 beq     @continue_header
+00001Er 1               
+00001Er 1               ;                 ; todo: error if ending up here?
+00001Er 1               ; @continue_header:
+00001Er 1               ;                 jsr     receive_byte    ; packet sequence number
+00001Er 1               ;                 jsr     receive_byte    ; packet sequence number checksum
+00001Er 1               ;                 ; todo: add up and check if 0
+00001Er 1               
+00001Er 1               ;                 ldy     #128            ; 128 data bytes
+00001Er 1               ; @next_data_byte:
+00001Er 1               ;                 jsr     receive_byte
+00001Er 1               ;                 jsr     xmodem_byte_sink
+00001Er 1               
+00001Er 1               ;                 dey
+00001Er 1               ;                 bne     @next_data_byte
+00001Er 1               
+00001Er 1               ;                 jsr     receive_byte    ; receive the data packet checksum
+00001Er 1               
+00001Er 1               ;                 ; todo: verify checksum and send ACK or NAK
+00001Er 1               
+00001Er 1               ;                 lda     #ACK
+00001Er 1               ;                 sta     ACIA_DATA
+00001Er 1               
+00001Er 1               ;                 jmp     @next_packet
+00001Er 1               ; @eot:
+00001Er 1               ;                 lda     #ACK
+00001Er 1               ;                 sta     ACIA_DATA
+00001Er 1               ;                 rts
+00001Er 1               
+00001Er 1               ; receive_byte:
+00001Er 1               ;                 ; reading a byte through serial connection
+00001Er 1               ;                 ; is wrapped in turning DTR on and off. However
+00001Er 1               ;                 ; it seems to not completely work, since we still
+00001Er 1               ;                 ; need a short pause between the bytes when sending.
+00001Er 1               ;                 lda     #%11001011      ; terminal ready
+00001Er 1               ;                 sta     ACIA_CMD
+00001Er 1               
+00001Er 1               ;                 jsr     RD_SRL_B        ; blocking
+00001Er 1               ;                 pha
+00001Er 1               
+00001Er 1               ;                 lda     #%11001010      ; terminal not ready
+00001Er 1               ;                 sta     ACIA_CMD
+00001Er 1               
+00001Er 1               ;                 pla
+00001Er 1               ;                 rts
+00001Er 1               
+00001Er 1               ; xmodem_byte_sink:
+00001Er 1               ;                 ; We came here through a JSR, so the return address is on the stack
+00001Er 1               ;                 ; jumping from here because there's no jsr (addr). The routine that
+00001Er 1               ;                 ; this jumps to can do a rts, which will go back to the original place
+00001Er 1               ;                 ; in @next_data_byte.
+00001Er 1               ;                 jmp     (xmodem_byte_sink_vector)
+00001Er 1               
+00001Er 1               
+00001Er 1               ; this only adds a space
+00001Er 1               print_formatted_byte_as_hex:
+00001Er 1  20 rr rr                     jsr     print_byte_as_hex
+000021r 1  A9 20                        lda     #' '
+000023r 1  20 rr rr                     jsr     send_byte_to_screen
+000026r 1  60                           rts
 000027r 1               
-000027r 1  C9 01                        cmp     #SOH
-000029r 1  F0 00                        beq     @continue_header
-00002Br 1               
-00002Br 1                               ; todo: error if ending up here?
-00002Br 1               @continue_header:
-00002Br 1  20 rr rr                     jsr     receive_byte    ; packet sequence number
-00002Er 1  20 rr rr                     jsr     receive_byte    ; packet sequence number checksum
-000031r 1                               ; todo: add up and check if 0
-000031r 1               
-000031r 1  A0 80                        ldy     #128            ; 128 data bytes
-000033r 1               @next_data_byte:
-000033r 1  20 rr rr                     jsr     receive_byte
-000036r 1                               ; jsr     print_formatted_byte_as_hex
-000036r 1  20 rr rr                     jsr     xmodem_byte_sink
-000039r 1               
-000039r 1  88                           dey
-00003Ar 1  D0 F7                        bne     @next_data_byte
-00003Cr 1               
-00003Cr 1  20 rr rr                     jsr     receive_byte    ; receive the data packet checksum
-00003Fr 1               
-00003Fr 1                               ; todo: verify checksum and send ACK or NAK
-00003Fr 1               
-00003Fr 1  A9 06                        lda     #ACK
-000041r 1  8D rr rr                     sta     ACIA_DATA
-000044r 1               
-000044r 1  4C rr rr                     jmp     @next_packet
-000047r 1               @eot:
-000047r 1  A9 06                        lda     #ACK
-000049r 1  8D rr rr                     sta     ACIA_DATA
-00004Cr 1  60                           rts
-00004Dr 1               
-00004Dr 1               receive_byte:
-00004Dr 1                               ; reading a byte through serial connection
-00004Dr 1                               ; is wrapped in turning DTR on and off. However
-00004Dr 1                               ; it seems to not completely work, since we still
-00004Dr 1                               ; need a short pause between the bytes when sending.
-00004Dr 1  A9 CB                        lda     #%11001011      ; terminal ready
-00004Fr 1  8D rr rr                     sta     ACIA_CMD
+000027r 1               print_byte_as_hex:
+000027r 1  48                           pha                     ; keep a copy for the low nibble
+000028r 1               
+000028r 1  4A                           lsr                     ; shift high nibble into low nibble
+000029r 1  4A                           lsr
+00002Ar 1  4A                           lsr
+00002Br 1  4A                           lsr
+00002Cr 1               
+00002Cr 1  20 rr rr                     jsr     print_nibble
+00002Fr 1               
+00002Fr 1  68                           pla                     ; get original value back
+000030r 1  29 0F                        and     #%00001111      ; reset high nibble
+000032r 1  20 rr rr                     jsr     print_nibble
+000035r 1  60                           rts
+000036r 1               
+000036r 1               print_nibble:
+000036r 1  C9 0A                        cmp     #10
+000038r 1  B0 05                        bcs     @letter         ; >= 10 (hex letter A-F)
+00003Ar 1  69 30                        adc     #48             ; ASCII offset to numbers 0-9
+00003Cr 1  4C rr rr                     jmp     @print
+00003Fr 1               @letter:
+00003Fr 1  69 36                        adc     #54             ; ASCII offset to letters A-F
+000041r 1               @print:
+000041r 1  20 rr rr                     jsr     send_byte_to_screen
+000044r 1  60                           rts
+000045r 1               
+000045r 1               print_string:
+000045r 1  0A                           asl                     ; multiply by 2 because size of memory address is 2 bytes
+000046r 1  A8                           tay
+000047r 1  B9 rr rr                     lda     string_table,y  ; string index into string table
+00004Ar 1  85 06                        sta     tmp3            ; LSB
+00004Cr 1  C8                           iny
+00004Dr 1  B9 rr rr                     lda     string_table,y
+000050r 1  85 07                        sta     tmp3+1          ; MSB
 000052r 1               
-000052r 1  20 8D 83                     jsr     RD_SRL_B        ; blocking
-000055r 1  48                           pha
-000056r 1               
-000056r 1  A9 CA                        lda     #%11001010      ; terminal not ready
-000058r 1  8D rr rr                     sta     ACIA_CMD
-00005Br 1               
-00005Br 1  68                           pla
-00005Cr 1  60                           rts
-00005Dr 1               
-00005Dr 1               xmodem_byte_sink:
-00005Dr 1                               ; We came here through a JSR, so the return address is on the stack
-00005Dr 1                               ; jumping from here because there's no jsr (addr). The routine that
-00005Dr 1                               ; this jumps to can do a rts, which will go back to the original place
-00005Dr 1                               ; in @next_data_byte.
-00005Dr 1  6C 08 00                     jmp     (xmodem_byte_sink_vector)
-000060r 1               
-000060r 1               
-000060r 1               ; this only adds a space
-000060r 1               print_formatted_byte_as_hex:
-000060r 1  20 rr rr                     jsr     print_byte_as_hex
-000063r 1  A9 20                        lda     #' '
+000052r 1  A0 00                        ldy #0
+000054r 1               @next_char:
+000054r 1  B1 06                        lda (tmp3),y
+000056r 1  F0 06                        beq @done
+000058r 1               
+000058r 1  20 rr rr                     jsr send_byte_to_screen
+00005Br 1  C8                           iny
+00005Cr 1  80 F6                        bra @next_char
+00005Er 1               @done:
+00005Er 1  A9 0D                        lda     #$0d
+000060r 1  20 rr rr                     jsr     send_byte_to_screen
+000063r 1  A9 0A                        lda     #$0a
 000065r 1  20 rr rr                     jsr     send_byte_to_screen
 000068r 1  60                           rts
 000069r 1               
-000069r 1               print_byte_as_hex:
-000069r 1  48                           pha                     ; keep a copy for the low nibble
-00006Ar 1               
-00006Ar 1  4A                           lsr                     ; shift high nibble into low nibble
-00006Br 1  4A                           lsr
-00006Cr 1  4A                           lsr
-00006Dr 1  4A                           lsr
-00006Er 1               
-00006Er 1  20 rr rr                     jsr     print_nibble
-000071r 1               
-000071r 1  68                           pla                     ; get original value back
-000072r 1  29 0F                        and     #%00001111      ; reset high nibble
-000074r 1  20 rr rr                     jsr     print_nibble
-000077r 1  60                           rts
-000078r 1               
-000078r 1               print_nibble:
-000078r 1  C9 0A                        cmp     #10
-00007Ar 1  B0 05                        bcs     @letter         ; >= 10 (hex letter A-F)
-00007Cr 1  69 30                        adc     #48             ; ASCII offset to numbers 0-9
-00007Er 1  4C rr rr                     jmp     @print
-000081r 1               @letter:
-000081r 1  69 36                        adc     #54             ; ASCII offset to letters A-F
-000083r 1               @print:
-000083r 1  20 rr rr                     jsr     send_byte_to_screen
-000086r 1  60                           rts
-000087r 1               
-000087r 1               print_string:
-000087r 1  0A                           asl                     ; multiply by 2 because size of memory address is 2 bytes
-000088r 1  A8                           tay
-000089r 1  B9 rr rr                     lda     string_table,y  ; string index into string table
-00008Cr 1  85 06                        sta     tmp3            ; LSB
-00008Er 1  C8                           iny
-00008Fr 1  B9 rr rr                     lda     string_table,y
-000092r 1  85 07                        sta     tmp3+1          ; MSB
-000094r 1               
-000094r 1  A0 00                        ldy #0
-000096r 1               @next_char:
-000096r 1  B1 06                        lda (tmp3),y
-000098r 1  F0 06                        beq @done
-00009Ar 1               
-00009Ar 1  20 rr rr                     jsr send_byte_to_screen
-00009Dr 1  C8                           iny
-00009Er 1  80 F6                        bra @next_char
-0000A0r 1               @done:
-0000A0r 1  A9 0D                        lda     #$0d
-0000A2r 1  20 rr rr                     jsr     send_byte_to_screen
-0000A5r 1  A9 0A                        lda     #$0a
-0000A7r 1  20 rr rr                     jsr     send_byte_to_screen
-0000AAr 1  60                           rts
-0000ABr 1               
-0000ABr 1               ; strings ========================================
-0000ABr 1               
-0000ABr 1               str_startup     =       0
-0000ABr 1               str_any_key     =       1
-0000ABr 1               
-0000ABr 1               string_table:
-0000ABr 1  rr rr rr rr                  .word s_startup, s_any_key
-0000AFr 1               
-0000AFr 1  53 68 61 6C  s_startup:      .byte "Shallow Thought v0.01", 0
-0000B3r 1  6C 6F 77 20  
-0000B7r 1  54 68 6F 75  
-0000C5r 1  50 72 65 73  s_any_key:      .byte "Press any key", 0
-0000C9r 1  73 20 61 6E  
-0000CDr 1  79 20 6B 65  
-0000D2r 1               
+000069r 1               ; strings ========================================
+000069r 1               
+000069r 1               str_startup     =       0
+000069r 1               str_any_key     =       1
+000069r 1               
+000069r 1               string_table:
+000069r 1  rr rr rr rr                  .word s_startup, s_any_key
+00006Dr 1               
+00006Dr 1  53 68 61 6C  s_startup:      .byte "Shallow Thought v0.01", 0
+000071r 1  6C 6F 77 20  
+000075r 1  54 68 6F 75  
+000083r 1  50 72 65 73  s_any_key:      .byte "Press any key", 0
+000087r 1  73 20 61 6E  
+00008Br 1  79 20 6B 65  
+000090r 1               
