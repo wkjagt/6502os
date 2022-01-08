@@ -1,18 +1,20 @@
 Modules list:
 -------------
 shallow_thought.o:
-    CODE              Offs=000000  Size=0000FA  Align=00001  Fill=0000
+    CODE              Offs=000000  Size=0000D3  Align=00001  Fill=0000
 via.o:
 acia.o:
 screen.o:
-    CODE              Offs=0000FA  Size=000072  Align=00001  Fill=0000
+    CODE              Offs=0000D3  Size=000072  Align=00001  Fill=0000
+keyboard.o:
+    CODE              Offs=000145  Size=00003A  Align=00001  Fill=0000
 
 
 Segment list:
 -------------
 Name                   Start     End    Size  Align
 ----------------------------------------------------
-CODE                  000700  00086B  00016C  00001
+CODE                  000700  00087E  00017F  00001
 
 
 Exports list by name:
@@ -21,13 +23,15 @@ ACIA_CMD                  004802 REA    ACIA_DATA                 004800 REA
 VIA1_DDRA                 006003 REA    VIA1_DDRB                 006002 REA    
 VIA1_PORTA                006001 REA    VIA1_PORTB                006000 REA    
 __ACIA_START__            004800 RLA    __VIA1_START__            006000 RLA    
-init_screen               0007FA RLA    send_byte_to_screen       000821 RLA    
+init_keyboard             000845 RLA    init_screen               0007D3 RLA    
+send_byte_to_screen       0007FA RLA    wait_for_key_press        00084B RLA    
 
 
 
 Exports list by value:
 ----------------------
-init_screen               0007FA RLA    send_byte_to_screen       000821 RLA    
+init_screen               0007D3 RLA    send_byte_to_screen       0007FA RLA    
+init_keyboard             000845 RLA    wait_for_key_press        00084B RLA    
 __ACIA_START__            004800 RLA    ACIA_DATA                 004800 REA    
 ACIA_CMD                  004802 REA    VIA1_PORTB                006000 REA    
 __VIA1_START__            006000 RLA    VIA1_PORTA                006001 REA    
@@ -38,23 +42,27 @@ VIA1_DDRB                 006002 REA    VIA1_DDRA                 006003 REA
 Imports list:
 -------------
 ACIA_CMD (acia.o):
-    shallow_thought.o         shallow_thought.s(7)
+    shallow_thought.o         shallow_thought.s(2)
 ACIA_DATA (acia.o):
-    shallow_thought.o         shallow_thought.s(6)
+    shallow_thought.o         shallow_thought.s(1)
 VIA1_DDRA (via.o):
     screen.o                  screen.s(1)
 VIA1_DDRB (via.o):
-    shallow_thought.o         shallow_thought.s(3)
+    keyboard.o                keyboard.s(1)
 VIA1_PORTA (via.o):
     screen.o                  screen.s(2)
 VIA1_PORTB (via.o):
-    shallow_thought.o         shallow_thought.s(4)
+    keyboard.o                keyboard.s(2)
 __ACIA_START__ ([linker generated]):
     acia.o                    acia.s(1)
 __VIA1_START__ ([linker generated]):
     via.o                     via.s(1)
+init_keyboard (keyboard.o):
+    shallow_thought.o         shallow_thought.s(5)
 init_screen (screen.o):
-    shallow_thought.o         shallow_thought.s(9)
+    shallow_thought.o         shallow_thought.s(4)
 send_byte_to_screen (screen.o):
-    shallow_thought.o         shallow_thought.s(10)
+    shallow_thought.o         shallow_thought.s(7)
+wait_for_key_press (keyboard.o):
+    shallow_thought.o         shallow_thought.s(6)
 

@@ -1,12 +1,9 @@
-                .import VIA1_DDRA
-                .import VIA1_PORTA
-                .import VIA1_DDRB
-                .import VIA1_PORTB
-
                 .import ACIA_DATA
                 .import ACIA_CMD
 
                 .import init_screen
+                .import init_keyboard
+                .import wait_for_key_press
                 .import send_byte_to_screen
 
 NAK             =       $15
@@ -14,9 +11,6 @@ ACK             =       $06
 EOT             =       $04
 SOH             =       $01
 
-; kb
-KB_CHAR_IN      =       $0
-KB_ACK          =       %01000000
 RD_SRL_B        =       $838D
 
                 .zeropage
@@ -25,38 +19,36 @@ tmp1            = $02
 tmp2            = $04
 tmp3            = $06
 
+xmodem_byte_sink_vector = $08
+
                 .code
 
-screen_init:
+reset:
                 jsr     init_screen
+                jsr     init_keyboard
 
                 ; startup message
                 lda     #str_startup
                 jsr     print_string
 
-kb_init:
-                ; data direction on port B
-                lda     #KB_ACK         ; only the ack pin is output
-                sta     VIA1_DDRB
-
                 lda     #str_any_key
                 jsr     print_string
 
-wait_for_key_press:
+                ; set the vector for what to do with each byte coming in through xmodem
+                lda     #<print_formatted_byte_as_hex
+                sta     xmodem_byte_sink_vector
+                lda     #>print_formatted_byte_as_hex
+                sta     xmodem_byte_sink_vector+1
+
+
                 ; The sender starts transmitting bytes as soon as
                 ; it receives a NAK byte from the receiver. To be
                 ; able to synchronize the two, the workflow is:
                 ; 1. start sending command on sender
                 ; 2. Press any key on the receiver to start the
                 ;    transmission
-                lda     VIA1_PORTB
-                bpl     wait_for_key_press
-
-                ; take the key from the buffer and ignore it
-                jsr     receive_nibble
-                jsr     receive_nibble
-                jsr     receive_nibble
-
+                jsr     wait_for_key_press
+                
 xmodem_receive:
                 ; tell the sender to start sending
                 lda     #NAK
@@ -84,7 +76,7 @@ xmodem_receive:
                 ldy     #128            ; 128 data bytes
 @next_data_byte:
                 jsr     receive_byte
-                jsr     print_formatted_byte_as_hex
+                jsr     xmodem_byte_sink
 
                 dey
                 bne     @next_data_byte 
@@ -119,6 +111,14 @@ receive_byte:
                 pla
                 rts
 
+xmodem_byte_sink:
+                ; We came here through a JSR, so the return address is on the stack
+                ; jumping from here because there's no jsr (addr). The routine that
+                ; this jumps to can do a rts, which will go back to the original place
+                ; in @next_data_byte.
+                jmp     (xmodem_byte_sink_vector)
+
+
 ; this only adds a space
 print_formatted_byte_as_hex:
                 jsr     print_byte_as_hex
@@ -150,33 +150,6 @@ print_nibble:
                 adc     #54             ; ASCII offset to letters A-F
 @print:
                 jsr     send_byte_to_screen
-                rts
-
-receive_nibble:
-                lda     VIA1_PORTB        ; LDA loads bit 7 (avail) into N
-                ; move low nibble from PORT B to high nibble
-                asl
-                asl
-                asl
-                asl
-
-                ldx     #4
-@rotate:
-                asl                     ; shift bit into carry
-                rol     KB_CHAR_IN      ; rotate carry into CHAR
-                dex
-                bne     @rotate
-
-                lda     VIA1_PORTB        ; send ack signal to kb controller
-                ora     #KB_ACK
-                sta     VIA1_PORTB
-@wait_avail_low:
-                lda     VIA1_PORTB        ; wait for available to go low
-                bmi     @wait_avail_low ; negative means bit 7 (avail) high
-
-                lda     VIA1_PORTB           ; set ack low
-                and     #!KB_ACK
-                sta     VIA1_PORTB
                 rts
 
 print_string:
