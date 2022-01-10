@@ -2,8 +2,10 @@ ca65 V2.18 - N/A
 Main file   : shallow_thought.s
 Current file: shallow_thought.s
 
-000000r 1                               .import ACIA_DATA
-000000r 1                               .import ACIA_CMD
+000000r 1                               .include "strings.inc"
+000000r 2               STR_STARTUP = $00
+000000r 2               STR_ANY_KEY = $01
+000000r 2               
 000000r 1               
 000000r 1                               .import init_screen
 000000r 1                               .import init_keyboard
@@ -11,14 +13,9 @@ Current file: shallow_thought.s
 000000r 1                               .import send_byte_to_screen
 000000r 1                               .import xmodem_receive
 000000r 1               
-000000r 1               ; NAK             =       $15
-000000r 1               ; ACK             =       $06
-000000r 1               ; EOT             =       $04
-000000r 1               ; SOH             =       $01
+000000r 1               .import string_table
 000000r 1               
-000000r 1               ; RD_SRL_B        =       $838D
-000000r 1               
-000000r 1                               .zeropage
+000000r 1               .zeropage
 000000r 1                               ; todo: use .res 2 without it being output in the binary file
 000000r 1               tmp1            = $02
 000000r 1               tmp2            = $04
@@ -33,10 +30,10 @@ Current file: shallow_thought.s
 000003r 1  20 rr rr                     jsr     init_keyboard
 000006r 1               
 000006r 1                               ; startup message
-000006r 1  A9 00                        lda     #str_startup
+000006r 1  A9 00                        lda     #STR_STARTUP
 000008r 1  20 rr rr                     jsr     print_string
 00000Br 1               
-00000Br 1  A9 01                        lda     #str_any_key
+00000Br 1  A9 01                        lda     #STR_ANY_KEY
 00000Dr 1  20 rr rr                     jsr     print_string
 000010r 1               
 000010r 1                               ; set the vector for what to do with each byte coming in through xmodem
@@ -54,76 +51,6 @@ Current file: shallow_thought.s
 000018r 1                               ;    transmission
 000018r 1  20 rr rr                     jsr     wait_for_key_press
 00001Br 1  20 rr rr                     jsr     xmodem_receive
-00001Er 1               
-00001Er 1               ; xmodem_receive:
-00001Er 1               ;                 ; tell the sender to start sending
-00001Er 1               ;                 lda     #NAK
-00001Er 1               ;                 sta     ACIA_DATA
-00001Er 1               
-00001Er 1               ; ; Receiving bytes are done in two nested loops:
-00001Er 1               ; ; @next_packet receives xmodem packets of 131 bytes long,
-00001Er 1               ; ; including the 128 data bytes, and loops until an EOT byte
-00001Er 1               ; ; is received right after a
-00001Er 1               ; ; @next_data_byte receives each of the 128 data bytes
-00001Er 1               ; @next_packet:
-00001Er 1               ;                 jsr     receive_byte    ; receive SOH or EOT
-00001Er 1               ;                 cmp     #EOT
-00001Er 1               ;                 beq     @eot
-00001Er 1               
-00001Er 1               ;                 cmp     #SOH
-00001Er 1               ;                 beq     @continue_header
-00001Er 1               
-00001Er 1               ;                 ; todo: error if ending up here?
-00001Er 1               ; @continue_header:
-00001Er 1               ;                 jsr     receive_byte    ; packet sequence number
-00001Er 1               ;                 jsr     receive_byte    ; packet sequence number checksum
-00001Er 1               ;                 ; todo: add up and check if 0
-00001Er 1               
-00001Er 1               ;                 ldy     #128            ; 128 data bytes
-00001Er 1               ; @next_data_byte:
-00001Er 1               ;                 jsr     receive_byte
-00001Er 1               ;                 jsr     xmodem_byte_sink
-00001Er 1               
-00001Er 1               ;                 dey
-00001Er 1               ;                 bne     @next_data_byte
-00001Er 1               
-00001Er 1               ;                 jsr     receive_byte    ; receive the data packet checksum
-00001Er 1               
-00001Er 1               ;                 ; todo: verify checksum and send ACK or NAK
-00001Er 1               
-00001Er 1               ;                 lda     #ACK
-00001Er 1               ;                 sta     ACIA_DATA
-00001Er 1               
-00001Er 1               ;                 jmp     @next_packet
-00001Er 1               ; @eot:
-00001Er 1               ;                 lda     #ACK
-00001Er 1               ;                 sta     ACIA_DATA
-00001Er 1               ;                 rts
-00001Er 1               
-00001Er 1               ; receive_byte:
-00001Er 1               ;                 ; reading a byte through serial connection
-00001Er 1               ;                 ; is wrapped in turning DTR on and off. However
-00001Er 1               ;                 ; it seems to not completely work, since we still
-00001Er 1               ;                 ; need a short pause between the bytes when sending.
-00001Er 1               ;                 lda     #%11001011      ; terminal ready
-00001Er 1               ;                 sta     ACIA_CMD
-00001Er 1               
-00001Er 1               ;                 jsr     RD_SRL_B        ; blocking
-00001Er 1               ;                 pha
-00001Er 1               
-00001Er 1               ;                 lda     #%11001010      ; terminal not ready
-00001Er 1               ;                 sta     ACIA_CMD
-00001Er 1               
-00001Er 1               ;                 pla
-00001Er 1               ;                 rts
-00001Er 1               
-00001Er 1               ; xmodem_byte_sink:
-00001Er 1               ;                 ; We came here through a JSR, so the return address is on the stack
-00001Er 1               ;                 ; jumping from here because there's no jsr (addr). The routine that
-00001Er 1               ;                 ; this jumps to can do a rts, which will go back to the original place
-00001Er 1               ;                 ; in @next_data_byte.
-00001Er 1               ;                 jmp     (xmodem_byte_sink_vector)
-00001Er 1               
 00001Er 1               
 00001Er 1               ; this only adds a space
 00001Er 1               print_formatted_byte_as_hex:
@@ -184,16 +111,12 @@ Current file: shallow_thought.s
 000069r 1               
 000069r 1               ; strings ========================================
 000069r 1               
-000069r 1               str_startup     =       0
-000069r 1               str_any_key     =       1
+000069r 1               ; str_startup     =       0
+000069r 1               ; str_any_key     =       1
 000069r 1               
-000069r 1               string_table:
-000069r 1  rr rr rr rr                  .word s_startup, s_any_key
-00006Dr 1               
-00006Dr 1  53 68 61 6C  s_startup:      .byte "Shallow Thought v0.01", 0
-000071r 1  6C 6F 77 20  
-000075r 1  54 68 6F 75  
-000083r 1  50 72 65 73  s_any_key:      .byte "Press any key", 0
-000087r 1  73 20 61 6E  
-00008Br 1  79 20 6B 65  
-000090r 1               
+000069r 1               ; string_table:
+000069r 1               ;                 .word s_startup, s_any_key
+000069r 1               
+000069r 1               ; s_startup:      .byte "Shallow Thought v0.01", 0
+000069r 1               ; s_any_key:      .byte "Press any key", 0
+000069r 1               

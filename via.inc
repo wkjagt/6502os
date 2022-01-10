@@ -1,21 +1,4 @@
-  .import __VIA1_START__
-
-  .export VIA1_PORTB
-  .export VIA1_PORTA
-  .export VIA1_DDRB
-  .export VIA1_DDRA
-  .export VIA1_T1CL
-  .export VIA1_T1CH
-  .export VIA1_T1LL
-  .export VIA1_T1LH
-  .export VIA1_T2CL
-  .export VIA1_T2CH
-  .export VIA1_SR
-  .export VIA1_ACR
-  .export VIA1_PCR
-  .export VIA1_IFR
-  .export VIA1_IER
-  .export VIA1_PANH
+.import __VIA1_START__
 
 VIA1_REGISTER_PORTB = $00
 VIA1_REGISTER_PORTA = $01

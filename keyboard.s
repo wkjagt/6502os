@@ -1,8 +1,7 @@
-                .import VIA1_DDRB
-                .import VIA1_PORTB
+.include "via.inc"
 
-                .export init_keyboard
-                .export wait_for_key_press
+.export init_keyboard
+.export wait_for_key_press
 
 KB_CHAR_IN      =       $0
 KB_ACK          =       %01000000

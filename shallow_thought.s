@@ -1,5 +1,4 @@
-                .import ACIA_DATA
-                .import ACIA_CMD
+                .include "strings.inc"
 
                 .import init_screen
                 .import init_keyboard
@@ -7,7 +6,9 @@
                 .import send_byte_to_screen
                 .import xmodem_receive
 
-                .zeropage
+.import string_table
+
+.zeropage
                 ; todo: use .res 2 without it being output in the binary file
 tmp1            = $02
 tmp2            = $04
@@ -22,10 +23,10 @@ reset:
                 jsr     init_keyboard
 
                 ; startup message
-                lda     #str_startup
+                lda     #STR_STARTUP
                 jsr     print_string
 
-                lda     #str_any_key
+                lda     #STR_ANY_KEY
                 jsr     print_string
 
                 ; set the vector for what to do with each byte coming in through xmodem
@@ -103,11 +104,11 @@ print_string:
 
 ; strings ========================================
 
-str_startup     =       0
-str_any_key     =       1
+; str_startup     =       0
+; str_any_key     =       1
 
-string_table:
-                .word s_startup, s_any_key
+; string_table:
+;                 .word s_startup, s_any_key
 
-s_startup:      .byte "Shallow Thought v0.01", 0                
-s_any_key:      .byte "Press any key", 0
+; s_startup:      .byte "Shallow Thought v0.01", 0                
+; s_any_key:      .byte "Press any key", 0

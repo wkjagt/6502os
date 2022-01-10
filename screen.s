@@ -1,8 +1,7 @@
-                .import VIA1_DDRA
-                .import VIA1_PORTA
+.include "via.inc"
 
-                .export init_screen
-                .export send_byte_to_screen
+.export init_screen
+.export send_byte_to_screen
 
 
 CLEAR_SCREEN    =       $0c

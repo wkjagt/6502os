@@ -1,7 +1,6 @@
-                .import ACIA_DATA
-                .import ACIA_CMD
+.include "acia.inc"
 
-                .export xmodem_receive
+.export xmodem_receive
 
 RD_SRL_B        =       $838D
 NAK             =       $15

@@ -1,9 +1,4 @@
-  .import __ACIA_START__
-
-  .export ACIA_DATA
-  .export ACIA_STAT
-  .export ACIA_CMD
-  .export ACIA_CTRL
+.import __ACIA_START__
 
 ACIA_REGISTER_DATA = $00
 ACIA_REGISTER_STAT = $01

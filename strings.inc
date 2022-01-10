@@ -1,0 +1,2 @@
+STR_STARTUP = $00
+STR_ANY_KEY = $01
