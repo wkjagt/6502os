@@ -1,4 +1,5 @@
 .include "acia.inc"
+.include "zeropage.inc"
 
 .export xmodem_receive
 
@@ -7,8 +8,6 @@ NAK             =       $15
 ACK             =       $06
 EOT             =       $04
 SOH             =       $01
-
-xmodem_byte_sink_vector = $08
 
 xmodem_receive:
                 ; tell the sender to start sending

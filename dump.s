@@ -1,9 +1,8 @@
 .include "strings.inc"
 .include "screen.inc"
+.include "zeropage.inc"
 
 .export dump_page
-
-dump_start = $0a
 
 .code
 

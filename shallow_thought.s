@@ -1,21 +1,10 @@
 .include "strings.inc"
 .include "keyboard.inc"
 .include "screen.inc"
+.include "zeropage.inc"
 
 .import xmodem_receive
 .import dump_page
-
-
-tmp1                    = $02
-tmp2                    = $04
-tmp3                    = $06
-
-xmodem_byte_sink_vector = $08
-command_vector          = $0c
-param_index             = $0e
-keybuffer_ptr           = $10
-keybuffer               = $80
-
 
 .code
 

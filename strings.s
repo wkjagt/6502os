@@ -1,17 +1,6 @@
-.export print_formatted_byte_as_hex
-.export print_byte_as_hex
-.export hex_to_byte
-.export print_string
-.export cr
- 
-.import putc
-
-tmp1 = $02
-tmp2 = $04
-tmp3 = $06
-
-LF              =       $0A
-CR              =       $0D
+.include "strings.inc"
+.include "zeropage.inc"
+.include "screen.inc"
 
 .code
 
