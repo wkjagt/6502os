@@ -1,7 +1,7 @@
 .include "via.inc"
 
 .export init_keyboard
-.export wait_for_key_press
+.export read_key
 
 KB_CHAR_IN      =       $0
 KB_ACK          =       %01000000
@@ -14,19 +14,23 @@ init_keyboard:
                 sta     VIA1_DDRB
                 rts
 
-wait_for_key_press:
-                lda     VIA1_PORTB
-                bpl     wait_for_key_press
+read_key:
+                phx
+                ; receive the character
+                jsr     receive_nibble
+                jsr     receive_nibble
 
-                ; take the key from the buffer and ignore it
-                jsr     receive_nibble
-                jsr     receive_nibble
-                jsr     receive_nibble
+                lda     KB_CHAR_IN      ; character is now in A, hold on to it
+                pha
+
+                jsr     receive_nibble  ; receive the flags
+                pla                     ; this version ignores the flags
+                plx
                 rts
 
 receive_nibble:
-                lda     VIA1_PORTB        ; LDA loads bit 7 (avail) into N
-                ; move low nibble from PORT B to high nibble
+                lda     VIA1_PORTB
+                bpl     receive_nibble
                 asl
                 asl
                 asl

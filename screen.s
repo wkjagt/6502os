@@ -1,7 +1,7 @@
 .include "via.inc"
 
 .export init_screen
-.export send_byte_to_screen
+.export putc
 
 
 CLEAR_SCREEN    =       $0c
@@ -31,19 +31,20 @@ init_screen:
                 sta     VIA1_PORTA
 
                 lda     #CLEAR_SCREEN
-                jsr     send_byte_to_screen
+                jsr     putc
                 lda     #CHOOSE_CURSOR
-                jsr     send_byte_to_screen
+                jsr     putc
                 lda     #CURSOR_CHAR
-                jsr     send_byte_to_screen
+                jsr     putc
                 lda     #CURSOR_BLINK
-                jsr     send_byte_to_screen
+                jsr     putc
 
                 rts
 
-send_byte_to_screen:
-                pha                     ; we pull off the arg twice, once for high
-                pha                     ; nibble and once for low nibble
+putc:
+                pha                     ; we pull off the arg 3 times, once for high
+                pha                     ; nibble, once for low nibble and once to put
+                pha                     ; back the original value
 
                 lda     VIA1_PORTA
                 and     #!SCRN_DATA_PINS; clear data
@@ -76,7 +77,7 @@ send_byte_to_screen:
                 sta     VIA1_PORTA
 
                 jsr     wait_ack_low
-
+                pla
                 rts
 
 

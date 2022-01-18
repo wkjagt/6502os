@@ -1,11 +1,17 @@
 .export print_formatted_byte_as_hex
+.export print_byte_as_hex
+.export hex_to_byte
 .export print_string
-
-.import send_byte_to_screen
+.export cr
+ 
+.import putc
 
 tmp1 = $02
 tmp2 = $04
 tmp3 = $06
+
+LF              =       $0A
+CR              =       $0D
 
 .code
 
@@ -19,7 +25,7 @@ s_any_key:      .byte "Press any key", 0
 print_formatted_byte_as_hex:
                 jsr     print_byte_as_hex
                 lda     #' '
-                jsr     send_byte_to_screen
+                jsr     putc
                 rts
 
 print_byte_as_hex:
@@ -45,7 +51,7 @@ print_nibble:
 @letter:
                 adc     #54             ; ASCII offset to letters A-F
 @print:
-                jsr     send_byte_to_screen
+                jsr     putc
                 rts
 
 print_string:
@@ -62,12 +68,64 @@ print_string:
                 lda (tmp3),y
                 beq @done
 
-                jsr send_byte_to_screen
+                jsr putc
                 iny
                 bra @next_char
 @done:
                 lda     #$0d
-                jsr     send_byte_to_screen
+                jsr     putc
                 lda     #$0a
-                jsr     send_byte_to_screen
+                jsr     putc
+                rts
+
+
+; Turn two ascii bytes into a byte containing the value represented
+; by the two characters 0-F
+hex_to_byte:
+                sta     tmp2            ; we need the address to do lda (tmp2), y
+
+                ldy     #0              ; high byte
+                lda     (tmp2),y
+                jsr     @shift_in_nibble
+
+                iny
+                lda     (tmp2),y        ; low byte
+                jsr     @shift_in_nibble
+
+                lda     tmp1            ; put the result back in A as return value
+                rts
+@shift_in_nibble:
+                cmp     #':'            ; the next ascii char after "9"
+                bcc     @number
+                                        ; assume it's a letter
+                sbc     #87             ; get the letter value
+                jmp     @continue
+@number:
+                sec
+                sbc     #48
+@continue:      
+                ; calculated nibble is now in low nibble
+                ; shift low nibble to high nibble
+                asl 
+                asl 
+                asl 
+                asl
+
+                ; left shift hight nibble into result
+                asl
+                rol     tmp1
+                asl
+                rol     tmp1
+                asl
+                rol     tmp1
+                asl
+                rol     tmp1
+
+                rts
+
+cr:
+                lda     #LF
+                jsr     putc
+                lda     #CR
+                jsr     putc
                 rts
