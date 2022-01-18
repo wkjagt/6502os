@@ -18,7 +18,7 @@ CR              =       $0D
 string_table:
                 .word s_startup, s_xmodem_start
 
-s_startup:      .byte "Shallow Thought v0.01", 0                
+s_startup:      .byte "                           -- Shallow Thought OS --", 0                
 s_xmodem_start: .byte "Initiate transfer on transmitter and then press any key", 0
 
 ; this only adds a space

@@ -1,6 +1,5 @@
-.import putc
-.import print_byte_as_hex
-.import cr
+.include "strings.inc"
+.include "screen.inc"
 
 .export dump_page
 
