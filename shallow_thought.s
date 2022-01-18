@@ -159,7 +159,7 @@ dump:
                 rts
 
 rcv:
-                lda     #STR_ANY_KEY
+                lda     #STR_XMODEM_START
                 jsr     print_string
 
                 ; set the vector for what to do with each byte coming in through xmodem
@@ -178,12 +178,6 @@ rcv:
                 jsr     xmodem_receive
                 rts
 
-
-command2:
-                lda #'2'
-                jsr putc
-                rts
-
 command3:
                 lda #'3'
                 jsr putc
@@ -192,12 +186,12 @@ command3:
 
 
 commands:
-                .word o_dump, o_command2, o_command3, 0
+                .word c_dump, c_rcv, c_command3, 0
 
-o_dump:          .byte "dump", 0
+c_dump:          .byte "dump", 0
                  .word dump
-o_command2:      .byte "command2", 0
-                 .word command2
-o_command3:      .byte "command3", 0
+c_rcv:           .byte "rcv", 0
+                 .word rcv
+c_command3:      .byte "command3", 0
                  .word command3
 

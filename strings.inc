@@ -1,2 +1,2 @@
-STR_STARTUP = $00
-STR_ANY_KEY = $01
+STR_STARTUP             = $00
+STR_XMODEM_START        = $01

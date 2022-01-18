@@ -16,10 +16,10 @@ CR              =       $0D
 .code
 
 string_table:
-                .word s_startup, s_any_key
+                .word s_startup, s_xmodem_start
 
 s_startup:      .byte "Shallow Thought v0.01", 0                
-s_any_key:      .byte "Press any key", 0
+s_xmodem_start: .byte "Initiate transfer on transmitter and then press any key", 0
 
 ; this only adds a space
 print_formatted_byte_as_hex:
