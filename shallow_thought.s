@@ -22,10 +22,10 @@ line_input:     jsr     cr
                 lda     #STR_PROMPT
                 jsr     print_string_no_lf
 
-                stz     keybuffer_ptr
+                stz     inputbuffer_ptr
 
-                ldx     #128
-clear_buffer:   stz     keybuffer,x
+                ldx     #128            ; inputbuffer size
+clear_buffer:   stz     inputbuffer,x
                 dex
                 bne     clear_buffer
 next_key:       jsr     read_key
@@ -39,12 +39,12 @@ next_key:       jsr     read_key
                 bne     @not_a_space
                 lda     #0              ; save 0 instead of space into buffer, so it 
                                         ; matches the end of the command string
-@not_a_space:   ldx     keybuffer_ptr
-                sta     keybuffer,x
-                inc     keybuffer_ptr
+@not_a_space:   ldx     inputbuffer_ptr
+                sta     inputbuffer,x
+                inc     inputbuffer_ptr
 
                 bra     next_key
-@enter:         lda     keybuffer_ptr
+@enter:         lda     inputbuffer_ptr
                 beq     line_input      ; do nothing if empty line
 
                 jsr     find_command
@@ -56,11 +56,11 @@ next_key:       jsr     read_key
                 lda     #BS
                 jsr     putc
 
-                lda     keybuffer_ptr
+                lda     inputbuffer_ptr
                 beq     next_key        ; already at start of line
-                dec     keybuffer_ptr
-                ldx     keybuffer_ptr
-                stz     keybuffer,x
+                dec     inputbuffer_ptr
+                ldx     inputbuffer_ptr
+                stz     inputbuffer,x
 
                 bra     next_key
 
@@ -98,16 +98,16 @@ find_command:   ldx     #0              ; index into list of commands
                 rts
 
 ; This looks at one command entry and matches it agains what's in the
-; keybuffer.
+; inputbuffer.
 ; Y:    index into the string to match
 ; tmp1: the starting address of the string
 match_command:  ldy     #0              ; index into strings
-@compare_char:  lda     keybuffer,y
+@compare_char:  lda     inputbuffer,y
                 cmp     (tmp1),y
                 beq     @continue
                 sec                     ; to message to the caller that the command didn't match
                 rts
-@continue:      lda     keybuffer,y     ; is it the last character?
+@continue:      lda     inputbuffer,y   ; is it the last character?
                 beq     @matched
                 iny
                 jmp     @compare_char
@@ -116,11 +116,15 @@ match_command:  ldy     #0              ; index into strings
                 clc                     ; to message to the caller that the command matched
                 rts
 
+;--------------------------------------------------------------------------------;
+;                                commands                                        ;
+;--------------------------------------------------------------------------------;
+
 ; The dump command. It dumps one page of memory. It takes a hex page number as parameter.
 ; Example: `dump a0` to dump page $a0.
 dump:           clc
-                lda     #keybuffer
-                adc     param_index         ; calculate the start of the param
+                lda     #inputbuffer
+                adc     param_index     ; calculate the start of the param
                 
                 jsr     hex_to_byte
                 jsr     dump_page
@@ -156,5 +160,3 @@ c_dump:         .byte   "dump", 0
                 .word   dump
 c_rcv:          .byte   "rcv", 0
                 .word   rcv
-
-
