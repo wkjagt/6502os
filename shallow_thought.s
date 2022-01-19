@@ -53,7 +53,7 @@ next_key:
                 lda     keybuffer_ptr
                 beq     next_command    ; do nothing if empty line
 
-                jsr     execute_command
+                jsr     find_command
                 bra     next_command
 @backspace:
                 lda     #BS
@@ -74,9 +74,9 @@ next_key:
 ; this loops over all the commands under the commands label
 ; each of those points to an entry in the list that contains the
 ; command string to match and the address of the routine to execute
-execute_command:
+find_command:
                 ldx     #0              ; index into list of commands
-find_command_loop:
+@loop:
                 lda     commands,x      ; load the address of the entry
                 sta     tmp1            ; into tmp1 (16 bits)
                 inx
@@ -89,7 +89,7 @@ find_command_loop:
 
                 jsr     match_command
                 inx
-                bra     find_command_loop
+                bra     @loop
 @end_of_list:
                 bcc     @done
                 lda     #STR_UNKNOWN_CMD
@@ -126,7 +126,7 @@ match_command:
                 iny
                 lda     (tmp1), y
                 sta     command_vector+1
-
+                jsr     cr
                 jmp     (command_vector)
                 clc                     ; to message to the caller that the command matched
                 rts
