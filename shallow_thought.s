@@ -8,31 +8,27 @@
 
 .code
 
-reset:
-                jsr     init_screen
+reset:          jsr     init_screen
                 jsr     init_keyboard
-
                 lda     #STR_STARTUP
                 jsr     print_string
 
                 ldx     #0
-clear_zp:
-                stz     0,x
+clear_zp:       stz     0,x
                 inx
                 bne     clear_zp
 
-next_command:
-                jsr     cr
+line_input:     jsr     cr
+                lda     #STR_PROMPT
+                jsr     print_string_no_lf
+
                 stz     keybuffer_ptr
 
                 ldx     #128
-clear_buffer:                
-                stz     keybuffer,x
+clear_buffer:   stz     keybuffer,x
                 dex
                 bne     clear_buffer
-next_key:
-                jsr     read_key
-
+next_key:       jsr     read_key
                 cmp     #DEL
                 beq     @backspace
                 cmp     #LF                
@@ -43,20 +39,17 @@ next_key:
                 bne     @not_a_space
                 lda     #0              ; save 0 instead of space into buffer, so it 
                                         ; matches the end of the command string
-@not_a_space:
-                ldx     keybuffer_ptr
+@not_a_space:   ldx     keybuffer_ptr
                 sta     keybuffer,x
                 inc     keybuffer_ptr
 
                 bra     next_key
-@enter:
-                lda     keybuffer_ptr
-                beq     next_command    ; do nothing if empty line
+@enter:         lda     keybuffer_ptr
+                beq     line_input      ; do nothing if empty line
 
                 jsr     find_command
-                bra     next_command
-@backspace:
-                lda     #BS
+                bra     line_input
+@backspace:     lda     #BS
                 jsr     putc
                 lda     #' '
                 jsr     putc
@@ -74,10 +67,8 @@ next_key:
 ; this loops over all the commands under the commands label
 ; each of those points to an entry in the list that contains the
 ; command string to match and the address of the routine to execute
-find_command:
-                ldx     #0              ; index into list of commands
-@loop:
-                lda     commands,x      ; load the address of the entry
+find_command:   ldx     #0              ; index into list of commands
+@loop:          lda     commands,x      ; load the address of the entry
                 sta     tmp1            ; into tmp1 (16 bits)
                 inx
                 lda     commands,x
@@ -91,8 +82,7 @@ find_command:
                 bcc     @execute
                 inx
                 bra     @loop
-@execute:
-                ; tmp1 now points to the command that holds the address
+@execute:       ; tmp1 now points to the command that holds the address
                 ; to jump to. Store that address in command_vector so we
                 ; can jump to it.
                 lda     (tmp1), y
@@ -103,8 +93,7 @@ find_command:
                 jsr     cr
                 jmp     (command_vector)
                 rts
-@unknown:
-                lda     #STR_UNKNOWN_CMD
+@unknown:       lda     #STR_UNKNOWN_CMD
                 jsr     print_string
                 rts
 
@@ -112,29 +101,24 @@ find_command:
 ; keybuffer.
 ; Y:    index into the string to match
 ; tmp1: the starting address of the string
-match_command:
-                ldy     #0              ; index into strings
-@compare_char:
-                lda     keybuffer,y
+match_command:  ldy     #0              ; index into strings
+@compare_char:  lda     keybuffer,y
                 cmp     (tmp1),y
                 beq     @continue
                 sec                     ; to message to the caller that the command didn't match
                 rts
-@continue:
-                lda     keybuffer,y     ; is it the last character?
-                beq     @string_matched
+@continue:      lda     keybuffer,y     ; is it the last character?
+                beq     @matched
                 iny
                 jmp     @compare_char
-@string_matched:         
-                iny                     ; skip past the 0 at the end of the string
+@matched:       iny                     ; skip past the 0 at the end of the string
                 sty     param_index
                 clc                     ; to message to the caller that the command matched
                 rts
 
 ; The dump command. It dumps one page of memory. It takes a hex page number as parameter.
 ; Example: `dump a0` to dump page $a0.
-dump:
-                clc
+dump:           clc
                 lda     #keybuffer
                 adc     param_index         ; calculate the start of the param
                 
@@ -146,8 +130,7 @@ dump:
 ; the transmission on the transmitting computer. A key press sends the initial NAK
 ; and starts receiving. It uses xmodem_byte_sink_vector as a vector to a routine that
 ; receives each data byte in the A register.
-rcv:
-                ; set the vector for what to do with each byte coming in through xmodem
+rcv:            ; set the vector for what to do with each byte coming in through xmodem
                 lda     #<print_formatted_byte_as_hex
                 sta     xmodem_byte_sink_vector
                 lda     #>print_formatted_byte_as_hex
@@ -167,8 +150,7 @@ rcv:
                 jsr     xmodem_receive
                 rts
 
-commands:
-                .word   c_dump, c_rcv, 0
+commands:       .word   c_dump, c_rcv, 0
 
 c_dump:         .byte   "dump", 0
                 .word   dump

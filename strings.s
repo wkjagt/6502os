@@ -5,11 +5,12 @@
 .code
 
 string_table:
-                .word   s_startup, s_xmodem_start, s_unknown_cmd
+                .word   s_startup, s_xmodem_start, s_unknown_cmd, s_prompt
 
 s_startup:      .byte   "                           -- Shallow Thought OS --", 0                
 s_xmodem_start: .byte   "Initiate transfer on transmitter and then press any key", 0
-s_unknown_cmd:  .byte  ": unknown command", 0 
+s_unknown_cmd:  .byte   ": unknown command", 0 
+s_prompt:       .byte   "$ ", 0
 
 print_formatted_byte_as_hex:
                 jsr     print_byte_as_hex
@@ -43,7 +44,7 @@ print_nibble:
                 jsr     putc
                 rts
 
-print_string:
+print_string_no_lf:
                 asl                     ; multiply by 2 because size of memory address is 2 bytes
                 tay
                 lda     string_table,y  ; string index into string table
@@ -61,6 +62,10 @@ print_string:
                 iny
                 bra     @next_char
 @done:
+                rts
+
+print_string:
+                jsr     print_string_no_lf
                 lda     #$0d
                 jsr     putc
                 lda     #$0a
