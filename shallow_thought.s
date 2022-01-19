@@ -35,23 +35,24 @@ next_key:
 
                 cmp     #DEL
                 beq     @backspace
-                pha
-                jsr     putc
-                pla
-                cmp     #SPACE
-                bne     @not_a_space
-                lda     #0              ; save 0 instead of space into buffer
-@not_a_space:
                 cmp     #LF                
                 beq     @enter
 
+                jsr     putc
+                cmp     #SPACE
+                bne     @not_a_space
+                lda     #0              ; save 0 instead of space into buffer, so it 
+                                        ; matches the end of the command string
+@not_a_space:
                 ldx     keybuffer_ptr
                 sta     keybuffer,x
                 inc     keybuffer_ptr
 
                 bra     next_key
 @enter:
-                jsr     cr
+                lda     keybuffer_ptr
+                beq     next_command    ; do nothing if empty line
+
                 jsr     execute_command
                 bra     next_command
 @backspace:
@@ -84,11 +85,15 @@ find_command_loop:
 
                 lda     (tmp1)          ; see if this is the last entry
                 ora     (tmp1+1)        ; check two bytes for 0.
-                beq     @done
+                beq     @end_of_list
 
                 jsr     match_command
                 inx
                 bra     find_command_loop
+@end_of_list:
+                bcc     @done
+                lda     #STR_UNKNOWN_CMD
+                jsr     print_string
 @done:
                 rts
 
@@ -101,7 +106,10 @@ match_command:
 @compare_char:
                 lda     keybuffer,y
                 cmp     (tmp1),y
-                bne     @done
+                beq     @continue
+                sec                     ; to message to the caller that the command didn't match
+                rts
+@continue:
                 lda     keybuffer,y     ; is it the last character?
                 beq     @string_matched
                 iny
@@ -120,7 +128,7 @@ match_command:
                 sta     command_vector+1
 
                 jmp     (command_vector)
-@done:
+                clc                     ; to message to the caller that the command matched
                 rts
 
 ; The dump command. It dumps one page of memory. It takes a hex page number as parameter.

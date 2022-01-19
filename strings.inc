@@ -7,6 +7,7 @@
 
 STR_STARTUP             = $00
 STR_XMODEM_START        = $01
+STR_UNKNOWN_CMD         = $02
 
 SPACE                   = $20
 LF                      = $0A
