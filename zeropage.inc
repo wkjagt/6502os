@@ -1,4 +1,5 @@
 ; additional "registers"
+kb_char_in              = $00
 tmp1                    = $02
 tmp2                    = $04
 tmp3                    = $06

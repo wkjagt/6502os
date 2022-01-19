@@ -1,9 +1,7 @@
+.include "keyboard.inc"
 .include "via.inc"
+.include "zeropage.inc"
 
-.export init_keyboard
-.export read_key
-
-KB_CHAR_IN      =       $0
 KB_ACK          =       %01000000
 
                 .code
@@ -20,7 +18,7 @@ read_key:
                 jsr     receive_nibble
                 jsr     receive_nibble
 
-                lda     KB_CHAR_IN      ; character is now in A, hold on to it
+                lda     kb_char_in      ; character is now in A, hold on to it
                 pha
 
                 jsr     receive_nibble  ; receive the flags
@@ -39,7 +37,7 @@ receive_nibble:
                 ldx     #4
 @rotate:
                 asl                     ; shift bit into carry
-                rol     KB_CHAR_IN      ; rotate carry into CHAR
+                rol     kb_char_in      ; rotate carry into CHAR
                 dex
                 bne     @rotate
 

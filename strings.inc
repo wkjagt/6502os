@@ -5,7 +5,6 @@
 .global string_table
 .global print_byte_as_hex
 
-
 STR_STARTUP             = $00
 STR_XMODEM_START        = $01
 

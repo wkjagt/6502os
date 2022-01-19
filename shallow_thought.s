@@ -153,11 +153,11 @@ rcv:
                 rts
 
 commands:
-                .word c_dump, c_rcv, 0
+                .word   c_dump, c_rcv, 0
 
-c_dump:         .byte "dump", 0
-                .word dump
-c_rcv:          .byte "rcv", 0
-                .word rcv
+c_dump:         .byte   "dump", 0
+                .word   dump
+c_rcv:          .byte   "rcv", 0
+                .word   rcv
 
 

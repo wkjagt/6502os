@@ -5,12 +5,11 @@
 .code
 
 string_table:
-                .word s_startup, s_xmodem_start
+                .word   s_startup, s_xmodem_start
 
-s_startup:      .byte "                           -- Shallow Thought OS --", 0                
-s_xmodem_start: .byte "Initiate transfer on transmitter and then press any key", 0
+s_startup:      .byte   "                           -- Shallow Thought OS --", 0                
+s_xmodem_start: .byte   "Initiate transfer on transmitter and then press any key", 0
 
-; this only adds a space
 print_formatted_byte_as_hex:
                 jsr     print_byte_as_hex
                 lda     #' '
@@ -52,14 +51,14 @@ print_string:
                 lda     string_table,y
                 sta     tmp3+1          ; MSB
 
-                ldy #0
+                ldy     #0
 @next_char:
-                lda (tmp3),y
-                beq @done
+                lda     (tmp3),y
+                beq     @done
 
-                jsr putc
+                jsr     putc
                 iny
-                bra @next_char
+                bra     @next_char
 @done:
                 lda     #$0d
                 jsr     putc
