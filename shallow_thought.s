@@ -85,16 +85,27 @@ find_command:
 
                 lda     (tmp1)          ; see if this is the last entry
                 ora     (tmp1+1)        ; check two bytes for 0.
-                beq     @end_of_list
+                beq     @unknown
 
                 jsr     match_command
+                bcc     @execute
                 inx
                 bra     @loop
-@end_of_list:
-                bcc     @done
+@execute:
+                ; tmp1 now points to the command that holds the address
+                ; to jump to. Store that address in command_vector so we
+                ; can jump to it.
+                lda     (tmp1), y
+                sta     command_vector      
+                iny
+                lda     (tmp1), y
+                sta     command_vector+1
+                jsr     cr
+                jmp     (command_vector)
+                rts
+@unknown:
                 lda     #STR_UNKNOWN_CMD
                 jsr     print_string
-@done:
                 rts
 
 ; This looks at one command entry and matches it agains what's in the
@@ -117,17 +128,6 @@ match_command:
 @string_matched:         
                 iny                     ; skip past the 0 at the end of the string
                 sty     param_index
-
-                ; tmp1 now points to the command that holds the address
-                ; to jump to. Store that address in command_vector so we
-                ; can jump to it.
-                lda     (tmp1), y
-                sta     command_vector      
-                iny
-                lda     (tmp1), y
-                sta     command_vector+1
-                jsr     cr
-                jmp     (command_vector)
                 clc                     ; to message to the caller that the command matched
                 rts
 
