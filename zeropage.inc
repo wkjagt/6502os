@@ -1,5 +1,6 @@
-; additional "registers"
 kb_char_in              = $00
+
+; additional "registers"
 tmp1                    = $02
 tmp2                    = $04
 tmp3                    = $06
@@ -10,4 +11,5 @@ command_vector          = $0c
 param_index             = $0e
 keybuffer_ptr           = $10
 
+; this is not the keyboard buffer, but the typed line
 keybuffer               = $80

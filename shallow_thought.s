@@ -63,7 +63,7 @@ next_key:
                 jsr     putc
 
                 lda     keybuffer_ptr
-                beq     next_key            ; already at start of line
+                beq     next_key        ; already at start of line
                 dec     keybuffer_ptr
                 ldx     keybuffer_ptr
                 stz     keybuffer,x
@@ -74,16 +74,16 @@ next_key:
 ; each of those points to an entry in the list that contains the
 ; command string to match and the address of the routine to execute
 execute_command:
-                ldx     #0                  ; index into list of commands
+                ldx     #0              ; index into list of commands
 find_command_loop:
-                lda     commands,x          ; load the address of the entry
-                sta     tmp1                ; into tmp1 (16 bits)
+                lda     commands,x      ; load the address of the entry
+                sta     tmp1            ; into tmp1 (16 bits)
                 inx
                 lda     commands,x
                 sta     tmp1+1
 
-                lda     (tmp1)              ; see if this is the last entry
-                ora     (tmp1+1)            ; check two bytes for 0.
+                lda     (tmp1)          ; see if this is the last entry
+                ora     (tmp1+1)        ; check two bytes for 0.
                 beq     @done
 
                 jsr     match_command
@@ -97,17 +97,17 @@ find_command_loop:
 ; Y:    index into the string to match
 ; tmp1: the starting address of the string
 match_command:
-                ldy     #0                  ; index into strings
+                ldy     #0              ; index into strings
 @compare_char:
                 lda     keybuffer,y
                 cmp     (tmp1),y
                 bne     @done
-                lda     keybuffer,y         ; is it the last character?
+                lda     keybuffer,y     ; is it the last character?
                 beq     @string_matched
                 iny
                 jmp     @compare_char
 @string_matched:         
-                iny     ; skip past the 0 at the end of the string
+                iny                     ; skip past the 0 at the end of the string
                 sty     param_index
 
                 ; tmp1 now points to the command that holds the address
@@ -123,6 +123,8 @@ match_command:
 @done:
                 rts
 
+; The dump command. It dumps one page of memory. It takes a hex page number as parameter.
+; Example: `dump a0` to dump page $a0.
 dump:
                 clc
                 lda     #keybuffer
@@ -132,15 +134,20 @@ dump:
                 jsr     dump_page
                 rts
 
+; The rcv command. It waits for a keypress to give the user the opportunity to start
+; the transmission on the transmitting computer. A key press sends the initial NAK
+; and starts receiving. It uses xmodem_byte_sink_vector as a vector to a routine that
+; receives each data byte in the A register.
 rcv:
-                lda     #STR_XMODEM_START
-                jsr     print_string
-
                 ; set the vector for what to do with each byte coming in through xmodem
                 lda     #<print_formatted_byte_as_hex
                 sta     xmodem_byte_sink_vector
                 lda     #>print_formatted_byte_as_hex
                 sta     xmodem_byte_sink_vector+1
+
+                ; prompt the user to press a key to start receiving
+                lda     #STR_XMODEM_START
+                jsr     print_string
 
                 ; The sender starts transmitting bytes as soon as
                 ; it receives a NAK byte from the receiver. To be
