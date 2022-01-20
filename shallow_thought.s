@@ -6,6 +6,8 @@
 .import xmodem_receive
 .import dump_page
 
+JUMP = $4C
+
 .code
 
 reset:          jsr     init_screen
@@ -192,12 +194,25 @@ run:            jmp     rcv_buffer
 commands:       .word   c_dump, c_rcv, c_cls, c_run, c_reset, 0
 
 c_dump:         .byte   "dump", 0
-                .word   dump
+                .word   jumptable + 0
 c_rcv:          .byte   "rcv", 0
-                .word   rcv
+                .word   jumptable + 3
 c_cls:          .byte   "cls", 0
-                .word   init_screen
+                .word   jumptable + 6
 c_run:          .byte   "run", 0
-                .word   run
+                .word   jumptable + 9
 c_reset:        .byte   "reset", 0
+                .word   jumptable + 12
+
+jumptable:
+                .byte   JUMP            ; 0
+                .word   dump
+                .byte   JUMP            ; 3
+                .word   rcv
+                .byte   JUMP            ; 6
+                .word   init_screen
+                .byte   JUMP            ; 9
+                .word   run
+                .byte   JUMP            ; 12
                 .word   reset
+            
