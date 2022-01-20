@@ -5,12 +5,15 @@
 .code
 
 string_table:
-                .word   s_startup, s_xmodem_start, s_unknown_cmd, s_prompt
+                .word   s_startup, s_xmodem_wait, s_unknown_cmd, s_prompt, s_xmodem_done
+                .word   s_xmodem_start
 
 s_startup:      .byte   "                           -- Shallow Thought OS --", 0                
-s_xmodem_start: .byte   "Initiate transfer on transmitter and then press any key", 0
+s_xmodem_wait:  .byte   "Initiate transfer on transmitter and then press any key.", 0
 s_unknown_cmd:  .byte   ": unknown command", 0 
 s_prompt:       .byte   "$ ", 0
+s_xmodem_done:  .byte   "Transfer completed to $2000.", 0
+s_xmodem_start: .byte   "Starting transfer to $2000...", 0
 
 print_formatted_byte_as_hex:
                 jsr     print_byte_as_hex

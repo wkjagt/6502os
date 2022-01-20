@@ -7,9 +7,11 @@
 .global print_byte_as_hex
 
 STR_STARTUP             = $00
-STR_XMODEM_START        = $01
+STR_XMODEM_WAIT         = $01
 STR_UNKNOWN_CMD         = $02
 STR_PROMPT              = $03
+STR_XMODEM_DONE         = $04
+STR_XMODEM_START        = $05
 
 SPACE                   = $20
 LF                      = $0A

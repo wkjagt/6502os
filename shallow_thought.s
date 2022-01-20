@@ -135,13 +135,19 @@ dump:           clc
 ; and starts receiving. It uses xmodem_byte_sink_vector as a vector to a routine that
 ; receives each data byte in the A register.
 rcv:            ; set the vector for what to do with each byte coming in through xmodem
-                lda     #<print_formatted_byte_as_hex
+                lda     #<save_to_ram
                 sta     xmodem_byte_sink_vector
-                lda     #>print_formatted_byte_as_hex
+                lda     #>save_to_ram
                 sta     xmodem_byte_sink_vector+1
 
+                ; reset the pointer to start of the receive buffer
+                lda     #<rcv_buffer
+                sta     rcv_buffer_pointer
+                lda     #>rcv_buffer
+                sta     rcv_buffer_pointer+1
+
                 ; prompt the user to press a key to start receiving
-                lda     #STR_XMODEM_START
+                lda     #STR_XMODEM_WAIT
                 jsr     print_string
 
                 ; The sender starts transmitting bytes as soon as
@@ -151,12 +157,29 @@ rcv:            ; set the vector for what to do with each byte coming in through
                 ; 2. Press any key on the receiver to start the
                 ;    transmission
                 jsr     read_key
+
+                lda     #STR_XMODEM_START
+                jsr     print_string
+
                 jsr     xmodem_receive
+
+                lda     #STR_XMODEM_DONE
+                jsr     print_string
                 rts
 
-commands:       .word   c_dump, c_rcv, 0
+save_to_ram:
+                sta     (rcv_buffer_pointer)
+                inc     rcv_buffer_pointer
+                bne     @done
+                inc     rcv_buffer_pointer+1
+@done:          rts     
+
+
+commands:       .word   c_dump, c_rcv, c_cls, 0
 
 c_dump:         .byte   "dump", 0
                 .word   dump
 c_rcv:          .byte   "rcv", 0
                 .word   rcv
+c_cls:          .byte   "cls", 0
+                .word   init_screen
