@@ -189,7 +189,7 @@ run:            jmp     rcv_buffer
 ;------------------------------------------------------
 ;                List of commands                     ;
 ;------------------------------------------------------
-commands:       .word   c_dump, c_rcv, c_cls, c_run, 0
+commands:       .word   c_dump, c_rcv, c_cls, c_run, c_reset, 0
 
 c_dump:         .byte   "dump", 0
                 .word   dump
@@ -199,3 +199,5 @@ c_cls:          .byte   "cls", 0
                 .word   init_screen
 c_run:          .byte   "run", 0
                 .word   run
+c_reset:        .byte   "reset", 0
+                .word   reset
