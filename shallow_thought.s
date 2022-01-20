@@ -29,7 +29,7 @@ clear_buffer:   stz     inputbuffer,x
                 dex
                 bne     clear_buffer
 next_key:       jsr     read_key
-                cmp     #DEL
+                cmp     #BS
                 beq     @backspace
                 cmp     #LF                
                 beq     @enter
@@ -49,15 +49,16 @@ next_key:       jsr     read_key
 
                 jsr     find_command
                 bra     line_input
-@backspace:     lda     #BS
+@backspace:     lda     inputbuffer_ptr
+                beq     next_key        ; already at start of line
+
+                lda     #BS
                 jsr     putc
                 lda     #' '
                 jsr     putc
                 lda     #BS
                 jsr     putc
 
-                lda     inputbuffer_ptr
-                beq     next_key        ; already at start of line
                 dec     inputbuffer_ptr
                 ldx     inputbuffer_ptr
                 stz     inputbuffer,x
@@ -115,11 +116,9 @@ match_command:  ldy     #0              ; index into strings
                 sty     param_index
                 clc                     ; to message to the caller that the command matched
                 rts
-
-;--------------------------------------------------------------------------------;
-;                                commands                                        ;
-;--------------------------------------------------------------------------------;
-
+;------------------------------------------------------
+;               Command routines                      ;
+;------------------------------------------------------
 ; The dump command. It dumps one page of memory. It takes a hex page number as parameter.
 ; Example: `dump a0` to dump page $a0.
 dump:           clc
@@ -134,6 +133,7 @@ dump:           clc
 ; the transmission on the transmitting computer. A key press sends the initial NAK
 ; and starts receiving. It uses xmodem_byte_sink_vector as a vector to a routine that
 ; receives each data byte in the A register.
+
 rcv:            ; set the vector for what to do with each byte coming in through xmodem
                 lda     #<save_to_ram
                 sta     xmodem_byte_sink_vector
@@ -167,6 +167,9 @@ rcv:            ; set the vector for what to do with each byte coming in through
                 jsr     print_string
                 rts
 
+; The routine vectored to by rcv. This gets each received
+; data byte in the A register. It saves it in RAM to it can
+; be jumped to by the jmp command.
 save_to_ram:
                 sta     (rcv_buffer_pointer)
                 inc     rcv_buffer_pointer
@@ -174,8 +177,19 @@ save_to_ram:
                 inc     rcv_buffer_pointer+1
 @done:          rts     
 
+; Very simple command to jump to the start of the receive buffer.
+; Notes:
+;   - This will crash the computer if whatever data is there
+;     doesn't consist of a valid and correct program
+;   - If the loaded program returns control with RTS, it gives
+;     control back to line_input which is where the original JSR
+;     is. After that only indirect jumps are used.
+run:            jmp     rcv_buffer
 
-commands:       .word   c_dump, c_rcv, c_cls, 0
+;------------------------------------------------------
+;                List of commands                     ;
+;------------------------------------------------------
+commands:       .word   c_dump, c_rcv, c_cls, c_run, 0
 
 c_dump:         .byte   "dump", 0
                 .word   dump
@@ -183,3 +197,5 @@ c_rcv:          .byte   "rcv", 0
                 .word   rcv
 c_cls:          .byte   "cls", 0
                 .word   init_screen
+c_run:          .byte   "run", 0
+                .word   run
