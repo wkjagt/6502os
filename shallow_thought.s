@@ -147,7 +147,7 @@ rcv:            ; set the vector for what to do with each byte coming in through
                 sta     rcv_buffer_pointer+1
 
                 ; prompt the user to press a key to start receiving
-                lda     #STR_XMODEM_WAIT
+                lda     #STR_RCV_WAIT
                 jsr     print_string
 
                 ; The sender starts transmitting bytes as soon as
@@ -158,12 +158,12 @@ rcv:            ; set the vector for what to do with each byte coming in through
                 ;    transmission
                 jsr     read_key
 
-                lda     #STR_XMODEM_START
+                lda     #STR_RCV_START
                 jsr     print_string
 
                 jsr     xmodem_receive
 
-                lda     #STR_XMODEM_DONE
+                lda     #STR_RCV_DONE
                 jsr     print_string
                 rts
 
