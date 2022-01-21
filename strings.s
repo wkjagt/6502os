@@ -1,6 +1,7 @@
 .include "strings.inc"
 .include "zeropage.inc"
 .include "screen.inc"
+.include "jump_table.inc"
 
 .code
 
@@ -11,14 +12,14 @@ string_table:
 s_startup:      .byte   "                           -- Shallow Thought OS --", 0                
 s_rcv_wait:     .byte   "Initiate transfer on transmitter and then press any key.", 0
 s_unknown_cmd:  .byte   ": unknown command", 0 
-s_prompt:       .byte   "$ ", 0
+s_prompt:       .byte   "> ", 0
 s_rcv_done:     .byte   "Transfer completed to $2000.", 0
 s_rcv_start:    .byte   "Starting transfer to $2000...", 0
 
 print_formatted_byte_as_hex:
                 jsr     print_byte_as_hex
                 lda     #' '
-                jsr     putc
+                jsr     JMP_PUTC
                 rts
 
 print_byte_as_hex:
@@ -44,7 +45,7 @@ print_nibble:
 @letter:
                 adc     #54             ; ASCII offset to letters A-F
 @print:
-                jsr     putc
+                jsr     JMP_PUTC
                 rts
 
 print_string_no_lf:
@@ -61,7 +62,7 @@ print_string_no_lf:
                 lda     (tmp3),y
                 beq     @done
 
-                jsr     putc
+                jsr     JMP_PUTC
                 iny
                 bra     @next_char
 @done:
@@ -70,9 +71,9 @@ print_string_no_lf:
 print_string:
                 jsr     print_string_no_lf
                 lda     #$0d
-                jsr     putc
+                jsr     JMP_PUTC
                 lda     #$0a
-                jsr     putc
+                jsr     JMP_PUTC
                 rts
 
 
@@ -122,7 +123,7 @@ hex_to_byte:
 
 cr:
                 lda     #LF
-                jsr     putc
+                jsr     JMP_PUTC
                 lda     #CR
-                jsr     putc
+                jsr     JMP_PUTC
                 rts

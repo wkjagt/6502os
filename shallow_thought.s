@@ -1,3 +1,4 @@
+.include "jump_table.inc"
 .include "strings.inc"
 .include "keyboard.inc"
 .include "screen.inc"
@@ -11,7 +12,15 @@ JUMP = $4C
 
 .code
 
-reset:          jsr     init_screen
+reset:
+copy_jumptable: ldx     #0
+@loop:          lda     jump_table,x
+                sta     $0300,x
+                inx
+                cpx     end_jump_table-jump_table
+                bne     @loop
+
+                jsr     init_screen
                 jsr     init_keyboard
                 lda     #STR_STARTUP
                 jsr     print_string
@@ -21,12 +30,6 @@ clear_zp:       stz     0,x
                 inx
                 bne     clear_zp
 
-copy_jumptable: ldx     #0
-@loop:          lda     jump_table,x
-                sta     $0300,x
-                inx
-                cpx     end_jump_table-jump_table
-                bne     @loop
 
 line_input:     jsr     cr
                 lda     #STR_PROMPT
@@ -44,7 +47,7 @@ next_key:       jsr     read_key
                 cmp     #LF                
                 beq     @enter
 
-                jsr     putc
+                jsr     JMP_PUTC
                 cmp     #SPACE
                 bne     @not_a_space
                 lda     #0              ; save 0 instead of space into buffer, so it 
@@ -63,11 +66,11 @@ next_key:       jsr     read_key
                 beq     next_key        ; already at start of line
 
                 lda     #BS
-                jsr     putc
+                jsr     JMP_PUTC
                 lda     #' '
-                jsr     putc
+                jsr     JMP_PUTC
                 lda     #BS
-                jsr     putc
+                jsr     JMP_PUTC
 
                 dec     inputbuffer_ptr
                 ldx     inputbuffer_ptr
@@ -199,24 +202,29 @@ run:            jmp     rcv_buffer
 ;------------------------------------------------------
 ;                List of commands                     ;
 ;------------------------------------------------------
+; This is a list of addresses of where each of the commands start
+; We index into this (using the constants in strings.inc) to find
+; where each next command definition starts in memory
 commands:       .word   cmd_dump, cmd_rcv, cmd_cls, cmd_run, cmd_reset, 0
 
+; 
 cmd_dump:       .byte   "dump", 0
-                .word   __JUMPTABLE_START__ + 0
+                .word   JMP_DUMP
 cmd_rcv:        .byte   "rcv", 0
-                .word   __JUMPTABLE_START__ + 3
+                .word   JMP_RCV
 cmd_cls:        .byte   "cls", 0
-                .word   __JUMPTABLE_START__ + 6
+                .word   JMP_CLS
 cmd_run:        .byte   "run", 0
-                .word   __JUMPTABLE_START__ + 9
+                .word   JMP_RUN
 cmd_reset:      .byte   "reset", 0
-                .word   __JUMPTABLE_START__ + 12
+                .word   JMP_RESET
 
 jump_table:
-jmp_dump:       jmp     dump
-jmp_rcv:        jmp     rcv
-jmp_cls:        jmp     init_screen
-jmp_run:        jmp     run
-jmp_reset:      jmp     reset
+                jmp     dump
+                jmp     rcv
+                jmp     init_screen
+                jmp     run
+                jmp     reset
+                jmp     putc
 end_jump_table:
             

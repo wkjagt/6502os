@@ -1,3 +1,4 @@
+.include "jump_table.inc"
 .include "strings.inc"
 .include "screen.inc"
 .include "zeropage.inc"
@@ -21,9 +22,9 @@ dump_page:
                 tya
                 jsr     print_byte_as_hex
                 lda     #' '
-                jsr     putc
+                jsr     JMP_PUTC
                 lda     #' '
-                jsr     putc
+                jsr     JMP_PUTC
 
                 ldx     #0
 ; raw bytes
@@ -31,7 +32,7 @@ dump_page:
                 lda     (dump_start),y
                 jsr     print_byte_as_hex
                 lda     #' '
-                jsr     putc
+                jsr     JMP_PUTC
                 iny
                 inx
                 cpx     #16
@@ -39,7 +40,7 @@ dump_page:
                 cpx     #8
                 bne     @next_hex_byte
                 lda     #' '
-                jsr     putc
+                jsr     JMP_PUTC
                 bra     @next_hex_byte
 ; ascii representation
 @ascii:
@@ -49,9 +50,9 @@ dump_page:
                 sbc     #16             ; rewind 16 bytes for ascii
                 tay
                 lda     #' '
-                jsr     putc
+                jsr     JMP_PUTC
                 lda     #' '
-                jsr     putc
+                jsr     JMP_PUTC
 @next_ascii_byte:
                 ; ascii: $20-$7E
                 lda     (dump_start),y
@@ -59,11 +60,11 @@ dump_page:
                 bcc     @not_ascii
                 cmp     #$7F
                 bcs     @not_ascii
-                jsr     putc
+                jsr     JMP_PUTC
                 bra     @continue_ascii_byte
 @not_ascii:
                 lda     #'.'
-                jsr     putc
+                jsr     JMP_PUTC
 @continue_ascii_byte:
                 iny
                 beq     @done

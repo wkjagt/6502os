@@ -1,0 +1,8 @@
+.import __JUMPTABLE_START__
+
+JMP_DUMP        = __JUMPTABLE_START__ + 0
+JMP_RCV         = __JUMPTABLE_START__ + 3
+JMP_CLS         = __JUMPTABLE_START__ + 6
+JMP_RUN         = __JUMPTABLE_START__ + 9
+JMP_RESET       = __JUMPTABLE_START__ + 12
+JMP_PUTC        = __JUMPTABLE_START__ + 15

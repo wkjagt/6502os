@@ -1,5 +1,6 @@
 .include "screen.inc"
 .include "via.inc"
+.include "jump_table.inc"
 
 .code
 
@@ -17,13 +18,13 @@ init_screen:
                 sta     VIA1_PORTA
 
                 lda     #CLEAR_SCREEN
-                jsr     putc
+                jsr     JMP_PUTC
                 lda     #CHOOSE_CURSOR
-                jsr     putc
+                jsr     JMP_PUTC
                 lda     #CURSOR_CHAR
-                jsr     putc
+                jsr     JMP_PUTC
                 lda     #CURSOR_BLINK
-                jsr     putc
+                jsr     JMP_PUTC
 
                 rts
 
