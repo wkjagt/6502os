@@ -20,8 +20,8 @@ copy_jumptable: ldx     #0
                 cpx     end_jump_table-jump_table
                 bne     @loop
 
-                jsr     init_screen
-                jsr     init_keyboard
+                jsr     JMP_INIT_SCREEN
+                jsr     JMP_INIT_KB
                 lda     #STR_STARTUP
                 jsr     print_string
 
@@ -41,7 +41,7 @@ line_input:     jsr     cr
 clear_buffer:   stz     inputbuffer,x
                 dex
                 bne     clear_buffer
-next_key:       jsr     read_key
+next_key:       jsr     JMP_GETC
                 cmp     #BS
                 beq     @backspace
                 cmp     #LF                
@@ -169,7 +169,7 @@ rcv:            ; set the vector for what to do with each byte coming in through
                 ; 1. start sending command on sender
                 ; 2. Press any key on the receiver to start the
                 ;    transmission
-                jsr     read_key
+                jsr     JMP_GETC
 
                 lda     #STR_RCV_START
                 jsr     print_string
@@ -213,7 +213,7 @@ cmd_dump:       .byte   "dump", 0
 cmd_rcv:        .byte   "rcv", 0
                 .word   JMP_RCV
 cmd_cls:        .byte   "cls", 0
-                .word   JMP_CLS
+                .word   JMP_INIT_SCREEN
 cmd_run:        .byte   "run", 0
                 .word   JMP_RUN
 cmd_reset:      .byte   "reset", 0
@@ -228,5 +228,7 @@ jump_table:
                 jmp     putc
                 jmp     print_byte_as_hex
                 jmp     xmodem_receive
+                jmp     read_key
+                jmp     init_keyboard
 end_jump_table:
             
