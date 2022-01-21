@@ -5,6 +5,7 @@
 
 .import xmodem_receive
 .import dump_page
+.import __JUMPTABLE_START__
 
 JUMP = $4C
 
@@ -19,6 +20,13 @@ reset:          jsr     init_screen
 clear_zp:       stz     0,x
                 inx
                 bne     clear_zp
+
+copy_jumptable: ldx     #0
+@loop:          lda     jump_table,x
+                sta     $0300,x
+                inx
+                cpx     end_jump_table-jump_table
+                bne     @loop
 
 line_input:     jsr     cr
                 lda     #STR_PROMPT
@@ -191,28 +199,24 @@ run:            jmp     rcv_buffer
 ;------------------------------------------------------
 ;                List of commands                     ;
 ;------------------------------------------------------
-commands:       .word   c_dump, c_rcv, c_cls, c_run, c_reset, 0
+commands:       .word   cmd_dump, cmd_rcv, cmd_cls, cmd_run, cmd_reset, 0
 
-c_dump:         .byte   "dump", 0
-                .word   jumptable + 0
-c_rcv:          .byte   "rcv", 0
-                .word   jumptable + 3
-c_cls:          .byte   "cls", 0
-                .word   jumptable + 6
-c_run:          .byte   "run", 0
-                .word   jumptable + 9
-c_reset:        .byte   "reset", 0
-                .word   jumptable + 12
+cmd_dump:       .byte   "dump", 0
+                .word   __JUMPTABLE_START__ + 0
+cmd_rcv:        .byte   "rcv", 0
+                .word   __JUMPTABLE_START__ + 3
+cmd_cls:        .byte   "cls", 0
+                .word   __JUMPTABLE_START__ + 6
+cmd_run:        .byte   "run", 0
+                .word   __JUMPTABLE_START__ + 9
+cmd_reset:      .byte   "reset", 0
+                .word   __JUMPTABLE_START__ + 12
 
-jumptable:
-                .byte   JUMP            ; 0
-                .word   dump
-                .byte   JUMP            ; 3
-                .word   rcv
-                .byte   JUMP            ; 6
-                .word   init_screen
-                .byte   JUMP            ; 9
-                .word   run
-                .byte   JUMP            ; 12
-                .word   reset
+jump_table:
+jmp_dump:       jmp     dump
+jmp_rcv:        jmp     rcv
+jmp_cls:        jmp     init_screen
+jmp_run:        jmp     run
+jmp_reset:      jmp     reset
+end_jump_table:
             
