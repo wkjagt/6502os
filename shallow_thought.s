@@ -226,5 +226,6 @@ jump_table:
                 jmp     run
                 jmp     reset
                 jmp     putc
+                jmp     print_byte_as_hex
 end_jump_table:
             

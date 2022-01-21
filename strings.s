@@ -17,7 +17,7 @@ s_rcv_done:     .byte   "Transfer completed to $2000.", 0
 s_rcv_start:    .byte   "Starting transfer to $2000...", 0
 
 print_formatted_byte_as_hex:
-                jsr     print_byte_as_hex
+                jsr     JMP_PRINT_HEX
                 lda     #' '
                 jsr     JMP_PUTC
                 rts

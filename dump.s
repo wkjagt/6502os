@@ -18,9 +18,9 @@ dump_page:
                 jsr     cr
                 
                 lda     dump_start+1
-                jsr     print_byte_as_hex
+                jsr     JMP_PRINT_HEX
                 tya
-                jsr     print_byte_as_hex
+                jsr     JMP_PRINT_HEX
                 lda     #' '
                 jsr     JMP_PUTC
                 lda     #' '
@@ -30,7 +30,7 @@ dump_page:
 ; raw bytes
 @next_hex_byte:
                 lda     (dump_start),y
-                jsr     print_byte_as_hex
+                jsr     JMP_PRINT_HEX
                 lda     #' '
                 jsr     JMP_PUTC
                 iny
