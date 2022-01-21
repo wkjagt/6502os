@@ -174,7 +174,7 @@ rcv:            ; set the vector for what to do with each byte coming in through
                 lda     #STR_RCV_START
                 jsr     print_string
 
-                jsr     xmodem_receive
+                jsr     JMP_XMODEM_RCV
 
                 lda     #STR_RCV_DONE
                 jsr     print_string
@@ -227,5 +227,6 @@ jump_table:
                 jmp     reset
                 jmp     putc
                 jmp     print_byte_as_hex
+                jmp     xmodem_receive
 end_jump_table:
             
