@@ -52,3 +52,6 @@ clean:
 	$(MAP_FILE) \
 	$(ASM_OBJECTS) \
 	$(ASM_OBJECTS:%.o=%.lst)
+
+bios:
+	minipro -p AT28C256 -w $(ROM_FILE) -s

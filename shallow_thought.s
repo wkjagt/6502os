@@ -8,8 +8,6 @@
 .import dump_page
 .import __JUMPTABLE_START__
 
-JUMP = $4C
-
 .code
 
 reset:
@@ -195,6 +193,11 @@ save_to_ram:
 ;     is. After that only indirect jumps are used.
 run:            jmp     rcv_buffer
 
+; Interrupt handlers don't do anything for now, but they jump 
+; through the jump table so they can be overriden in software
+irq:            jmp     (IRQ_HANDLER)
+nmi:            jmp     (NMI_HANDLER)
+irqnmi:         rti
 ;------------------------------------------------------
 ;                List of commands                     ;
 ;------------------------------------------------------
@@ -214,6 +217,9 @@ cmd_run:        .byte   "run", 0
 cmd_reset:      .byte   "reset", 0
                 .word   JMP_RESET
 
+; This jump table isn't used at this location. These are default values
+; That are copied to __JUMP_TABLE__ in RAM on reset, and can be overriden
+; from software.
 jump_table:
                 jmp     dump
                 jmp     rcv
@@ -226,5 +232,12 @@ jump_table:
                 jmp     read_key
                 jmp     init_keyboard
                 jmp     line_input
+                jmp     irqnmi
+                jmp     irqnmi
 end_jump_table:
-            
+
+.segment "VECTORS"
+
+                .word   nmi
+                .word   reset
+                .word   irq
