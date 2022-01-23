@@ -2,7 +2,7 @@
 .include "strings.inc"
 .include "keyboard.inc"
 .include "screen.inc"
-.include "zeropage.inc"
+.include "addresses.inc"
 
 .import xmodem_receive
 .import dump_page
@@ -22,15 +22,15 @@ copy_jumptable: ldx     #0
 
                 jsr     JMP_INIT_SCREEN
                 jsr     JMP_INIT_KB
-                lda     #STR_STARTUP
-                jsr     print_string
+                print   STR_STARTUP
 
                 ldx     #0
-clear_zp:       stz     0,x
+@clear_zp:      stz     0,x
                 inx
-                bne     clear_zp
+                bne     @clear_zp
+                jsr     LINE_INPUT
 
-
+; Get the input for one line until enter is pressed. Then try to execute a command
 line_input:     jsr     cr
                 lda     #STR_PROMPT
                 jsr     print_string_no_lf
@@ -38,10 +38,10 @@ line_input:     jsr     cr
                 stz     inputbuffer_ptr
 
                 ldx     #128            ; inputbuffer size
-clear_buffer:   stz     inputbuffer,x
+@clear_buffer:  stz     inputbuffer,x
                 dex
-                bne     clear_buffer
-next_key:       jsr     JMP_GETC
+                bne     @clear_buffer
+@next_key:      jsr     JMP_GETC
                 cmp     #BS
                 beq     @backspace
                 cmp     #LF                
@@ -56,14 +56,14 @@ next_key:       jsr     JMP_GETC
                 sta     inputbuffer,x
                 inc     inputbuffer_ptr
 
-                bra     next_key
+                bra     @next_key
 @enter:         lda     inputbuffer_ptr
                 beq     line_input      ; do nothing if empty line
 
                 jsr     find_command
                 bra     line_input
 @backspace:     lda     inputbuffer_ptr
-                beq     next_key        ; already at start of line
+                beq     @next_key        ; already at start of line
 
                 lda     #BS
                 jsr     JMP_PUTC
@@ -76,7 +76,7 @@ next_key:       jsr     JMP_GETC
                 ldx     inputbuffer_ptr
                 stz     inputbuffer,x
 
-                bra     next_key
+                bra     @next_key
 
 ; this loops over all the commands under the commands label
 ; each of those points to an entry in the list that contains the
@@ -107,8 +107,7 @@ find_command:   ldx     #0              ; index into list of commands
                 jsr     cr
                 jmp     (command_vector)
                 rts
-@unknown:       lda     #STR_UNKNOWN_CMD
-                jsr     print_string
+@unknown:       print   STR_UNKNOWN_CMD
                 rts
 
 ; This looks at one command entry and matches it agains what's in the
@@ -160,8 +159,7 @@ rcv:            ; set the vector for what to do with each byte coming in through
                 sta     rcv_buffer_pointer+1
 
                 ; prompt the user to press a key to start receiving
-                lda     #STR_RCV_WAIT
-                jsr     print_string
+                print   STR_RCV_WAIT
 
                 ; The sender starts transmitting bytes as soon as
                 ; it receives a NAK byte from the receiver. To be
@@ -171,13 +169,11 @@ rcv:            ; set the vector for what to do with each byte coming in through
                 ;    transmission
                 jsr     JMP_GETC
 
-                lda     #STR_RCV_START
-                jsr     print_string
+                print   STR_RCV_START
 
                 jsr     JMP_XMODEM_RCV
 
-                lda     #STR_RCV_DONE
-                jsr     print_string
+                print   STR_RCV_DONE
                 rts
 
 ; The routine vectored to by rcv. This gets each received
@@ -207,7 +203,6 @@ run:            jmp     rcv_buffer
 ; where each next command definition starts in memory
 commands:       .word   cmd_dump, cmd_rcv, cmd_cls, cmd_run, cmd_reset, 0
 
-; 
 cmd_dump:       .byte   "dump", 0
                 .word   JMP_DUMP
 cmd_rcv:        .byte   "rcv", 0
@@ -230,5 +225,6 @@ jump_table:
                 jmp     xmodem_receive
                 jmp     read_key
                 jmp     init_keyboard
+                jmp     line_input
 end_jump_table:
             

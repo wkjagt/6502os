@@ -1,5 +1,5 @@
 .include "acia.inc"
-.include "zeropage.inc"
+.include "addresses.inc"
 
 .export xmodem_receive
 

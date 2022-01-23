@@ -1,6 +1,6 @@
 .include "keyboard.inc"
 .include "via.inc"
-.include "zeropage.inc"
+.include "addresses.inc"
 
 KB_ACK          =       %01000000
 
