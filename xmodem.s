@@ -3,7 +3,6 @@
 
 .export xmodem_receive
 
-RD_SRL_B        =       $838D
 NAK             =       $15
 ACK             =       $06
 EOT             =       $04
@@ -62,7 +61,7 @@ receive_byte:
                 lda     #%11001011      ; terminal ready
                 sta     ACIA_CMD
 
-                jsr     RD_SRL_B        ; blocking
+                jsr     rcv_byte        ; blocking
                 pha
 
                 lda     #%11001010      ; terminal not ready

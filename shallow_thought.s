@@ -2,6 +2,7 @@
 .include "strings.inc"
 .include "keyboard.inc"
 .include "screen.inc"
+.include "acia.inc"
 .include "addresses.inc"
 
 .import xmodem_receive
@@ -20,6 +21,8 @@ copy_jumptable: ldx     #0
 
                 jsr     JMP_INIT_SCREEN
                 jsr     JMP_INIT_KB
+                jsr     JMP_INIT_SERIAL
+
                 print   STR_STARTUP
 
                 ldx     #0
@@ -234,6 +237,7 @@ jump_table:
                 jmp     line_input
                 jmp     irqnmi
                 jmp     irqnmi
+                jmp     init_serial
 end_jump_table:
 
 .segment "VECTORS"
