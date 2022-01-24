@@ -2,7 +2,7 @@
 
 .global init_serial
 .global rcv_byte
-; .global send_byte
+.global send_byte
 
 SER_RXFL        = 1 << 3 ; Serial Receive full bit
 
