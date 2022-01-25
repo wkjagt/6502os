@@ -6,7 +6,8 @@ ASM_SOURCES=shallow_thought.s\
 			strings.s\
 			dump.s\
 			acia.s\
-			jump_table.s
+			jump_table.s\
+			zeropage.s
 
 FIRMWARE_CFG=firmware.cfg
 

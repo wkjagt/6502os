@@ -3,7 +3,7 @@
 .include "keyboard.inc"
 .include "screen.inc"
 .include "acia.inc"
-.include "addresses.inc"
+.include "zeropage.inc"
 
 .import xmodem_receive
 .import dump_page

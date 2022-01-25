@@ -1,0 +1,10 @@
+.globalzp kb_char_in
+.globalzp tmp1
+.globalzp tmp2
+.globalzp tmp3
+.globalzp dump_start
+.globalzp command_vector
+.globalzp param_index
+.globalzp inputbuffer_ptr
+.globalzp rcv_buffer_pointer
+.globalzp xmodem_byte_sink_vector

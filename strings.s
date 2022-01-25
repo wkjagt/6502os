@@ -1,5 +1,5 @@
 .include "strings.inc"
-.include "addresses.inc"
+.include "zeropage.inc"
 .include "screen.inc"
 .include "jump_table.inc"
 
