@@ -14,7 +14,7 @@
 reset:
 copy_jumptable: ldx     #0
 @loop:          lda     jump_table,x
-                sta     $0300,x
+                sta     __JUMPTABLE_START__,x
                 inx
                 cpx     end_jump_table-jump_table
                 bne     @loop
@@ -29,7 +29,7 @@ copy_jumptable: ldx     #0
 @clear_zp:      stz     0,x
                 inx
                 bne     @clear_zp
-                jsr     LINE_INPUT
+                jsr     JMP_LINE_INPUT
 
 ; Get the input for one line until enter is pressed. Then try to execute a command
 line_input:     jsr     cr
@@ -198,8 +198,8 @@ run:            jmp     rcv_buffer
 
 ; Interrupt handlers don't do anything for now, but they jump 
 ; through the jump table so they can be overriden in software
-irq:            jmp     (IRQ_HANDLER)
-nmi:            jmp     (NMI_HANDLER)
+irq:            jmp     (JMP_IRQ_HANDLER)
+nmi:            jmp     (JMP_NMI_HANDLER)
 irqnmi:         rti
 ;------------------------------------------------------
 ;                List of commands                     ;
