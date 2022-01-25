@@ -7,7 +7,8 @@
 
 .import xmodem_receive
 .import dump_page
-.import __JUMPTABLE_START__
+.import __PROGRAM_START__
+.import __INPUTBFR_START__
 
 .code
 
@@ -39,7 +40,7 @@ line_input:     jsr     cr
                 stz     inputbuffer_ptr
 
                 ldx     #128            ; inputbuffer size
-@clear_buffer:  stz     inputbuffer,x
+@clear_buffer:  stz     __INPUTBFR_START__,x
                 dex
                 bne     @clear_buffer
 @next_key:      jsr     JMP_GETC
@@ -54,7 +55,7 @@ line_input:     jsr     cr
                 lda     #0              ; save 0 instead of space into buffer, so it 
                                         ; matches the end of the command string
 @not_a_space:   ldx     inputbuffer_ptr
-                sta     inputbuffer,x
+                sta     __INPUTBFR_START__,x
                 inc     inputbuffer_ptr
 
                 bra     @next_key
@@ -75,7 +76,7 @@ line_input:     jsr     cr
 
                 dec     inputbuffer_ptr
                 ldx     inputbuffer_ptr
-                stz     inputbuffer,x
+                stz     __INPUTBFR_START__,x
 
                 bra     @next_key
 
@@ -116,12 +117,12 @@ find_command:   ldx     #0              ; index into list of commands
 ; Y:    index into the string to match
 ; tmp1: the starting address of the string
 match_command:  ldy     #0              ; index into strings
-@compare_char:  lda     inputbuffer,y
+@compare_char:  lda     __INPUTBFR_START__,y
                 cmp     (tmp1),y
                 beq     @continue
                 sec                     ; to message to the caller that the command didn't match
                 rts
-@continue:      lda     inputbuffer,y   ; is it the last character?
+@continue:      lda     __INPUTBFR_START__,y   ; is it the last character?
                 beq     @matched
                 iny
                 jmp     @compare_char
@@ -135,7 +136,7 @@ match_command:  ldy     #0              ; index into strings
 ; The dump command. It dumps one page of memory. It takes a hex page number as parameter.
 ; Example: `dump a0` to dump page $a0.
 dump:           clc
-                lda     #inputbuffer
+                lda     #<__INPUTBFR_START__
                 adc     param_index     ; calculate the start of the param
                 
                 jsr     hex_to_byte
@@ -154,9 +155,9 @@ rcv:            ; set the vector for what to do with each byte coming in through
                 sta     xmodem_byte_sink_vector+1
 
                 ; reset the pointer to start of the receive buffer
-                lda     #<rcv_buffer
+                lda     #<__PROGRAM_START__
                 sta     rcv_buffer_pointer
-                lda     #>rcv_buffer
+                lda     #>__PROGRAM_START__
                 sta     rcv_buffer_pointer+1
 
                 ; prompt the user to press a key to start receiving
@@ -194,7 +195,7 @@ save_to_ram:
 ;   - If the loaded program returns control with RTS, it gives
 ;     control back to line_input which is where the original JSR
 ;     is. After that only indirect jumps are used.
-run:            jmp     rcv_buffer
+run:            jmp     __PROGRAM_START__
 
 ; Interrupt handlers don't do anything for now, but they jump 
 ; through the jump table so they can be overriden in software
@@ -221,8 +222,8 @@ cmd_reset:      .byte   "reset", 0
                 .word   JMP_RESET
 
 ; This jump table isn't used at this location. These are default values
-; That are copied to __JUMP_TABLE__ in RAM on reset, and can be overriden
-; from software.
+; That are copied to the JUMPTABLE segment in RAM on reset, and can be overriden
+; from user software.
 jump_table:
                 jmp     dump
                 jmp     rcv

@@ -1,3 +1,5 @@
+.global __JUMPTABLE_START__
+
 .global JMP_DUMP
 .global JMP_RCV
 .global JMP_INIT_SCREEN
