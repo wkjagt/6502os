@@ -40,7 +40,7 @@ line_input:     jsr     cr
                 stz     inputbuffer_ptr
 
                 ldx     #128            ; inputbuffer size
-@clear_buffer:  stz     __INPUTBFR_START__,x
+@clear_buffer:  stz     <__INPUTBFR_START__,x
                 dex
                 bne     @clear_buffer
 @next_key:      jsr     JMP_GETC
@@ -55,7 +55,7 @@ line_input:     jsr     cr
                 lda     #0              ; save 0 instead of space into buffer, so it 
                                         ; matches the end of the command string
 @not_a_space:   ldx     inputbuffer_ptr
-                sta     __INPUTBFR_START__,x
+                sta     <__INPUTBFR_START__,x
                 inc     inputbuffer_ptr
 
                 bra     @next_key
@@ -76,7 +76,7 @@ line_input:     jsr     cr
 
                 dec     inputbuffer_ptr
                 ldx     inputbuffer_ptr
-                stz     __INPUTBFR_START__,x
+                stz     <__INPUTBFR_START__,x
 
                 bra     @next_key
 
@@ -117,12 +117,12 @@ find_command:   ldx     #0              ; index into list of commands
 ; Y:    index into the string to match
 ; tmp1: the starting address of the string
 match_command:  ldy     #0              ; index into strings
-@compare_char:  lda     __INPUTBFR_START__,y
+@compare_char:  lda     <__INPUTBFR_START__,y
                 cmp     (tmp1),y
                 beq     @continue
                 sec                     ; to message to the caller that the command didn't match
                 rts
-@continue:      lda     __INPUTBFR_START__,y   ; is it the last character?
+@continue:      lda     <__INPUTBFR_START__,y   ; is it the last character?
                 beq     @matched
                 iny
                 jmp     @compare_char
