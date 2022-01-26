@@ -13,11 +13,12 @@
 .code
 
 reset:
-copy_jumptable: ldx     #0
+                sei
+copy_jumptable: ldx     #(end_jump_table-jump_table)
 @loop:          lda     jump_table,x
                 sta     __JUMPTABLE_START__,x
-                inx
-                cpx     end_jump_table-jump_table
+                dex
+                cpx     #$ff            ; ugly. is there a better way?
                 bne     @loop
 
                 jsr     JMP_INIT_SCREEN
@@ -199,8 +200,8 @@ run:            jmp     __PROGRAM_START__
 
 ; Interrupt handlers don't do anything for now, but they jump 
 ; through the jump table so they can be overriden in software
-irq:            jmp     (JMP_IRQ_HANDLER)
-nmi:            jmp     (JMP_NMI_HANDLER)
+irq:            jmp     JMP_IRQ_HANDLER
+nmi:            jmp     JMP_NMI_HANDLER
 irqnmi:         rti
 ;------------------------------------------------------
 ;                List of commands                     ;
