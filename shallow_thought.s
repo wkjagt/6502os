@@ -9,11 +9,22 @@
 .import dump_page
 .import __PROGRAM_START__
 .import __INPUTBFR_START__
+; .import __RAM_SIZE__
 
 .code
 
-reset:
-                sei
+reset:          sei                     ; no interrupts, but user programs can enable them
+                ldx     #$ff
+                txs
+clear_ram:      stz     tmp1            ; low byte, always 0, index into it using y
+                stz     tmp1+1          ; high byte, start at last page of RAM
+                ldy     #0
+                lda     #0
+@loop:          sta     (tmp1), y
+                iny
+                bne     @loop
+                inc     tmp1+1
+                bne     @loop
 copy_jumptable: ldx     #(end_jump_table-jump_table)
 @loop:          lda     jump_table,x
                 sta     __JUMPTABLE_START__,x
@@ -27,10 +38,6 @@ copy_jumptable: ldx     #(end_jump_table-jump_table)
 
                 print   STR_STARTUP
 
-                ldx     #0
-@clear_zp:      stz     0,x
-                inx
-                bne     @clear_zp
                 jsr     JMP_LINE_INPUT
 
 ; Get the input for one line until enter is pressed. Then try to execute a command
@@ -240,6 +247,10 @@ jump_table:
                 jmp     irqnmi
                 jmp     irqnmi
                 jmp     init_serial
+                jmp     cursor_on
+                jmp     cursor_off
+                jmp     draw_pixel
+                jmp     rmv_pixel
 end_jump_table:
 
 .segment "VECTORS"

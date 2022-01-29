@@ -16,15 +16,9 @@ init_screen:
                 lda     VIA1_PORTA
                 and     #SCRN_UNUSED
                 sta     VIA1_PORTA
-
-                lda     #CLEAR_SCREEN
-                jsr     JMP_PUTC
-                lda     #CHOOSE_CURSOR
-                jsr     JMP_PUTC
-                lda     #CURSOR_CHAR
-                jsr     JMP_PUTC
-                lda     #CURSOR_BLINK
-                jsr     JMP_PUTC
+                
+                jsr     clear_screen
+                jsr     JMP_CURSOR_ON
 
                 rts
 
@@ -84,3 +78,34 @@ wait_ack_low:
                 bne     @loop
                 pla
                 rts
+
+cursor_on:      lda     #CHOOSE_CURSOR
+                jsr     JMP_PUTC
+                lda     #CURSOR_CHAR
+                jsr     JMP_PUTC
+                lda     #CURSOR_BLINK
+                jsr     JMP_PUTC
+                rts
+
+cursor_off:     lda     #CHOOSE_CURSOR
+                jsr     JMP_PUTC
+                lda     #' '
+                jsr     JMP_PUTC
+                lda     #CURSOR_SOLID
+                jsr     JMP_PUTC
+                rts
+
+clear_screen:   lda     #CLEAR_SCREEN
+                jsr     JMP_PUTC
+                rts
+
+draw_pixel:     lda     #DRAW_PIXEL
+                bra     send_pixel
+rmv_pixel:      lda     #RESET_PIXEL
+send_pixel:     jsr     JMP_PUTC
+                txa
+                jsr     JMP_PUTC
+                tya
+                jsr     JMP_PUTC
+                rts
+

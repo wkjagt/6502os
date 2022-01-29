@@ -14,3 +14,7 @@
 .global JMP_IRQ_HANDLER
 .global JMP_NMI_HANDLER
 .global JMP_INIT_SERIAL
+.global JMP_CURSOR_ON
+.global JMP_CURSOR_OFF
+.global JMP_DRAW_PIXEL
+.global JMP_RMV_PIXEL
