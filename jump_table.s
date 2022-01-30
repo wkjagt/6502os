@@ -19,3 +19,6 @@ JMP_CURSOR_ON:          .res 3          ; 42
 JMP_CURSOR_OFF:         .res 3          ; 45
 JMP_DRAW_PIXEL:         .res 3          ; 48
 JMP_RMV_PIXEL:          .res 3          ; 51
+JMP_INIT_STORAGE:       .res 3          ; 54
+JMP_STOR_READ:          .res 3          ; 57
+JMP_STOR_WRITE:         .res 3          ; 60

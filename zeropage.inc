@@ -8,3 +8,7 @@
 .globalzp inputbuffer_ptr
 .globalzp rcv_buffer_pointer
 .globalzp xmodem_byte_sink_vector
+.globalzp stor_target_block
+.globalzp stor_target_addr
+.globalzp stor_src_addr
+.globalzp stor_byte_cnt

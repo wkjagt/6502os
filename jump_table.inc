@@ -18,3 +18,6 @@
 .global JMP_CURSOR_OFF
 .global JMP_DRAW_PIXEL
 .global JMP_RMV_PIXEL
+.global JMP_INIT_STORAGE
+.global JMP_STOR_READ
+.global JMP_STOR_WRITE

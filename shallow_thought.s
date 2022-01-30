@@ -4,6 +4,7 @@
 .include "screen.inc"
 .include "acia.inc"
 .include "zeropage.inc"
+.include "storage.inc"
 
 .import xmodem_receive
 .import dump_page
@@ -35,6 +36,7 @@ copy_jumptable: ldx     #(end_jump_table-jump_table)
                 jsr     JMP_INIT_SCREEN
                 jsr     JMP_INIT_KB
                 jsr     JMP_INIT_SERIAL
+                jsr     JMP_INIT_STORAGE
 
                 print   STR_STARTUP
 
@@ -251,6 +253,9 @@ jump_table:
                 jmp     cursor_off
                 jmp     draw_pixel
                 jmp     rmv_pixel
+                jmp     init_storage
+                jmp     read_sequence
+                jmp     write_sequence
 end_jump_table:
 
 .segment "VECTORS"
