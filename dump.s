@@ -7,8 +7,8 @@
 
 .code
 
-dump_page:
-                sta     dump_start+1
+dump_page:      stz     dump_start
+                sta     dump_start+1    ; page
                 ldx     #0
                 ldy     #0
 ; start of line (new line + start address)

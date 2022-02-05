@@ -5,7 +5,7 @@
 init_storage:   lda     VIA1_DDRA
                 ora     #(DATA_PIN | CLOCK_PIN)
                 sta     VIA1_DDRA
-
+                stz     current_drive
                 rts
 
 ;=================================================================================

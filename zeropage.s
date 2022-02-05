@@ -18,3 +18,5 @@ stor_target_block:      .res 1          ; ARGS0
 stor_target_addr:       .res 2          ; ARGS1/2 (H/L)
 stor_src_addr:          .res 2          ; ARGS3/4 (L/H) 
 stor_byte_cnt:          .res 1          ; ARGS5
+
+current_drive:          .res 1

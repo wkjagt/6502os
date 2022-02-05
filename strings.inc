@@ -15,9 +15,8 @@
 STR_STARTUP             = $00
 STR_RCV_WAIT            = $01
 STR_UNKNOWN_CMD         = $02
-STR_PROMPT              = $03
-STR_RCV_DONE            = $04
-STR_RCV_START           = $05
+STR_RCV_DONE            = $03
+STR_RCV_START           = $04
 
 SPACE                   = $20
 LF                      = $0A

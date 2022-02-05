@@ -44,12 +44,18 @@ copy_jumptable: ldx     #(end_jump_table-jump_table)
 
 ; Get the input for one line until enter is pressed. Then try to execute a command
 line_input:     jsr     cr
-                lda     #STR_PROMPT
-                jsr     print_string_no_lf
+
+                lda     current_drive
+                adc     #48              ; to ascii
+                jsr     JMP_PUTC
+                lda     #'>'
+                jsr     JMP_PUTC
+                lda     #' '
+                jsr     JMP_PUTC
 
                 stz     inputbuffer_ptr
 
-                ldx     #128            ; inputbuffer size
+                ldx     #80            ; inputbuffer size
 @clear_buffer:  stz     <__INPUTBFR_START__,x
                 dex
                 bne     @clear_buffer
@@ -149,7 +155,7 @@ dump:           clc
                 lda     #<__INPUTBFR_START__
                 adc     param_index     ; calculate the start of the param
                 
-                jsr     hex_to_byte
+                jsr     hex_to_byte     ; this puts the page number in A
                 jsr     dump_page
                 rts
 

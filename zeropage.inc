@@ -12,3 +12,4 @@
 .globalzp stor_target_addr
 .globalzp stor_src_addr
 .globalzp stor_byte_cnt
+.globalzp current_drive
