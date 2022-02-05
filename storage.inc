@@ -1,6 +1,6 @@
 .global init_storage
-.global write_sequence
-.global read_sequence
+.global write_pages
+.global read_pages
 
 DATA_PIN                = %01            
 CLOCK_PIN               = %10

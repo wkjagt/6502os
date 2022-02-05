@@ -48,11 +48,10 @@ line_input:     jsr     cr
                 lda     current_drive
                 adc     #48              ; to ascii
                 jsr     JMP_PUTC
-                lda     #'>'
+                lda     #'#'
                 jsr     JMP_PUTC
                 lda     #' '
                 jsr     JMP_PUTC
-
                 stz     inputbuffer_ptr
 
                 ldx     #80            ; inputbuffer size
@@ -279,8 +278,8 @@ jump_table:
                 jmp     draw_pixel
                 jmp     rmv_pixel
                 jmp     init_storage
-                jmp     read_sequence
-                jmp     write_sequence
+                jmp     read_pages
+                jmp     write_pages
 end_jump_table:
 
 .segment "VECTORS"
