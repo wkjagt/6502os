@@ -204,6 +204,16 @@ save_to_ram:
                 inc     rcv_buffer_pointer+1
 @done:          rts     
 
+set_drive0:     lda     #0
+                bra     set_drive
+set_drive1:     lda     #1
+                bra     set_drive
+set_drive2:     lda     #2
+                bra     set_drive
+set_drive3:     lda     #3
+set_drive:      sta     current_drive
+                rts
+
 ; Very simple command to jump to the start of the receive buffer.
 ; Notes:
 ;   - This will crash the computer if whatever data is there
@@ -224,7 +234,8 @@ irqnmi:         rti
 ; This is a list of addresses of where each of the commands start
 ; We index into this (using the constants in strings.inc) to find
 ; where each next command definition starts in memory
-commands:       .word   cmd_dump, cmd_rcv, cmd_cls, cmd_run, cmd_reset, 0
+commands:       .word   cmd_dump, cmd_rcv, cmd_cls, cmd_run, cmd_reset
+                .word   cmd_d0, cmd_d1, cmd_d2, cmd_d3, 0
 
 cmd_dump:       .byte   "dump", 0
                 .word   JMP_DUMP
@@ -236,6 +247,14 @@ cmd_run:        .byte   "run", 0
                 .word   JMP_RUN
 cmd_reset:      .byte   "reset", 0
                 .word   JMP_RESET
+cmd_d0:         .byte   "d0", 0
+                .word   set_drive0
+cmd_d1:         .byte   "d1", 0
+                .word   set_drive1
+cmd_d2:         .byte   "d2", 0
+                .word   set_drive2
+cmd_d3:         .byte   "d3", 0
+                .word   set_drive3
 
 ; This jump table isn't used at this location. These are default values
 ; That are copied to the JUMPTABLE segment in RAM on reset, and can be overriden
