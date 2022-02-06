@@ -196,12 +196,46 @@ rcv:            ; set the vector for what to do with each byte coming in through
 ; The routine vectored to by rcv. This gets each received
 ; data byte in the A register. It saves it in RAM to it can
 ; be jumped to by the jmp command.
-save_to_ram:
-                sta     (rcv_buffer_pointer)
+save_to_ram:    sta     (rcv_buffer_pointer)
                 inc     rcv_buffer_pointer
                 bne     @done
                 inc     rcv_buffer_pointer+1
 @done:          rts     
+
+; ex: `load 00 04` means load 4 pages from eeprom, starting at page 0
+                ; page arg
+load:           clc
+                lda     #<__INPUTBFR_START__
+                adc     param_index
+                jsr     hex_to_byte
+                sta     stor_eeprom_addr_h
+
+                ; page count
+                clc
+                lda     #<__INPUTBFR_START__
+                adc     param_index
+                adc     #3
+                jsr     hex_to_byte
+                tax
+                jsr     JMP_STOR_READ
+                rts
+
+save:           clc
+                lda     #<__INPUTBFR_START__
+                adc     param_index
+                jsr     hex_to_byte
+                sta     stor_eeprom_addr_h
+
+                ; page count
+                clc
+                lda     #<__INPUTBFR_START__
+                adc     param_index
+                adc     #3
+                jsr     hex_to_byte
+                tax
+
+                jsr     JMP_STOR_WRITE
+                rts
 
 set_drive0:     lda     #0
                 bra     set_drive
@@ -234,7 +268,7 @@ irqnmi:         rti
 ; We index into this (using the constants in strings.inc) to find
 ; where each next command definition starts in memory
 commands:       .word   cmd_dump, cmd_rcv, cmd_cls, cmd_run, cmd_reset
-                .word   cmd_d0, cmd_d1, cmd_d2, cmd_d3, 0
+                .word   cmd_d0, cmd_d1, cmd_d2, cmd_d3, cmd_load, cmd_save, 0
 
 cmd_dump:       .byte   "dump", 0
                 .word   JMP_DUMP
@@ -254,6 +288,10 @@ cmd_d2:         .byte   "d2", 0
                 .word   set_drive2
 cmd_d3:         .byte   "d3", 0
                 .word   set_drive3
+cmd_load:       .byte   "load", 0
+                .word   load
+cmd_save:       .byte   "save", 0
+                .word   save
 
 ; This jump table isn't used at this location. These are default values
 ; That are copied to the JUMPTABLE segment in RAM on reset, and can be overriden
