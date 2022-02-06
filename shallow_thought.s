@@ -204,7 +204,12 @@ save_to_ram:    sta     (rcv_buffer_pointer)
 
 ; ex: `load 00 04` means load 4 pages from eeprom, starting at page 0
                 ; page arg
-load:           clc
+load:           jsr     load_save_args
+                jmp     JMP_STOR_READ
+save:           jsr     load_save_args
+                jmp     JMP_STOR_READ
+
+load_save_args: clc
                 lda     #<__INPUTBFR_START__
                 adc     param_index
                 jsr     hex_to_byte
@@ -217,24 +222,6 @@ load:           clc
                 adc     #3
                 jsr     hex_to_byte
                 tax
-                jsr     JMP_STOR_READ
-                rts
-
-save:           clc
-                lda     #<__INPUTBFR_START__
-                adc     param_index
-                jsr     hex_to_byte
-                sta     stor_eeprom_addr_h
-
-                ; page count
-                clc
-                lda     #<__INPUTBFR_START__
-                adc     param_index
-                adc     #3
-                jsr     hex_to_byte
-                tax
-
-                jsr     JMP_STOR_WRITE
                 rts
 
 set_drive0:     lda     #0
