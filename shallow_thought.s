@@ -38,7 +38,7 @@ copy_jumptable: ldx     #(end_jump_table-jump_table)
                 jsr     JMP_INIT_SERIAL
                 jsr     JMP_INIT_STORAGE
 
-                print   STR_STARTUP
+                println STR_STARTUP
 
                 jsr     JMP_LINE_INPUT
 
@@ -124,7 +124,7 @@ find_command:   ldx     #0              ; index into list of commands
                 jsr     cr
                 jmp     (command_vector)
                 rts
-@unknown:       print   STR_UNKNOWN_CMD
+@unknown:       println STR_UNKNOWN_CMD
                 rts
 
 ; This looks at one command entry and matches it agains what's in the
@@ -176,7 +176,7 @@ rcv:            ; set the vector for what to do with each byte coming in through
                 sta     rcv_buffer_pointer+1
 
                 ; prompt the user to press a key to start receiving
-                print   STR_RCV_WAIT
+                println STR_RCV_WAIT
 
                 ; The sender starts transmitting bytes as soon as
                 ; it receives a NAK byte from the receiver. To be
@@ -187,13 +187,18 @@ rcv:            ; set the vector for what to do with each byte coming in through
                 jsr     JMP_GETC
 
                 print   STR_RCV_START
+                lda     #>__PROGRAM_START__
+                jsr     JMP_PRINT_HEX
+                lda     #<__PROGRAM_START__
+                jsr     JMP_PRINT_HEX
+                jsr     cr
 
                 jsr     JMP_XMODEM_RCV
                 txa
                 ina
-                lsr                     ; packer count to page count
+                lsr                     ; packet count to page count
                 jsr     JMP_PRINT_HEX
-                print   STR_RCV_DONE
+                println STR_RCV_DONE
                 rts
 
 ; The routine vectored to by rcv. This gets each received

@@ -6,11 +6,15 @@
 .global string_table
 .global print_byte_as_hex
 
-.macro print str_index
+.macro println str_index
                 lda     #str_index
                 jsr     print_string
 .endmacro
 
+.macro print str_index
+                lda     #str_index
+                jsr     print_string_no_lf
+.endmacro
 
 STR_STARTUP             = $00
 STR_RCV_WAIT            = $01
