@@ -10,6 +10,7 @@ SOH             =       $01
 
 xmodem_receive:
                 ; tell the sender to start sending
+                ldx     #0              ; packet counter
                 jsr     nak
 
 ; Receiving bytes are done in two nested loops:
@@ -30,7 +31,7 @@ xmodem_receive:
                 jsr     rcv_byte        ; packet sequence number
                 jsr     rcv_byte        ; packet sequence number checksum
                 ; todo: add up and check if 0
-
+                inx
                 ldy     #128            ; 128 data bytes
 @next_data_byte:
                 jsr     rcv_byte

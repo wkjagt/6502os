@@ -13,6 +13,7 @@ rcv_byte:
                 ; is wrapped in turning DTR on and off. However
                 ; it seems to not completely work, since we still
                 ; need a short pause between the bytes when sending.
+                phx
                 lda     #%11001011      ; terminal ready
                 sta     ACIA_CMD
 @loop:                
@@ -23,7 +24,7 @@ rcv_byte:
 
                 ldx     #%11001010      ; terminal not ready
                 stx     ACIA_CMD
-
+                plx
                 rts
 
 send_byte:

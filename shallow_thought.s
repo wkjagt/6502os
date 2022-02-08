@@ -189,7 +189,10 @@ rcv:            ; set the vector for what to do with each byte coming in through
                 print   STR_RCV_START
 
                 jsr     JMP_XMODEM_RCV
-
+                txa
+                ina
+                lsr                     ; packer count to page count
+                jsr     JMP_PRINT_HEX
                 print   STR_RCV_DONE
                 rts
 

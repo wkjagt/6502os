@@ -9,11 +9,11 @@ string_table:
                 .word   s_startup, s_rcv_wait, s_unknown_cmd, s_rcv_done
                 .word   s_rcv_start
 
-s_startup:      .byte   "                           -- Shallow Thought OS --", 0                
+s_startup:      .byte   "                           -- Pager OS --", 0                
 s_rcv_wait:     .byte   "Initiate transfer on transmitter and then press any key.", 0
 s_unknown_cmd:  .byte   ": unknown command", 0 
-s_rcv_done:     .byte   "Transfer completed to $2000.", 0
-s_rcv_start:    .byte   "Starting transfer to $2000...", 0
+s_rcv_done:     .byte   " page(s) received.", 0
+s_rcv_start:    .byte   "Starting transfer...", 0
 
 print_formatted_byte_as_hex:
                 jsr     JMP_PRINT_HEX
