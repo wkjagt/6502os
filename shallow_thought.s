@@ -207,7 +207,7 @@ save_to_ram:    sta     (rcv_buffer_pointer)
 load:           jsr     load_save_args
                 jmp     JMP_STOR_READ
 save:           jsr     load_save_args
-                jmp     JMP_STOR_READ
+                jmp     JMP_STOR_WRITE
 
 load_save_args: clc
                 lda     #<__INPUTBFR_START__
