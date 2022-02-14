@@ -99,23 +99,23 @@ clear_screen:   lda     #CLEAR_SCREEN
                 jsr     JMP_PUTC
                 rts
 
-cursor_home:    lda     #$01
+cursor_home:    lda     #CURSOR_HOME
                 jsr     JMP_PUTC
                 rts
 
-cursor_right:   lda     #$1C
+cursor_right:   lda     #CURSOR_RIGHT
                 jsr     JMP_PUTC
                 rts
 
-cursor_left:    lda     #$1D
+cursor_left:    lda     #CURSOR_LEFT
                 jsr     JMP_PUTC
                 rts
 
-cursor_up:      lda     #$1E
+cursor_up:      lda     #CURSOR_UP
                 jsr     JMP_PUTC
                 rts
 
-cursor_down:    lda     #$1F
+cursor_down:    lda     #CURSOR_DOWN
                 jsr     JMP_PUTC
                 rts
 

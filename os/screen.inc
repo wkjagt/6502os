@@ -10,17 +10,21 @@
 .global cursor_down
 .global cursor_home
 
-CLEAR_SCREEN    =       $0c
-CHOOSE_CURSOR   =       2               ; choose cursor command to screen
-CURSOR_CHAR     =       $db             ; solid block
-CURSOR_BLINK    =       3
-CURSOR_SOLID    =       4
-DRAW_PIXEL      =       5
-RESET_PIXEL     =       6
+CURSOR_HOME     =       $01
+CHOOSE_CURSOR   =       $02               ; choose cursor command to screen
+CURSOR_BLINK    =       $03
+CURSOR_SOLID    =       $04
+DRAW_PIXEL      =       $05
+RESET_PIXEL     =       $06
+CLEAR_SCREEN    =       $0C
+CURSOR_RIGHT    =       $1C
+CURSOR_LEFT     =       $1D
+CURSOR_UP       =       $1E
+CURSOR_DOWN     =       $1F
 
+CURSOR_CHAR     =       $DB             ; solid block
 SCRN_DATA_PINS  =       %11110000       ; In 4 bit mode: send 4 bits of data at a time
 SCRN_AVAILABLE  =       %00000100       ; To tell the screen that new data is available
 SCRN_ACK        =       %00001000       ; Input pin for the screen to ack the data
 SCRN_OUT_PINS   =       SCRN_DATA_PINS | SCRN_AVAILABLE
 SCRN_UNUSED     =       %00000011       ; unused pins on this port
-
