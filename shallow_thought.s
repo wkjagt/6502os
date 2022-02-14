@@ -5,12 +5,12 @@
 .include "acia.inc"
 .include "zeropage.inc"
 .include "storage.inc"
+.include "edit.inc"
 
 .import xmodem_receive
 .import dump_page
 .import __PROGRAM_START__
 .import __INPUTBFR_START__
-; .import __RAM_SIZE__
 
 .code
 
@@ -242,6 +242,14 @@ set_drive3:     lda     #3
 set_drive:      sta     current_drive
                 rts
 
+edit:           clc
+                lda     #<__INPUTBFR_START__
+                adc     param_index     ; calculate the start of the param
+                
+                jsr     hex_to_byte     ; this puts the page number in A
+                jsr     edit_page
+                rts
+
 ; Very simple command to jump to the start of the receive buffer.
 ; Notes:
 ;   - This will crash the computer if whatever data is there
@@ -263,18 +271,19 @@ irqnmi:         rti
 ; We index into this (using the constants in strings.inc) to find
 ; where each next command definition starts in memory
 commands:       .word   cmd_dump, cmd_rcv, cmd_cls, cmd_run, cmd_reset
-                .word   cmd_d0, cmd_d1, cmd_d2, cmd_d3, cmd_load, cmd_save, 0
+                .word   cmd_d0, cmd_d1, cmd_d2, cmd_d3, cmd_load, cmd_save
+                .word   cmd_edit, 0
 
 cmd_dump:       .byte   "dump", 0
-                .word   JMP_DUMP
+                .word   dump
 cmd_rcv:        .byte   "rcv", 0
-                .word   JMP_RCV
+                .word   rcv
 cmd_cls:        .byte   "cls", 0
-                .word   JMP_INIT_SCREEN
+                .word   init_screen
 cmd_run:        .byte   "run", 0
-                .word   JMP_RUN
+                .word   run
 cmd_reset:      .byte   "reset", 0
-                .word   JMP_RESET
+                .word   reset
 cmd_d0:         .byte   "d0", 0
                 .word   set_drive0
 cmd_d1:         .byte   "d1", 0
@@ -287,12 +296,14 @@ cmd_load:       .byte   "load", 0
                 .word   load
 cmd_save:       .byte   "save", 0
                 .word   save
+cmd_edit:       .byte   "edit", 0
+                .word   edit
 
 ; This jump table isn't used at this location. These are default values
 ; That are copied to the JUMPTABLE segment in RAM on reset, and can be overriden
 ; from user software.
 jump_table:
-                jmp     dump
+                jmp     dump_page
                 jmp     rcv
                 jmp     init_screen
                 jmp     run
