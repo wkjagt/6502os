@@ -99,6 +99,26 @@ clear_screen:   lda     #CLEAR_SCREEN
                 jsr     JMP_PUTC
                 rts
 
+cursor_home:    lda     #$01
+                jsr     JMP_PUTC
+                rts
+
+cursor_right:   lda     #$1C
+                jsr     JMP_PUTC
+                rts
+
+cursor_left:    lda     #$1D
+                jsr     JMP_PUTC
+                rts
+
+cursor_up:      lda     #$1E
+                jsr     JMP_PUTC
+                rts
+
+cursor_down:    lda     #$1F
+                jsr     JMP_PUTC
+                rts
+
 draw_pixel:     lda     #DRAW_PIXEL
                 bra     send_pixel
 rmv_pixel:      lda     #RESET_PIXEL

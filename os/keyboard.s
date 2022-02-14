@@ -2,8 +2,6 @@
 .include "via.inc"
 .include "zeropage.inc"
 
-KB_ACK          =       %01000000
-
                 .code
 
 init_keyboard:

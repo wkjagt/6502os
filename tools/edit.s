@@ -2,6 +2,7 @@
 .include "../os/jump_table.inc"
 .include "../os/zeropage.inc"
 .include "../os/strings.inc"
+.include "../os/screen.inc"
 
 .zeropage
 
@@ -206,15 +207,15 @@ set_cursor:     pha
                 rts
 
 
-cursor_home:    lda     #$01
-                jsr     JMP_PUTC
-                rts
-cursor_right:   lda     #$1C
-                jsr     JMP_PUTC
-                rts
-cursor_left:    lda     #$1D
-                jsr     JMP_PUTC
-                rts
-cursor_down:    lda     #$1F
-                jsr     JMP_PUTC
-                rts
+; cursor_home:    lda     #$01
+;                 jsr     JMP_PUTC
+;                 rts
+; cursor_right:   lda     #$1C
+;                 jsr     JMP_PUTC
+;                 rts
+; cursor_left:    lda     #$1D
+;                 jsr     JMP_PUTC
+;                 rts
+; cursor_down:    lda     #$1F
+;                 jsr     JMP_PUTC
+;                 rts
