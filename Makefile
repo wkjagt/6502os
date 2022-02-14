@@ -1,15 +1,16 @@
 ROM_NAME=shallow_thought
 
-ASM_SOURCES=shallow_thought.s\
-			screen.s keyboard.s\
-			xmodem.s\
-			strings.s\
-			dump.s\
-			acia.s\
-			jump_table.s\
-			zeropage.s\
-			storage.s\
-			edit.s
+ASM_SOURCES=os/shallow_thought.s\
+			os/screen.s\
+			os/keyboard.s\
+			os/xmodem.s\
+			os/strings.s\
+			tools/dump.s\
+			os/acia.s\
+			os/jump_table.s\
+			os/zeropage.s\
+			os/storage.s\
+			tools/edit.s
 
 FIRMWARE_CFG=firmware.cfg
 

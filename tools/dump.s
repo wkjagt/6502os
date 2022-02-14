@@ -1,7 +1,7 @@
-.include "jump_table.inc"
-.include "strings.inc"
-.include "screen.inc"
-.include "zeropage.inc"
+.include "../os/jump_table.inc"
+.include "../os/strings.inc"
+.include "../os/screen.inc"
+.include "../os/zeropage.inc"
 
 .export dump_page
 

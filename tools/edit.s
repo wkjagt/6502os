@@ -1,7 +1,7 @@
 .include "edit.inc"
-.include "jump_table.inc"
-.include "zeropage.inc"
-.include "strings.inc"
+.include "../os/jump_table.inc"
+.include "../os/zeropage.inc"
+.include "../os/strings.inc"
 
 .zeropage
 

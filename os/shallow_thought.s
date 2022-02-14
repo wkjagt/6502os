@@ -5,7 +5,7 @@
 .include "acia.inc"
 .include "zeropage.inc"
 .include "storage.inc"
-.include "edit.inc"
+.include "../tools/edit.inc"
 
 .import xmodem_receive
 .import dump_page
