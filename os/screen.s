@@ -3,10 +3,8 @@
 .include "jump_table.inc"
 
 .code
-
-init_screen:
                 ; Set up data pins to communicate with the screen controller
-                lda     VIA1_DDRA
+init_screen:    lda     VIA1_DDRA
                 ora     #SCRN_OUT_PINS
                 and     #(SCRN_OUT_PINS | SCRN_UNUSED)
                 sta     VIA1_DDRA
@@ -22,8 +20,7 @@ init_screen:
 
                 rts
 
-putc:
-                pha                     ; we pull off the arg 3 times, once for high
+putchar:        pha                     ; we pull off the arg 3 times, once for high
                 pha                     ; nibble, once for low nibble and once to put
                 pha                     ; back the original value
 
@@ -62,61 +59,45 @@ putc:
                 rts
 
 
-wait_ack_high:
-                pha
-@loop:
-                lda     VIA1_PORTA
+wait_ack_high:  pha
+@loop:          lda     VIA1_PORTA
                 and     #SCRN_ACK
                 beq     @loop
                 pla
                 rts
-wait_ack_low:
-                pha
-@loop:
-                lda     VIA1_PORTA
+wait_ack_low:   pha
+@loop:          lda     VIA1_PORTA
                 and     #SCRN_ACK
                 bne     @loop
                 pla
                 rts
 
-cursor_on:      lda     #CHOOSE_CURSOR
-                jsr     JMP_PUTC
-                lda     #CURSOR_CHAR
-                jsr     JMP_PUTC
-                lda     #CURSOR_BLINK
-                jsr     JMP_PUTC
+cursor_on:      putc    CHOOSE_CURSOR
+                putc    CURSOR_CHAR
+                putc    CURSOR_BLINK
                 rts
 
-cursor_off:     lda     #CHOOSE_CURSOR
-                jsr     JMP_PUTC
-                lda     #' '
-                jsr     JMP_PUTC
-                lda     #CURSOR_SOLID
-                jsr     JMP_PUTC
+cursor_off:     putc    CHOOSE_CURSOR
+                putc    ' '
+                putc    CURSOR_SOLID
                 rts
 
-clear_screen:   lda     #CLEAR_SCREEN
-                jsr     JMP_PUTC
+clear_screen:   putc    CLEAR_SCREEN
                 rts
 
-cursor_home:    lda     #CURSOR_HOME
-                jsr     JMP_PUTC
+cursor_home:    putc CURSOR_HOME
                 rts
 
-cursor_right:   lda     #CURSOR_RIGHT
-                jsr     JMP_PUTC
+cursor_right:   putc CURSOR_RIGHT
                 rts
 
-cursor_left:    lda     #CURSOR_LEFT
-                jsr     JMP_PUTC
+cursor_left:    putc CURSOR_LEFT
                 rts
 
-cursor_up:      lda     #CURSOR_UP
-                jsr     JMP_PUTC
+cursor_up:      putc CURSOR_UP
                 rts
 
-cursor_down:    lda     #CURSOR_DOWN
-                jsr     JMP_PUTC
+cursor_down:    putc CURSOR_DOWN
                 rts
 
 draw_pixel:     lda     #DRAW_PIXEL
@@ -128,4 +109,3 @@ send_pixel:     jsr     JMP_PUTC
                 tya
                 jsr     JMP_PUTC
                 rts
-

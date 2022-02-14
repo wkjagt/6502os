@@ -21,26 +21,22 @@ dump_page:      stz     dump_start
                 jsr     JMP_PRINT_HEX
                 tya
                 jsr     JMP_PRINT_HEX
-                lda     #' '
-                jsr     JMP_PUTC
-                lda     #' '
-                jsr     JMP_PUTC
+                putc    ' '
+                putc    ' '
 
                 ldx     #0
 ; raw bytes
 @next_hex_byte:
                 lda     (dump_start),y
                 jsr     JMP_PRINT_HEX
-                lda     #' '
-                jsr     JMP_PUTC
+                putc    ' '
                 iny
                 inx
                 cpx     #16
                 beq     @ascii
                 cpx     #8
                 bne     @next_hex_byte
-                lda     #' '
-                jsr     JMP_PUTC
+                putc    ' '
                 bra     @next_hex_byte
 ; ascii representation
 @ascii:
@@ -49,10 +45,8 @@ dump_page:      stz     dump_start
                 sec
                 sbc     #16             ; rewind 16 bytes for ascii
                 tay
-                lda     #' '
-                jsr     JMP_PUTC
-                lda     #' '
-                jsr     JMP_PUTC
+                putc    ' '
+                putc    ' '
 @next_ascii_byte:
                 ; ascii: $20-$7E
                 lda     (dump_start),y
@@ -63,8 +57,7 @@ dump_page:      stz     dump_start
                 jsr     JMP_PUTC
                 bra     @continue_ascii_byte
 @not_ascii:
-                lda     #'.'
-                jsr     JMP_PUTC
+                putc    '.'
 @continue_ascii_byte:
                 iny
                 beq     @done

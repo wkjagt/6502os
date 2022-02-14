@@ -46,12 +46,9 @@ copy_jumptable: ldx     #(end_jump_table-jump_table)
 line_input:     jsr     cr
 
                 lda     current_drive
-                adc     #48              ; to ascii
-                jsr     JMP_PUTC
-                lda     #'#'
-                jsr     JMP_PUTC
-                lda     #' '
-                jsr     JMP_PUTC
+                putc    48              ; to ascii
+                putc    '#'
+                putc    ' '
                 stz     inputbuffer_ptr
 
                 ldx     #80            ; inputbuffer size
@@ -82,12 +79,9 @@ line_input:     jsr     cr
 @backspace:     lda     inputbuffer_ptr
                 beq     @next_key        ; already at start of line
 
-                lda     #BS
-                jsr     JMP_PUTC
-                lda     #' '
-                jsr     JMP_PUTC
-                lda     #BS
-                jsr     JMP_PUTC
+                putc    BS
+                putc    ' '
+                putc    BS
 
                 dec     inputbuffer_ptr
                 ldx     inputbuffer_ptr
@@ -308,7 +302,7 @@ jump_table:
                 jmp     init_screen
                 jmp     run
                 jmp     reset
-                jmp     putc
+                jmp     putchar
                 jmp     print_byte_as_hex
                 jmp     xmodem_receive
                 jmp     read_key

@@ -1,5 +1,5 @@
 .global init_screen
-.global putc
+.global putchar
 .global cursor_on
 .global cursor_off
 .global draw_pixel
@@ -28,3 +28,9 @@ SCRN_AVAILABLE  =       %00000100       ; To tell the screen that new data is av
 SCRN_ACK        =       %00001000       ; Input pin for the screen to ack the data
 SCRN_OUT_PINS   =       SCRN_DATA_PINS | SCRN_AVAILABLE
 SCRN_UNUSED     =       %00000011       ; unused pins on this port
+
+
+.macro  putc char
+                lda     #char
+                jsr     JMP_PUTC
+.endmacro

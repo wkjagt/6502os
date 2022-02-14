@@ -17,8 +17,7 @@ s_rcv_start:    .byte   "Starting transfer to ", 0
 
 print_formatted_byte_as_hex:
                 jsr     JMP_PRINT_HEX
-                lda     #' '
-                jsr     JMP_PUTC
+                putc    ' '
                 rts
 
 print_byte_as_hex:
@@ -67,12 +66,9 @@ print_string_no_lf:
 @done:
                 rts
 
-print_string:
-                jsr     print_string_no_lf
-                lda     #$0d
-                jsr     JMP_PUTC
-                lda     #$0a
-                jsr     JMP_PUTC
+print_string:   jsr     print_string_no_lf
+                putc    $0d             ; todo: use constant
+                putc    $0a             ; todo: use constant
                 rts
 
 
@@ -121,9 +117,6 @@ hex_to_byte:    sta     tmp2            ; we need the address to do lda (tmp2), 
 
                 rts
 
-cr:
-                lda     #LF
-                jsr     JMP_PUTC
-                lda     #CR
-                jsr     JMP_PUTC
+cr:             putc    LF
+                putc    CR
                 rts

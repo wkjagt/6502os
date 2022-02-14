@@ -135,8 +135,7 @@ hex_input:      ldx     input_pointer
                 jsr     JMP_PUTC        ; overwrite the char on screen
                 cpx     #1
                 beq     @last_pos
-                lda     #'_'
-                jsr     JMP_PUTC
+                putc    '_'
                 jsr     cursor_left
                 inc     input_pointer
                 rts
@@ -205,17 +204,3 @@ set_cursor:     pha
                 bne     @down
 @done:          pla
                 rts
-
-
-; cursor_home:    lda     #$01
-;                 jsr     JMP_PUTC
-;                 rts
-; cursor_right:   lda     #$1C
-;                 jsr     JMP_PUTC
-;                 rts
-; cursor_left:    lda     #$1D
-;                 jsr     JMP_PUTC
-;                 rts
-; cursor_down:    lda     #$1F
-;                 jsr     JMP_PUTC
-;                 rts
