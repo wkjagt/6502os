@@ -1,3 +1,5 @@
+; todo: rename to pager
+
 .include "jump_table.inc"
 .include "strings.inc"
 .include "keyboard.inc"
@@ -7,6 +9,7 @@
 .include "storage.inc"
 .include "../tools/edit.inc"
 .include "../tools/terminal.inc"
+.include "../tools/receive.inc"
 
 .import xmodem_receive
 .import dump_page
@@ -53,9 +56,9 @@ irqnmi:         rti
 ; This jump table isn't used at this location. These are default values
 ; That are copied to the JUMPTABLE segment in RAM on reset, and can be overriden
 ; from user software.
-jump_table:
+jump_table:                             ; todo: remove all non OS things
                 jmp     dump_page
-                jmp     rcv
+                jmp     receive
                 jmp     init_screen
                 jmp     run
                 jmp     reset

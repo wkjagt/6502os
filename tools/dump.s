@@ -1,11 +1,24 @@
+.include "dump.inc"
 .include "../os/jump_table.inc"
 .include "../os/strings.inc"
 .include "../os/screen.inc"
 .include "../os/zeropage.inc"
 
-.export dump_page
+.export dump_page                       ; todo: remove
+.import __INPUTBFR_START__              ; todo: move arg parsing to terminal
 
 .code
+
+; The dump command. It dumps one page of memory. It takes a hex page number as parameter.
+; Example: `dump a0` to dump page $a0.
+dump:           clc
+                lda     #<__INPUTBFR_START__
+                adc     param_index     ; calculate the start of the param
+                
+                jsr     hex_to_byte     ; this puts the page number in A
+                jsr     dump_page
+                rts
+
 
 dump_page:      stz     dump_start
                 sta     dump_start+1    ; page

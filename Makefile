@@ -11,7 +11,10 @@ ASM_SOURCES=os/shallow_thought.s\
 			os/storage.s\
 			tools/dump.s\
 			tools/edit.s\
-			tools/terminal.s
+			tools/terminal.s\
+			tools/receive.s\
+			tools/storage.s\
+			tools/run.s
 
 FIRMWARE_CFG=firmware.cfg
 

@@ -4,6 +4,8 @@
 .include "../os/strings.inc"
 .include "../os/screen.inc"
 
+.import __INPUTBFR_START__
+
 .zeropage
 
 cell:                   .res 1
@@ -13,6 +15,17 @@ input_pointer:          .res 1
 incomplete_entry:       .res 1          ; uses 1 bit only
 
 .code
+
+; The edit CLI command
+edit:           clc
+                lda     #<__INPUTBFR_START__    ; todo: move this to terminal parse logic
+                adc     param_index     ; calculate the start of the param
+                
+                jsr     hex_to_byte     ; this puts the page number in A
+                jsr     edit_page
+                rts
+
+
 ;========================================================================
 ;        EDIT A PAGE
 ; 

@@ -1,15 +1,16 @@
 .include "terminal.inc"
-.include "../os/shallow_thought.inc"
 .include "../os/jump_table.inc"
 .include "../os/strings.inc"
 .include "../os/keyboard.inc"
 .include "../os/screen.inc"
-.include "../os/acia.inc"
 .include "../os/zeropage.inc"
-.include "../os/storage.inc"
 .include "edit.inc"
+.include "receive.inc"
+.include "dump.inc"
+.include "storage.inc"
+.include "run.inc"
 
-.import xmodem_receive
+; .import xmodem_receive
 .import dump_page
 .import __PROGRAM_START__
 .import __INPUTBFR_START__
@@ -112,120 +113,6 @@ match_command:  ldy     #0              ; index into strings
                 rts
 
 ;------------------------------------------------------
-;               Command routines                      ;
-;------------------------------------------------------
-; The dump command. It dumps one page of memory. It takes a hex page number as parameter.
-; Example: `dump a0` to dump page $a0.
-dump:           clc
-                lda     #<__INPUTBFR_START__
-                adc     param_index     ; calculate the start of the param
-                
-                jsr     hex_to_byte     ; this puts the page number in A
-                jsr     dump_page
-                rts
-
-; The rcv command. It waits for a keypress to give the user the opportunity to start
-; the transmission on the transmitting computer. A key press sends the initial NAK
-; and starts receiving. It uses xmodem_byte_sink_vector as a vector to a routine that
-; receives each data byte in the A register.
-
-rcv:            ; set the vector for what to do with each byte coming in through xmodem
-                lda     #<save_to_ram
-                sta     xmodem_byte_sink_vector
-                lda     #>save_to_ram
-                sta     xmodem_byte_sink_vector+1
-
-                ; reset the pointer to start of the receive buffer
-                lda     #<__PROGRAM_START__
-                sta     rcv_buffer_pointer
-                lda     #>__PROGRAM_START__
-                sta     rcv_buffer_pointer+1
-
-                ; prompt the user to press a key to start receiving
-                println STR_RCV_WAIT
-
-                ; The sender starts transmitting bytes as soon as
-                ; it receives a NAK byte from the receiver. To be
-                ; able to synchronize the two, the workflow is:
-                ; 1. start sending command on sender
-                ; 2. Press any key on the receiver to start the
-                ;    transmission
-                jsr     JMP_GETC
-
-                print   STR_RCV_START
-                lda     #>__PROGRAM_START__
-                jsr     JMP_PRINT_HEX
-                lda     #<__PROGRAM_START__
-                jsr     JMP_PRINT_HEX
-                jsr     cr
-
-                jsr     JMP_XMODEM_RCV
-                txa
-                ina
-                lsr                     ; packet count to page count
-                jsr     JMP_PRINT_HEX
-                println STR_RCV_DONE
-                rts
-
-; The routine vectored to by rcv. This gets each received
-; data byte in the A register. It saves it in RAM to it can
-; be jumped to by the jmp command.
-save_to_ram:    sta     (rcv_buffer_pointer)
-                inc     rcv_buffer_pointer
-                bne     @done
-                inc     rcv_buffer_pointer+1
-@done:          rts     
-
-; ex: `load 00 04` means load 4 pages from eeprom, starting at page 0
-                ; page arg
-load:           jsr     load_save_args
-                jmp     JMP_STOR_READ
-save:           jsr     load_save_args
-                jmp     JMP_STOR_WRITE
-
-load_save_args: clc
-                lda     #<__INPUTBFR_START__
-                adc     param_index
-                jsr     hex_to_byte
-                sta     stor_eeprom_addr_h
-
-                ; page count
-                clc
-                lda     #<__INPUTBFR_START__
-                adc     param_index
-                adc     #3
-                jsr     hex_to_byte
-                tax
-                rts
-
-set_drive0:     lda     #0
-                bra     set_drive
-set_drive1:     lda     #1
-                bra     set_drive
-set_drive2:     lda     #2
-                bra     set_drive
-set_drive3:     lda     #3
-set_drive:      sta     current_drive
-                rts
-
-edit:           clc
-                lda     #<__INPUTBFR_START__
-                adc     param_index     ; calculate the start of the param
-                
-                jsr     hex_to_byte     ; this puts the page number in A
-                jsr     edit_page
-                rts
-
-; Very simple command to jump to the start of the receive buffer.
-; Notes:
-;   - This will crash the computer if whatever data is there
-;     doesn't consist of a valid and correct program
-;   - If the loaded program returns control with RTS, it gives
-;     control back to line_input which is where the original JSR
-;     is. After that only indirect jumps are used.
-run:            jmp     __PROGRAM_START__
-
-;------------------------------------------------------
 ;                List of commands                     ;
 ;------------------------------------------------------
 ; This is a list of addresses of where each of the commands start
@@ -238,7 +125,7 @@ commands:       .word   cmd_dump, cmd_rcv, cmd_cls, cmd_run, cmd_reset
 cmd_dump:       .byte   "dump", 0
                 .word   dump
 cmd_rcv:        .byte   "rcv", 0
-                .word   rcv
+                .word   receive
 cmd_cls:        .byte   "cls", 0
                 .word   init_screen
 cmd_run:        .byte   "run", 0
