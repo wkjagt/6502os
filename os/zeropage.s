@@ -1,5 +1,5 @@
 .include "zeropage.inc"
-
+; todo: move this to files that need these vars, except global ones
 .zeropage
 
 kb_char_in:             .res 2
