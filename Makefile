@@ -1,6 +1,6 @@
-ROM_NAME=shallow_thought
+ROM_NAME=pager_os
 
-ASM_SOURCES=os/shallow_thought.s\
+ASM_SOURCES=os/pager_os.s\
 			os/screen.s\
 			os/keyboard.s\
 			os/xmodem.s\

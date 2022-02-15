@@ -1,5 +1,3 @@
-; todo: rename to pager
-
 .include "jump_table.inc"
 .include "strings.inc"
 .include "keyboard.inc"
