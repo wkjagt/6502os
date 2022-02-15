@@ -5,12 +5,13 @@ ASM_SOURCES=os/shallow_thought.s\
 			os/keyboard.s\
 			os/xmodem.s\
 			os/strings.s\
-			tools/dump.s\
 			os/acia.s\
 			os/jump_table.s\
 			os/zeropage.s\
 			os/storage.s\
-			tools/edit.s
+			tools/dump.s\
+			tools/edit.s\
+			tools/terminal.s
 
 FIRMWARE_CFG=firmware.cfg
 
