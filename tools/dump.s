@@ -1,8 +1,9 @@
 .include "dump.inc"
+.include "terminal.inc"
 .include "../os/jump_table.inc"
 .include "../os/strings.inc"
 .include "../os/screen.inc"
-.include "../os/zeropage.inc"
+.include "../os/zeropage.inc"           ; todo: remove once no longer needed
 
 .export dump_page                       ; todo: remove
 .import __INPUTBFR_START__              ; todo: move arg parsing to terminal

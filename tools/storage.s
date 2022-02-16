@@ -1,5 +1,6 @@
 .include "storage.inc"
-.include "../os/zeropage.inc"
+.include "terminal.inc"
+.include "../os/zeropage.inc"           ; todo: remove once no longer needed
 .include "../os/strings.inc"
 .include "../os/jump_table.inc"
 

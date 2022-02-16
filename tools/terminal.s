@@ -11,9 +11,18 @@
 .include "run.inc"
 
 .import dump_page
-.import __PROGRAM_START__               ; todo: remove once everything goes through args
 .import __INPUTBFR_START__
 
+.zeropage
+command_vector:         .res 2
+param_index:            .res 2
+inputbuffer_ptr:        .res 2
+; reserve space for 3 16 byte args. store single byte values in position 1, 3, 5 so they can be
+; easily used as addresses where the argument represents a page in memory. Example: argument 0A
+; in memory looks like 00 0A, where the address can be referenced directly because 6502 is little endian.
+terminal_args:          .res 6
+
+.code
 terminal:       jsr     cr
                 lda     current_drive
                 adc     #48              ; to ascii
