@@ -117,53 +117,34 @@ match_command:  ldy     #0              ; index into strings
                 jmp     @compare_char
 @matched:       iny                     ; skip past the 0 at the end of the string
                 sty     param_index
+                jsr     save_args
+                clc                     ; to message to the caller that the command matched
+                rts
 
-                phy
-                phx
-                pha
-                lda     tmp1
+
+save_args:      phy
+                lda     tmp1            ; tmp1 is used by hex_to_byte
                 pha
 
                 ldx     #1
-
-                tya
+@arg_loop:      tya
                 clc
                 adc     #<__INPUTBFR_START__
                 jsr     hex_to_byte
                 sta     terminal_args, x
-
-                ; param 2
+                cpx     #5
+                beq     @done
                 inx
                 inx
                 iny
                 iny
                 iny
-                tya
-                clc
-                adc     #<__INPUTBFR_START__
-                jsr     hex_to_byte
-                sta     terminal_args, x
-
-                ; param 3
-                inx
-                inx
-                iny
-                iny
-                iny
-                tya
-                clc
-                adc     #<__INPUTBFR_START__
-                jsr     hex_to_byte
-                sta     terminal_args, x
-
-                pla
+                bra     @arg_loop
+@done:          pla
                 sta     tmp1
-                pla
-                plx
                 ply
-
-                clc                     ; to message to the caller that the command matched
                 rts
+
 
 ;------------------------------------------------------
 ;                List of commands                     ;
