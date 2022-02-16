@@ -18,11 +18,7 @@ incomplete_entry:       .res 1          ; uses 1 bit only
 .code
 
 ; The edit CLI command
-edit:           clc
-                lda     #<__INPUTBFR_START__    ; todo: move this to terminal parse logic
-                adc     param_index     ; calculate the start of the param
-                
-                jsr     hex_to_byte     ; this puts the page number in A
+edit:           lda     TERM_ARG1
                 jsr     edit_page
                 rts
 
