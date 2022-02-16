@@ -14,21 +14,10 @@ load:           jsr     load_save_args
 save:           jsr     load_save_args
                 jmp     JMP_STOR_WRITE
 
-load_save_args: clc
-                lda     #<__INPUTBFR_START__  ; todo: parse this in terminal
-                adc     param_index
-                jsr     hex_to_byte
+load_save_args: lda     TERM_ARG1
                 sta     stor_eeprom_addr_h
-
-                ; page count
-                clc
-                lda     #<__INPUTBFR_START__
-                adc     param_index
-                adc     #3
-                jsr     hex_to_byte
-                tax
+                ldx     TERM_ARG2
                 rts
-
 
 set_drive0:     lda     #0
                 bra     set_drive
