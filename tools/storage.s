@@ -19,7 +19,7 @@ load_save_args: lda     TERM_ARG1
                 ldx     TERM_ARG2
                 rts
 
-set_drive0:     lda     #0
+set_drive0:     lda     #0              ; todo: use arguments for this
                 bra     set_drive
 set_drive1:     lda     #1
                 bra     set_drive

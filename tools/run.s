@@ -1,5 +1,4 @@
-.include "run.inc"
-.import __PROGRAM_START__               ; todo: remove once run page is an arg
+.include "terminal.inc"
 
 .code
 ; Very simple command to jump to the start of the receive buffer.
@@ -9,4 +8,4 @@
 ;   - If the loaded program returns control with RTS, it gives
 ;     control back to line_input which is where the original JSR
 ;     is. After that only indirect jumps are used.
-run:            jmp     __PROGRAM_START__       ; get page from cli arg
+run:            jmp     (TERM_ARG_ADDR1)       ; get page from cli arg

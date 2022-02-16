@@ -1,9 +1,8 @@
 .include "receive.inc"
+.include "terminal.inc"
 .include "../os/strings.inc"
 .include "../os/jump_table.inc"
 .include "../os/zeropage.inc"
-
-.import __PROGRAM_START__               ; todo: remove once rcv takes a page param
 
 ; The rcv command. It waits for a keypress to give the user the opportunity to start
 ; the transmission on the transmitting computer. A key press sends the initial NAK
@@ -22,13 +21,13 @@ receive:        println STR_RCV_WAIT
                 jsr     JMP_GETC
 
                 print   STR_RCV_START
-                lda     #>__PROGRAM_START__
-                jsr     JMP_PRINT_HEX
-                lda     #<__PROGRAM_START__
+                lda     TERM_ARG1
                 jsr     JMP_PRINT_HEX
                 jsr     cr
 
+                lda     TERM_ARG1
                 jsr     JMP_XMODEM_RCV
+
                 txa
                 ina
                 lsr                     ; packet count to page count

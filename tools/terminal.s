@@ -15,7 +15,6 @@
 
 .zeropage
 command_vector:         .res 2
-param_index:            .res 2          ; todo when everything moved to using terminal_args
 inputbuffer_ptr:        .res 2
 ; reserve space for 3 16 byte args. store single byte values in position 1, 3, 5 so they can be
 ; easily used as addresses where the argument represents a page in memory. Example: argument 0A
@@ -116,7 +115,6 @@ match_command:  ldy     #0              ; index into strings
                 iny
                 jmp     @compare_char
 @matched:       iny                     ; skip past the 0 at the end of the string
-                sty     param_index
                 jsr     save_args
                 clc                     ; to message to the caller that the command matched
                 rts

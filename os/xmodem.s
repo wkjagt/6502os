@@ -9,9 +9,8 @@ ACK             =       $06
 EOT             =       $04
 SOH             =       $01
 
-xmodem_receive: lda     #<__PROGRAM_START__
-                sta     rcv_buffer_pointer
-                lda     #>__PROGRAM_START__
+; A: the page to start saving received data
+xmodem_receive: stz     rcv_buffer_pointer
                 sta     rcv_buffer_pointer+1
 
                 ; tell the sender to start sending
