@@ -75,7 +75,8 @@ print_string:   jsr     print_string_no_lf
 ; Turn two ascii bytes into a byte containing the value represented
 ; by the two characters 0-F
 ; A: zero page pointer to first character (the high nibble). The next char is the low nibble.
-hex_to_byte:    sta     tmp2            ; we need the address to do lda (tmp2), y
+hex_to_byte:    phy
+                sta     tmp2            ; we need the address to do lda (tmp2), y
                 stz     tmp2+1
                 
                 ldy     #0              ; high nibble
@@ -87,7 +88,9 @@ hex_to_byte:    sta     tmp2            ; we need the address to do lda (tmp2), 
                 jsr     @shift_in_nibble
 
                 lda     tmp1            ; put the result back in A as return value
+                ply
                 rts
+
 @shift_in_nibble:
                 cmp     #':'            ; the next ascii char after "9"
                 bcc     @number
