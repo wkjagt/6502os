@@ -104,8 +104,6 @@ edit_page:      stz     active_page
                 jsr     JMP_DUMP
                 lda     #1
                 jsr     update_cell
-                ; jsr     set_cursor
-
                 jmp     @next_key
 
 @check_esc:     cpx     #ESC
@@ -117,12 +115,12 @@ edit_page:      stz     active_page
 
 @check_pgup:    cpx     #PGUP
                 bne     @check_pgdn
-                inc     active_page+1
+                dec     active_page+1
                 jmp     @restart
 
 @check_pgdn:    cpx     #PGDN
                 bne     @next
-                dec     active_page+1
+                inc     active_page+1
                 jmp     @restart
 
 @next:          jmp     @next_key
