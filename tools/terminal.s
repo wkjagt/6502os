@@ -14,7 +14,6 @@
 .import __INPUTBFR_START__
 
 .zeropage
-command_vector:         .res 2
 inputbuffer_ptr:        .res 2
 ; reserve space for 3 16 byte args. store single byte values in position 1, 3, 5 so they can be
 ; easily used as addresses where the argument represents a page in memory. Example: argument 0A
@@ -90,12 +89,12 @@ find_command:   ldx     #0              ; index into list of commands
                 ; to jump to. Store that address in command_vector so we
                 ; can jump to it.
                 lda     (tmp1), y
-                sta     command_vector      
+                sta     tmp2
                 iny
                 lda     (tmp1), y
-                sta     command_vector+1
+                sta     tmp2+1
                 jsr     cr
-                jmp     (command_vector)
+                jmp     (tmp2)
                 rts
 @unknown:       println STR_UNKNOWN_CMD
                 rts
