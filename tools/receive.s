@@ -11,20 +11,7 @@
 ; receives each data byte in the A register.
 .code
 
-receive:        ; set the vector for what to do with each byte coming in through xmodem
-                lda     #<save_to_ram
-                sta     xmodem_byte_sink_vector
-                lda     #>save_to_ram
-                sta     xmodem_byte_sink_vector+1
-
-                ; reset the pointer to start of the receive buffer
-                lda     #<__PROGRAM_START__
-                sta     rcv_buffer_pointer
-                lda     #>__PROGRAM_START__
-                sta     rcv_buffer_pointer+1
-
-                ; prompt the user to press a key to start receiving
-                println STR_RCV_WAIT
+receive:        println STR_RCV_WAIT
 
                 ; The sender starts transmitting bytes as soon as
                 ; it receives a NAK byte from the receiver. To be
@@ -48,12 +35,3 @@ receive:        ; set the vector for what to do with each byte coming in through
                 jsr     JMP_PRINT_HEX
                 println STR_RCV_DONE
                 rts
-
-; The routine vectored to by rcv. This gets each received
-; data byte in the A register. It saves it in RAM to it can
-; be jumped to by the jmp command.
-save_to_ram:    sta     (rcv_buffer_pointer)
-                inc     rcv_buffer_pointer
-                bne     @done
-                inc     rcv_buffer_pointer+1
-@done:          rts     

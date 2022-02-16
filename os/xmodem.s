@@ -2,13 +2,18 @@
 .include "zeropage.inc"
 
 .export xmodem_receive
+.import __PROGRAM_START__               ; todo: remove once rcv takes a page param
 
 NAK             =       $15
 ACK             =       $06
 EOT             =       $04
 SOH             =       $01
 
-xmodem_receive:
+xmodem_receive: lda     #<__PROGRAM_START__
+                sta     rcv_buffer_pointer
+                lda     #>__PROGRAM_START__
+                sta     rcv_buffer_pointer+1
+
                 ; tell the sender to start sending
                 ldx     #0              ; packet counter
                 jsr     nak
@@ -35,7 +40,7 @@ xmodem_receive:
                 ldy     #128            ; 128 data bytes
 @next_data_byte:
                 jsr     rcv_byte
-                jsr     xmodem_byte_sink
+                jsr     save_to_ram
 
                 dey
                 bne     @next_data_byte 
@@ -50,12 +55,11 @@ xmodem_receive:
                 jsr     ack
                 rts
 
-xmodem_byte_sink:
-                ; We came here through a JSR, so the return address is on the stack
-                ; jumping from here because there's no jsr (addr). The routine that
-                ; this jumps to can do a rts, which will go back to the original place
-                ; in @next_data_byte.
-                jmp     (xmodem_byte_sink_vector)
+save_to_ram:    sta     (rcv_buffer_pointer)
+                inc     rcv_buffer_pointer
+                bne     @done
+                inc     rcv_buffer_pointer+1
+@done:          rts     
 
 ack:
                 lda     #ACK
