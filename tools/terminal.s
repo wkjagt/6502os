@@ -10,9 +10,8 @@
 .include "storage.inc"
 .include "run.inc"
 
-; .import xmodem_receive
 .import dump_page
-.import __PROGRAM_START__
+.import __PROGRAM_START__               ; todo: remove once everything goes through args
 .import __INPUTBFR_START__
 
 terminal:       jsr     cr
@@ -44,12 +43,12 @@ terminal:       jsr     cr
 
                 bra     @next_key
 @enter:         lda     inputbuffer_ptr
-                beq     terminal      ; do nothing if empty line
+                beq     terminal        ; do nothing if empty line
 
                 jsr     find_command
                 bra     terminal
 @backspace:     lda     inputbuffer_ptr
-                beq     @next_key        ; already at start of line
+                beq     @next_key       ; already at start of line
 
                 putc    BS
                 putc    ' '

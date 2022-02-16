@@ -10,6 +10,8 @@
 .global cursor_down
 .global cursor_home
 
+; todo: is this the best place for these?
+; other places: screen or keyboard
 CURSOR_HOME     =       $01
 CHOOSE_CURSOR   =       $02               ; choose cursor command to screen
 CURSOR_BLINK    =       $03

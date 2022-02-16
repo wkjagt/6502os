@@ -44,38 +44,24 @@ edit_page:      stz     active_page
 
 @cmp_right:     cpx     #RIGHT
                 bne     @cmp_left
-                lda     cell
-                and     #LOW_NIBBLE     ; in rightmost column the four last bits are always set
-                cmp     #LOW_NIBBLE
-                beq     @next_key
                 lda     #1
                 jsr     update_cell
                 jmp     @next_key
 
 @cmp_left:      cpx     #LEFT
                 bne     @cmp_up
-                lda     cell
-                and     #LOW_NIBBLE     ; ignore the 4 highest bits
-                beq     @next_key            ; last 4 bits need to have something set
                 lda     #$ff            ; -1
                 jsr     update_cell
                 jmp     @next_key
 
 @cmp_up:        cpx     #UP
                 bne     @cmp_down
-                lda     cell
-                and     #HIGH_NIBBLE    ; for the top row the high nibble is always 0
-                beq     @next_key
                 lda     #$f0            ; -16
                 jsr     update_cell
                 jmp     @next_key
 
 @cmp_down:      cpx     #DOWN
                 bne     @cmp_hex
-                lda     cell
-                and     #HIGH_NIBBLE    ; for the bottom row, the high nibble is always 1111
-                cmp     #HIGH_NIBBLE
-                beq     @next_key
                 lda     #16
                 jsr     update_cell
                 jmp     @next_key
@@ -104,7 +90,7 @@ edit_page:      stz     active_page
                 jsr     hex_input
                 jmp     @next_key
 
-@check_save:    cpx     #'s'
+@check_save:    cpx     #LF
                 bne     @check_esc
                 lda     incomplete_entry
                 bne     @next
@@ -116,7 +102,10 @@ edit_page:      stz     active_page
                 jsr     JMP_INIT_SCREEN
                 lda     active_page+1
                 jsr     JMP_DUMP
-                jsr     set_cursor
+                lda     #1
+                jsr     update_cell
+                ; jsr     set_cursor
+
                 jmp     @next_key
 
 @check_esc:     cpx     #ESC
