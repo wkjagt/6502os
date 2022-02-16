@@ -12,11 +12,7 @@
 
 ; The dump command. It dumps one page of memory. It takes a hex page number as parameter.
 ; Example: `dump a0` to dump page $a0.
-dump:           clc
-                lda     #<__INPUTBFR_START__
-                adc     param_index     ; calculate the start of the param
-                
-                jsr     hex_to_byte     ; this puts the page number in A
+dump:           lda     TERM_ARG1
                 jsr     dump_page
                 rts
 
