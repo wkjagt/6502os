@@ -10,7 +10,6 @@
 .include "../tools/receive.inc"
 
 .import xmodem_receive
-.import dump_page
 .import __PROGRAM_START__
 .import __INPUTBFR_START__
 
@@ -55,7 +54,6 @@ irqnmi:         rti
 ; That are copied to the JUMPTABLE segment in RAM on reset, and can be overriden
 ; from user software.
 jump_table:                             ; todo: remove all non OS things
-                jmp     dump_page
                 jmp     receive
                 jmp     init_screen
                 jmp     run

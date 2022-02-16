@@ -5,9 +5,6 @@
 .include "../os/screen.inc"
 .include "../os/zeropage.inc"           ; todo: remove once no longer needed
 
-.export dump_page                       ; todo: remove
-.import __INPUTBFR_START__              ; todo: move arg parsing to terminal
-
 .code
 
 ; The dump command. It dumps one page of memory. It takes a hex page number as parameter.

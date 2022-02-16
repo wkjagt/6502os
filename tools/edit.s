@@ -1,11 +1,10 @@
 .include "edit.inc"
 .include "terminal.inc"
+.include "dump.inc"
 .include "../os/jump_table.inc"
 .include "../os/zeropage.inc"           ; todo: remove once no longer needed
 .include "../os/strings.inc"
 .include "../os/screen.inc"
-
-.import __INPUTBFR_START__
 
 .zeropage
 
@@ -19,10 +18,6 @@ incomplete_entry:       .res 1          ; uses 1 bit only
 
 ; The edit CLI command
 edit:           lda     TERM_ARG1
-                jsr     edit_page
-                rts
-
-
 ;========================================================================
 ;        EDIT A PAGE
 ; 
@@ -34,7 +29,7 @@ edit_page:      stz     active_page
 @reload:        jsr     reset_input
                 jsr     JMP_INIT_SCREEN
                 lda     active_page+1
-                jsr     JMP_DUMP        ; use dump as data view
+                jsr     dump_page       ; use dump as data view
                 jsr     set_cursor
 @next_key:      jsr     JMP_GETC
                 tax                     ; puts pressed char in X
@@ -98,7 +93,7 @@ edit_page:      stz     active_page
                 jsr     reset_input
                 jsr     JMP_INIT_SCREEN
                 lda     active_page+1
-                jsr     JMP_DUMP
+                jsr     dump_page
                 lda     #1
                 jsr     update_cell
                 jmp     @next_key
