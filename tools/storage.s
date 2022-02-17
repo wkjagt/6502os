@@ -4,32 +4,31 @@
 .include "../os/strings.inc"
 .include "../os/jump_table.inc"
 
-.import __INPUTBFR_START__              ; remove
-
 .code
-; arg 1: page count
-; arg 2: drive page
-; arg 3: ram page
-; Ie "Load 3 pages from drive page 0 to RAM page 1A"
-; `load 03 00 1A`
-load:           ldx     TERM_ARG1
-                lda     TERM_ARG2
-                sta     stor_eeprom_addr_h
-                lda     TERM_ARG3
-                sta     stor_ram_addr_h
+
+
+; x: page count
+; stor_eeprom_addr_h
+; stor_ram_addr_h
+
+
+load:           jsr     get_args
                 jmp     JMP_STOR_READ
 
-; arg 1: page count
-; arg 2: ram page
-; arg 3: drive page
-; Ie "Save 3 pages from RAM page 1A to drive page 0"
-; `save 03 1A 00`
-save:           ldx     TERM_ARG1
-                lda     TERM_ARG2
-                sta     stor_ram_addr_h
-                lda     TERM_ARG3
-                sta     stor_eeprom_addr_h
+
+save:           jsr     get_args
                 jmp     JMP_STOR_WRITE
+
+get_args:       ldx     TERM_ARG1
+                bne     @count_given
+                ldx     #1              ; 1 page by default
+@count_given:   lda     TERM_ARG2
+                sta     stor_eeprom_addr_h  ; 0 is the default so no need to check
+                lda     TERM_ARG3
+                bne     @ram_page_given
+                lda     #4              ; page 4 by default
+@ram_page_given:sta     stor_ram_addr_h
+                rts
 
 set_drive0:     lda     #0              ; todo: use arguments for this
                 bra     set_drive
