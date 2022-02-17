@@ -1,1 +1,10 @@
+.include        "screen.inc"
+.include        "acia.inc"
+.include        "jump_table.inc"        ; todo: remove
+.include        "keyboard.inc"
+.include        "storage.inc"
+.include        "strings.inc"
+.include        "via.inc"
+.include        "zeropage.inc"
+
 .global         reset

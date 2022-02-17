@@ -1,10 +1,8 @@
 .include "edit.inc"
 .include "terminal.inc"
 .include "dump.inc"
-.include "../os/jump_table.inc"
-.include "../os/zeropage.inc"           ; todo: remove once no longer needed
-.include "../os/strings.inc"
-.include "../os/screen.inc"
+.include "../os/pager_os.inc"
+
 
 .zeropage
 

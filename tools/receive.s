@@ -1,8 +1,6 @@
 .include "receive.inc"
 .include "terminal.inc"
-.include "../os/strings.inc"
-.include "../os/jump_table.inc"
-.include "../os/zeropage.inc"
+.include "../os/pager_os.inc"
 
 ; The rcv command. It waits for a keypress to give the user the opportunity to start
 ; the transmission on the transmitting computer. A key press sends the initial NAK
