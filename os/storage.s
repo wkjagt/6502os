@@ -2,8 +2,6 @@
 .include "zeropage.inc"
 .include "via.inc"
 
-.import __PROGRAM_START__
-
 init_storage:   lda     VIA1_DDRA
                 ora     #(DATA_PIN | CLOCK_PIN)
                 sta     VIA1_DDRA
@@ -19,8 +17,6 @@ read_pages:     pha
                 sta     stor_eeprom_block
                 
                 plx                     ;page count
-                lda     #>__PROGRAM_START__
-                sta     stor_ram_addr_h
 
 @next_page:     stz     stor_ram_addr_l
                 stz     stor_eeprom_addr_l
@@ -50,8 +46,6 @@ write_pages:    pha
                 sta     stor_eeprom_block
                 
                 plx                     ;page count
-                lda     #>__PROGRAM_START__
-                sta     stor_ram_addr_h
 
 @next_page:     stz     stor_ram_addr_l
                 stz     stor_eeprom_addr_l

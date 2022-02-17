@@ -2,7 +2,6 @@
 .include "zeropage.inc"
 
 .export xmodem_receive
-.import __PROGRAM_START__               ; todo: remove once rcv takes a page param
 
 NAK             =       $15
 ACK             =       $06

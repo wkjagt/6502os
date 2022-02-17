@@ -10,7 +10,6 @@
 .include "../tools/receive.inc"
 
 .import xmodem_receive
-.import __PROGRAM_START__
 .import __INPUTBFR_START__
 
 .code

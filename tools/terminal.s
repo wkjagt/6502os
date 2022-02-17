@@ -10,8 +10,9 @@
 .include "storage.inc"
 .include "run.inc"
 
-.import dump_page
 .import __INPUTBFR_START__
+
+command_vector          = tmp2
 
 .zeropage
 inputbuffer_ptr:        .res 2
@@ -89,12 +90,12 @@ find_command:   ldx     #0              ; index into list of commands
                 ; to jump to. Store that address in command_vector so we
                 ; can jump to it.
                 lda     (tmp1), y
-                sta     tmp2
+                sta     command_vector
                 iny
                 lda     (tmp1), y
-                sta     tmp2+1
+                sta     command_vector+1
                 jsr     cr
-                jmp     (tmp2)
+                jmp     (command_vector)
                 rts
 @unknown:       println STR_UNKNOWN_CMD
                 rts
