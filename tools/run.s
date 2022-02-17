@@ -8,4 +8,8 @@
 ;   - If the loaded program returns control with RTS, it gives
 ;     control back to line_input which is where the original JSR
 ;     is. After that only indirect jumps are used.
-run:            jmp     (TERM_ARG_ADDR1)       ; get page from cli arg
+run:            lda     TERM_ARG1
+                bne     @arg_given
+                lda     #4
+                sta     TERM_ARG1
+@arg_given:     jmp     (TERM_ARG_ADDR1)       ; get page from cli arg
