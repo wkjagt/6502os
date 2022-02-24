@@ -14,7 +14,8 @@ ASM_SOURCES=os/pager_os.s\
 			tools/terminal.s\
 			tools/receive.s\
 			tools/storage.s\
-			tools/run.s
+			tools/run.s\
+			tools/input.s
 
 FIRMWARE_CFG=firmware.cfg
 

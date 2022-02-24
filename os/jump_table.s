@@ -21,3 +21,5 @@ JMP_RMV_PIXEL:          .res 3          ; 48
 JMP_INIT_STORAGE:       .res 3          ; 51
 JMP_STOR_READ:          .res 3          ; 54
 JMP_STOR_WRITE:         .res 3          ; 57
+JMP_STOR_READ_PAGE:     .res 3          ; 60
+JMP_STOR_WRITE_PAGE:    .res 3          ; 63

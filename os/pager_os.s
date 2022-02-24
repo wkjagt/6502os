@@ -73,6 +73,8 @@ jump_table:                             ; todo: remove all non OS things
                 jmp     init_storage
                 jmp     read_pages
                 jmp     write_pages
+                jmp     read_page
+                jmp     write_page
 end_jump_table:
 
 .segment "VECTORS"

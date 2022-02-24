@@ -5,13 +5,13 @@
 .include "dump.inc"
 .include "storage.inc"
 .include "run.inc"
+.include "input.inc"
 
 .import __INPUTBFR_START__
 
 command_vector          = tmp2
 
 .zeropage
-inputbuffer_ptr:        .res 2
 ; reserve space for 3 16 byte args. store single byte values in position 1, 3, 5 so they can be
 ; easily used as addresses where the argument represents a page in memory. Example: argument 0A
 ; in memory looks like 00 0A, where the address can be referenced directly because 6502 is little endian.
@@ -24,45 +24,15 @@ terminal:       jsr     cr
                 jsr     JMP_PUTC
                 putc    '#'
                 putc    ' '
-                stz     inputbuffer_ptr
+                jsr     get_input
 
-                ldx     #80            ; inputbuffer size
-@clear_buffer:  stz     <__INPUTBFR_START__,x
-                dex
-                bne     @clear_buffer
-@next_key:      jsr     JMP_GETC
-                cmp     #BS
-                beq     @backspace
-                cmp     #LF                
-                beq     @enter
-
-                jsr     JMP_PUTC
-                cmp     #SPACE
-                bne     @not_a_space
-                lda     #0              ; save 0 instead of space into buffer, so it 
-                                        ; matches the end of the command string
-@not_a_space:   ldx     inputbuffer_ptr
-                sta     <__INPUTBFR_START__,x
-                inc     inputbuffer_ptr
-
-                bra     @next_key
-@enter:         lda     inputbuffer_ptr
+                lda     inputbuffer_ptr
                 beq     terminal        ; do nothing if empty line
 
                 jsr     find_command
                 bra     terminal
-@backspace:     lda     inputbuffer_ptr
-                beq     @next_key       ; already at start of line
+                rts
 
-                putc    BS
-                putc    ' '
-                putc    BS
-
-                dec     inputbuffer_ptr
-                ldx     inputbuffer_ptr
-                stz     <__INPUTBFR_START__,x
-
-                bra     @next_key
 
 ; this loops over all the commands under the commands label
 ; each of those points to an entry in the list that contains the

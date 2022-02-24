@@ -36,6 +36,28 @@ read_pages:     pha
                 pla
                 rts
 
+read_page:      pha
+                phy
+                phx
+                
+                ldx     current_drive
+                lda     drive_to_eeprom_block, x
+                sta     stor_eeprom_block
+                
+@next_page:     stz     stor_ram_addr_l
+                stz     stor_eeprom_addr_l
+                jsr     read_sequence
+
+                lda     #128
+                sta     stor_ram_addr_l
+                sta     stor_eeprom_addr_l
+                jsr     read_sequence
+
+                plx
+                ply
+                pla
+                rts
+
 
 write_pages:    pha
                 phy
@@ -65,6 +87,27 @@ write_pages:    pha
                 pla
                 rts
 
+write_page :    pha
+                phy
+                phx
+                
+                ldx     current_drive
+                lda     drive_to_eeprom_block, x
+                sta     stor_eeprom_block
+
+@next_page:     stz     stor_ram_addr_l
+                stz     stor_eeprom_addr_l
+                jsr     write_sequence
+
+                lda     #128
+                sta     stor_ram_addr_l
+                sta     stor_eeprom_addr_l
+                jsr     write_sequence
+
+                plx                     ;page count
+                ply
+                pla
+                rts
 ;=================================================================================
 ;               PRIVATE ROUTINES
 ;=================================================================================
