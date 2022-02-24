@@ -3,7 +3,6 @@
 .globalzp tmp2
 .globalzp tmp3
 .globalzp dump_start
-.globalzp rcv_buffer_pointer
 .globalzp stor_eeprom_block
 .globalzp stor_eeprom_addr_l
 .globalzp stor_eeprom_addr_h

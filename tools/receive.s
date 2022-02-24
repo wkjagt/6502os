@@ -26,9 +26,7 @@ receive:        println STR_RCV_WAIT
                 lda     TERM_ARG1
                 jsr     JMP_XMODEM_RCV
 
-                txa
-                ina
-                lsr                     ; packet count to page count
+                lda     rcv_page_count
                 jsr     JMP_PRINT_HEX
                 println STR_RCV_DONE
                 rts

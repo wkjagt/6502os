@@ -7,7 +7,6 @@ tmp1:                   .res 2
 tmp2:                   .res 2
 tmp3:                   .res 2
 dump_start:             .res 2
-rcv_buffer_pointer:     .res 2
 
 ; storage routine args
 stor_eeprom_block:      .res 1

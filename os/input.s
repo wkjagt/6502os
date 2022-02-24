@@ -2,6 +2,7 @@
 .include "../os/pager_os.inc"
 
 .import __INPUTBFR_START__
+.import __INPUTBFR_SIZE__
 
 .zeropage
 inputbuffer_ptr:        .res 2
@@ -9,7 +10,7 @@ inputbuffer_ptr:        .res 2
 .code
 
 get_input:      stz     inputbuffer_ptr
-                ldx     #80            ; inputbuffer size
+                ldx     #<__INPUTBFR_SIZE__-1   ; -1 bcause otherwise it wraps to addr 00
 @clear_buffer:  stz     <__INPUTBFR_START__,x
                 dex
                 bne     @clear_buffer

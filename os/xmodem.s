@@ -1,16 +1,17 @@
+.include "xmodem.inc"
 .include "acia.inc"
-.include "zeropage.inc"
 
-.export xmodem_receive
+.zeropage
+rcv_page_count:         .res 1
+rcv_start_page:         .res 1
+rcv_buffer_pointer:     .res 2
 
-NAK             =       $15
-ACK             =       $06
-EOT             =       $04
-SOH             =       $01
-
+.code
 ; A: the page to start saving received data
-xmodem_receive: stz     rcv_buffer_pointer
+xmodem_receive: stz     rcv_page_count
+                stz     rcv_buffer_pointer
                 sta     rcv_buffer_pointer+1
+                sta     rcv_start_page  ; this one doesn't get updated
 
                 ; tell the sender to start sending
                 ldx     #0              ; packet counter
@@ -21,8 +22,7 @@ xmodem_receive: stz     rcv_buffer_pointer
 ; including the 128 data bytes, and loops until an EOT byte
 ; is received right after a 
 ; @next_data_byte receives each of the 128 data bytes
-@next_packet:
-                jsr     rcv_byte        ; receive SOH or EOT
+@next_packet:   jsr     rcv_byte        ; receive SOH or EOT
                 cmp     #EOT
                 beq     @eot
 
@@ -36,8 +36,7 @@ xmodem_receive: stz     rcv_buffer_pointer
                 ; todo: add up and check if 0
                 inx
                 ldy     #128            ; 128 data bytes
-@next_data_byte:
-                jsr     rcv_byte
+@next_data_byte:jsr     rcv_byte
                 jsr     save_to_ram
 
                 dey
@@ -49,8 +48,13 @@ xmodem_receive: stz     rcv_buffer_pointer
                 jsr     ack
 
                 jmp     @next_packet
-@eot:
-                jsr     ack
+@eot:           jsr     ack
+
+                txa
+                ina
+                lsr                     ; packet count to page count
+                sta     rcv_page_count
+
                 rts
 
 save_to_ram:    sta     (rcv_buffer_pointer)

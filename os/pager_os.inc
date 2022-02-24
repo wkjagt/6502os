@@ -7,5 +7,6 @@
 .include        "via.inc"
 .include        "zeropage.inc"
 .include        "input.inc"
+.include        "xmodem.inc"
 
 .global         reset
