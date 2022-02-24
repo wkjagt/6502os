@@ -6,5 +6,6 @@
 .include        "strings.inc"
 .include        "via.inc"
 .include        "zeropage.inc"
+.include        "input.inc"
 
 .global         reset

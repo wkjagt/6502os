@@ -5,7 +5,6 @@
 .include "dump.inc"
 .include "storage.inc"
 .include "run.inc"
-.include "input.inc"
 
 .import __INPUTBFR_START__
 

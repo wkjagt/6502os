@@ -5,6 +5,7 @@
 .include "acia.inc"
 .include "zeropage.inc"
 .include "storage.inc"
+.include "input.inc"
 .include "../tools/edit.inc"
 .include "../tools/terminal.inc"
 .include "../tools/receive.inc"
@@ -75,6 +76,7 @@ jump_table:                             ; todo: remove all non OS things
                 jmp     write_pages
                 jmp     read_page
                 jmp     write_page
+                jmp     get_input
 end_jump_table:
 
 .segment "VECTORS"
