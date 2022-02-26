@@ -19,11 +19,9 @@ receive:        println STR_RCV_WAIT
                 jsr     JMP_GETC
 
                 print   STR_RCV_START
-                lda     TERM_ARG1
-                jsr     JMP_PRINT_HEX
                 jsr     cr
 
-                lda     TERM_ARG1
+                lda     #PROGRAM_START_PAGE
                 jsr     JMP_XMODEM_RCV
 
                 lda     rcv_page_count

@@ -1,4 +1,5 @@
 .include "terminal.inc"
+.include "../os/pager_os.inc"
 
 .code
 ; Very simple command to jump to the start of the receive buffer.
@@ -10,6 +11,6 @@
 ;     is. After that only indirect jumps are used.
 run:            lda     TERM_ARG1
                 bne     @arg_given
-                lda     #4
+                lda     #PROGRAM_START_PAGE
                 sta     TERM_ARG1
 @arg_given:     jmp     (TERM_ARG_ADDR1)       ; get page from cli arg
