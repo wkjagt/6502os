@@ -10,10 +10,7 @@ inputbuffer_ptr:        .res 2
 .code
 
 get_input:      stz     inputbuffer_ptr
-                ldx     #<__INPUTBFR_SIZE__-1   ; -1 bcause otherwise it wraps to addr 00
-@clear_buffer:  stz     <__INPUTBFR_START__,x
-                dex
-                bne     @clear_buffer
+                jsr     clear_input
 @next_key:      jsr     JMP_GETC
                 cmp     #BS
                 beq     @backspace
@@ -43,3 +40,10 @@ get_input:      stz     inputbuffer_ptr
 
                 bra     @next_key
 @enter:         rts
+
+
+clear_input:    ldx     #<__INPUTBFR_SIZE__-1   ; -1 bcause otherwise it wraps to addr 00
+@clear_buffer:  stz     <__INPUTBFR_START__,x
+                dex
+                bne     @clear_buffer
+                rts

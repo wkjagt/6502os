@@ -24,3 +24,4 @@ JMP_STOR_WRITE:         .res 3          ; 57
 JMP_STOR_READ_PAGE:     .res 3          ; 60
 JMP_STOR_WRITE_PAGE:    .res 3          ; 63
 JMP_GET_INPUT:          .res 3          ; 66
+JMP_CLR_INPUT:          .res 3          ; 69
