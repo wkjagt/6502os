@@ -3,6 +3,8 @@
 .global clear_fat
 .global load_dir
 .global load_fat
+.global show_dir
+.global format_drive
 
 .globalzp dir_page
 .globalzp next_empty_page

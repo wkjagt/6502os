@@ -1,7 +1,9 @@
-.include "jump_table.inc"
 .include "file.inc"
+.include "jump_table.inc"
 .include "zeropage.inc"
 .include "zeropage.inc"
+.include "strings.inc"
+.include "screen.inc"
 
 drive_page      = stor_eeprom_addr_h 
 ram_page        = stor_ram_addr_h
@@ -100,13 +102,15 @@ clear_dir:      ldx     #0
                 rts
 
 ;===============================================================
-;               Load a page from one of the 4 DIR pages of
-;               the directory into RAM.
+;               Load the current DIR page from the drive into RAM.
 ;===============================================================
 load_dir:       jsr     dir_args
                 jsr     READ_PAGE
                 rts
 
+;===============================================================
+;               Save the current DIR page from RAM to the drive.
+;===============================================================
 save_dir:       phx                     ; todo: document why this is needed
                 pha
                 jsr     dir_args
@@ -115,6 +119,7 @@ save_dir:       phx                     ; todo: document why this is needed
                 plx
                 rts
 
+; private routine used by the two routines above
 dir_args:       lda     dir_page
                 sta     drive_page
                 lda     #>DIR_BUFFER
@@ -135,4 +140,50 @@ print_file_name:phx
                 dey
                 bne     @next_char
                 plx
+                rts
+
+;============================================================
+;               Show the contents of the directory of the
+;               currently selected drive. Format:
+;
+;               filename (size in pages)
+;============================================================
+show_dir:       stz     dir_page
+@next_page:     inc     dir_page
+                jsr     load_dir        ; load dir page into buffer
+                jsr     output_dir
+                lda     dir_page
+                cmp     #4              ; todo: use constant
+                bne     @next_page
+@done:          rts
+
+output_dir:     ldx     #0
+@next_item:     lda     DIR_BUFFER,x    ; first char of filename. If 0: empty entry
+                beq     @skip
+
+                jsr     print_file_name
+
+                prn     "  ("
+                lda     DIR_BUFFER+9,x  ; todo: use constant
+                jsr     JMP_PRINT_HEX
+                prn     ")"
+
+                putc    LF
+                putc    CR
+@skip:          txa
+                clc
+                adc     #16
+                beq     @done
+                tax
+                bra     @next_item      ; if 0: end of page
+@done:          rts
+
+;============================================================
+;               Format the current drive by clearing the FAT
+;               and the directory.
+;============================================================
+format_drive:   jsr     clear_fat
+                jsr     clear_dir
+                jsr     load_fat
+                jsr     load_dir
                 rts
