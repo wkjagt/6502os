@@ -5,6 +5,11 @@
 .global load_fat
 .global show_dir
 .global format_drive
+.global save_dir
+.global find_empty_page
+.global format_drive
+.global save_file
+.global load_file
 
 .globalzp dir_page
 .globalzp next_empty_page

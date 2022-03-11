@@ -25,3 +25,12 @@ JMP_STOR_READ_PAGE:     .res 3          ; 60
 JMP_STOR_WRITE_PAGE:    .res 3          ; 63
 JMP_GET_INPUT:          .res 3          ; 66
 JMP_CLR_INPUT:          .res 3          ; 69
+JMP_LOAD_FAT:           .res 3          ; 72
+JMP_CLEAR_FAT:          .res 3          ; 75
+JMP_FIND_EMPTY_PAGE:    .res 3          ; 78
+JMP_CLEAR_DIR:          .res 3          ; 81
+JMP_LOAD_DIR:           .res 3          ; 84
+JMP_SAVE_DIR:           .res 3          ; 87
+JMP_SHOW_DIR:           .res 3          ; 90
+JMP_FORMAT_DIVE:        .res 3          ; 93
+JMP_PRINT_STRING:       .res 3          ; 96

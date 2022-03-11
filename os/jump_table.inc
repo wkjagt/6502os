@@ -25,3 +25,12 @@
 .global JMP_STOR_WRITE_PAGE
 .global JMP_GET_INPUT
 .global JMP_CLR_INPUT
+.global JMP_LOAD_FAT
+.global JMP_CLEAR_FAT
+.global JMP_FIND_EMPTY_PAGE
+.global JMP_CLEAR_DIR
+.global JMP_LOAD_DIR
+.global JMP_SAVE_DIR
+.global JMP_SHOW_DIR
+.global JMP_FORMAT_DIVE
+.global JMP_PRINT_STRING

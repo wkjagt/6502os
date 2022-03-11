@@ -6,15 +6,29 @@
 .code
 
 load:           jsr     get_args
-                jmp     JMP_STOR_READ
+                lda     TERM_ARG1
+                bne     @using_pages
+                jsr     JMP_GET_INPUT
+                jmp     load_file
+@using_pages:   jmp     JMP_STOR_READ
 
 save:           jsr     get_args
-                jmp     JMP_STOR_WRITE
+                lda     TERM_ARG1
+                bne     @using_pages
+                jsr     JMP_GET_INPUT
+                jmp     save_file
+@using_pages:   jmp     JMP_STOR_WRITE
+
+;=======================================================================
+;               These are page related args, that are used when load
+;               and save are used with hex args, in the following order:
+;                   - page count
+;                   - drive page
+;                   - RAM page
+;=======================================================================
 
 get_args:       ldx     TERM_ARG1
-                bne     @count_given
-                ldx     #1              ; 1 page by default todo: don't hardcode this here
-@count_given:   lda     TERM_ARG2
+                lda     TERM_ARG2
                 sta     stor_eeprom_addr_h  ; 0 is the default so no need to check
                 lda     TERM_ARG3
                 bne     @ram_page_given
@@ -22,6 +36,11 @@ get_args:       ldx     TERM_ARG1
 @ram_page_given:sta     stor_ram_addr_h
                 rts
 
+
+
+;======================================================
+;               Routines to set the current drive
+;======================================================
 set_drive0:     lda     #0              ; todo: use arguments for this
                 bra     set_drive
 set_drive1:     lda     #1

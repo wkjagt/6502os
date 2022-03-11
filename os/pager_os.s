@@ -6,6 +6,7 @@
 .include "zeropage.inc"
 .include "storage.inc"
 .include "input.inc"
+.include "file.inc"
 .include "../tools/edit.inc"
 .include "../tools/terminal.inc"
 .include "../tools/receive.inc"
@@ -55,6 +56,7 @@ irqnmi:         rti
 ; This jump table isn't used at this location. These are default values
 ; That are copied to the JUMPTABLE segment in RAM on reset, and can be overriden
 ; from user software.
+; todo: move to jumptable.s
 jump_table:                             ; todo: remove all non OS things
                 jmp     receive
                 jmp     init_screen
@@ -80,6 +82,15 @@ jump_table:                             ; todo: remove all non OS things
                 jmp     write_page
                 jmp     get_input
                 jmp     clear_input
+                jmp     load_fat
+                jmp     clear_fat
+                jmp     find_empty_page
+                jmp     clear_dir
+                jmp     load_dir
+                jmp     save_dir
+                jmp     show_dir
+                jmp     format_drive
+                jmp     print_string
 end_jump_table:
 
 .segment "VECTORS"
