@@ -8,7 +8,7 @@
 ; receives each data byte in the A register.
 .code
 
-receive:        println STR_RCV_WAIT
+receive:        prn     "Initiate transfer on transmitter and then press any key.", 1
 
                 ; The sender starts transmitting bytes as soon as
                 ; it receives a NAK byte from the receiver. To be
@@ -18,13 +18,13 @@ receive:        println STR_RCV_WAIT
                 ;    transmission
                 jsr     JMP_GETC
 
-                print   STR_RCV_START
-                jsr     cr
+                prn     "Starting transfer...", 1
+                cr
 
                 lda     #PROGRAM_START_PAGE
                 jsr     JMP_XMODEM_RCV
 
                 lda     rcv_page_count
                 jsr     JMP_PRINT_HEX
-                println STR_RCV_DONE
+                prn     " page(s) received.", 1
                 rts

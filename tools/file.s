@@ -13,7 +13,7 @@ show_dir:       stz     dir_page
                 jsr     load_dir        ; load dir page into buffer
                 jsr     output_dir
                 lda     dir_page
-                cmp     #4
+                cmp     #4              ; todo: use constant
                 bne     @next_page
 @done:          rts
 
@@ -24,12 +24,12 @@ output_dir:     ldx     #0
                 jsr     print_file_name
 
                 prn     "  ("
-                lda     DIR_BUFFER+9,x
+                lda     DIR_BUFFER+9,x  ; todo: use constant
                 jsr     JMP_PRINT_HEX
                 prn     ")"
 
-                putc LF             ; todo: in ROM replace with cr routine
-                putc CR
+                putc    LF
+                putc    CR
 @skip:          txa
                 clc
                 adc     #16

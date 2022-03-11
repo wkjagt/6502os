@@ -8,18 +8,6 @@ tmp_string:     .res    2
 
 .code
 
-string_table:
-                .word   s_startup, s_rcv_wait, s_unknown_cmd, s_rcv_done
-                .word   s_rcv_start
-
-; todo: most of these aren't specific to OS
-
-s_startup:      .byte   "                           -- Pager OS --", 0                
-s_rcv_wait:     .byte   "Initiate transfer on transmitter and then press any key.", 0
-s_unknown_cmd:  .byte   ": unknown command", 0 
-s_rcv_done:     .byte   " page(s) received.", 0
-s_rcv_start:    .byte   "Starting transfer...", 0
-
 print_formatted_byte_as_hex:
                 jsr     JMP_PRINT_HEX
                 putc    ' '
@@ -51,31 +39,6 @@ print_nibble:
                 jsr     JMP_PUTC
                 rts
 
-print_string_no_lf:
-                asl                     ; multiply by 2 because size of memory address is 2 bytes
-                tay
-                lda     string_table,y  ; string index into string table
-                sta     tmp3            ; LSB
-                iny
-                lda     string_table,y
-                sta     tmp3+1          ; MSB
-
-                ldy     #0
-@next_char:
-                lda     (tmp3),y
-                beq     @done
-
-                jsr     JMP_PUTC
-                iny
-                bra     @next_char
-@done:
-                rts
-
-print_string:   jsr     print_string_no_lf
-                putc    $0d             ; todo: use constant
-                putc    $0a             ; todo: use constant
-                rts
-
 ;=============================================================================
 ; Print the string that follows the JSR instruction that jumps to
 ; this routine. It uses the return address on the stack to find the
@@ -86,7 +49,7 @@ print_string:   jsr     print_string_no_lf
 ;               jsr     print_string2
 ;               .byte   "Print this string",0
 ;=============================================================================
-print_string2:  pla                     ; get the return address from the stack
+print_string:   pla                     ; get the return address from the stack
                 sta     tmp_string      ; and put it in tmp_string. That way it
                 pla                     ; can be used for indirect addressing to
                 sta     tmp_string+1    ; read the string right after the JSR.
@@ -152,8 +115,4 @@ hex_to_byte:    phy
                 asl
                 rol     tmp1
 
-                rts
-
-cr:             putc    LF
-                putc    CR
                 rts

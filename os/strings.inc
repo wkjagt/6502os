@@ -1,32 +1,22 @@
 .global cr
 .global print_formatted_byte_as_hex
-.global print_string_no_lf
 .global print_string
-.global print_string2
 .global hex_to_byte
-.global string_table
 .global print_byte_as_hex
 
-.macro println str_index
-                lda     #str_index
+.macro prn      string, withcr              ; cr is optional
                 jsr     print_string
+                .byte   string, 0
+.ifnblank       withcr
+                cr
+.endif
 .endmacro
 
-.macro print str_index
-                lda     #str_index
-                jsr     print_string_no_lf
+.macro cr
+                putc    CR
+                putc    LF
 .endmacro
 
-.macro prn      string
-                jsr     print_string2
-                .byte   string,0
-.endmacro
-
-STR_STARTUP             = $00
-STR_RCV_WAIT            = $01
-STR_UNKNOWN_CMD         = $02
-STR_RCV_DONE            = $03
-STR_RCV_START           = $04
 
 SPACE                   = $20
 LF                      = $0A

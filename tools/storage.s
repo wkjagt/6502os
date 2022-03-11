@@ -30,4 +30,6 @@ set_drive2:     lda     #2
                 bra     set_drive
 set_drive3:     lda     #3
 set_drive:      sta     current_drive
+                jsr     load_fat
+                jsr     load_dir
                 rts

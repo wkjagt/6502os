@@ -18,7 +18,7 @@ command_vector          = tmp2
 terminal_args:          .res 6
 
 .code
-terminal:       jsr     cr
+terminal:       cr
                 lda     current_drive
                 adc     #48              ; to ascii
                 jsr     JMP_PUTC
@@ -60,10 +60,10 @@ find_command:   ldx     #0              ; index into list of commands
                 iny
                 lda     (tmp1), y
                 sta     command_vector+1
-                jsr     cr
+                cr
                 jmp     (command_vector)
                 rts
-@unknown:       println STR_UNKNOWN_CMD
+@unknown:       prn     ": unknown command"
                 rts
 
 ; This looks at one command entry and matches it agains what's in the

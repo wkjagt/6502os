@@ -10,7 +10,6 @@ dump:           lda     TERM_ARG1
                 jsr     dump_page
                 rts
 
-
 dump_page:      stz     dump_start
                 sta     dump_start+1    ; page
                 ldx     #0
@@ -18,20 +17,16 @@ dump_page:      stz     dump_start
 ; start of line (new line + start address)
 ; x counts up to 16 for each row
 ; y counts up to 256 for the whole page of memory
-@next_row:
-                jsr     cr
-                
+@next_row:      cr
                 lda     dump_start+1
                 jsr     JMP_PRINT_HEX
                 tya
                 jsr     JMP_PRINT_HEX
-                putc    ' '
-                putc    ' '
+                prn     "  "
 
                 ldx     #0
 ; raw bytes
-@next_hex_byte:
-                lda     (dump_start),y
+@next_hex_byte: lda     (dump_start),y
                 jsr     JMP_PRINT_HEX
                 putc    ' '
                 iny
@@ -43,16 +38,13 @@ dump_page:      stz     dump_start
                 putc    ' '
                 bra     @next_hex_byte
 ; ascii representation
-@ascii:
-                ldx     #0
+@ascii:         ldx     #0
                 tya
                 sec
                 sbc     #16             ; rewind 16 bytes for ascii
                 tay
-                putc    ' '
-                putc    ' '
-@next_ascii_byte:
-                ; ascii: $20-$7E
+                prn     "  "
+@next_ascii:    ; ascii: $20-$7E
                 lda     (dump_start),y
                 cmp     #$20            ; space
                 bcc     @not_ascii
@@ -60,14 +52,12 @@ dump_page:      stz     dump_start
                 bcs     @not_ascii
                 jsr     JMP_PUTC
                 bra     @continue_ascii_byte
-@not_ascii:
-                putc    '.'
+@not_ascii:     putc    '.'
 @continue_ascii_byte:
                 iny
                 beq     @done
                 inx
                 cpx     #16
                 beq     @next_row
-                bra     @next_ascii_byte
-@done:
-                rts
+                bra     @next_ascii
+@done:          rts
