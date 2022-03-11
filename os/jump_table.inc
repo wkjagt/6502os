@@ -21,3 +21,7 @@
 .global JMP_INIT_STORAGE
 .global JMP_STOR_READ
 .global JMP_STOR_WRITE
+.global JMP_STOR_READ_PAGE
+.global JMP_STOR_WRITE_PAGE
+.global JMP_GET_INPUT
+.global JMP_CLR_INPUT

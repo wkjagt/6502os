@@ -8,6 +8,7 @@
 .include        "zeropage.inc"
 .include        "input.inc"
 .include        "xmodem.inc"
+.include        "file.inc"
 
 PROGRAM_START           = $0600
 PROGRAM_START_PAGE      = $06

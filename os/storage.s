@@ -1,11 +1,18 @@
 .include "storage.inc"
 .include "zeropage.inc"
 .include "via.inc"
+.include "file.inc"
 
 init_storage:   lda     VIA1_DDRA
                 ora     #(DATA_PIN | CLOCK_PIN)
                 sta     VIA1_DDRA
                 stz     current_drive
+
+                lda     #1
+                sta     dir_page
+                jsr     load_fat
+                jsr     load_dir
+
                 rts
 
 read_pages:     pha
