@@ -46,7 +46,7 @@ print_nibble:
 ; on the stack to return to the instruction that follows the bytes.
 ; The string data after the JSR instruction needs to end with a 0 byte.
 ; Example:
-;               jsr     print_string2
+;               jsr     print_string
 ;               .byte   "Print this string",0
 ;=============================================================================
 print_string:   pla                     ; get the return address from the stack
