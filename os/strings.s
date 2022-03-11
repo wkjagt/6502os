@@ -3,6 +3,9 @@
 .include "screen.inc"
 .include "jump_table.inc"
 
+.zeropage
+tmp_string:     .res    2
+
 .code
 
 string_table:
@@ -71,6 +74,35 @@ print_string_no_lf:
 print_string:   jsr     print_string_no_lf
                 putc    $0d             ; todo: use constant
                 putc    $0a             ; todo: use constant
+                rts
+
+;=============================================================================
+; Print the string that follows the JSR instruction that jumps to
+; this routine. It uses the return address on the stack to find the
+; bytes right after the JSR instruction. It updates the return address
+; on the stack to return to the instruction that follows the bytes.
+; The string data after the JSR instruction needs to end with a 0 byte.
+; Example:
+;               jsr     print_string2
+;               .byte   "Print this string",0
+;=============================================================================
+print_string2:  pla                     ; get the return address from the stack
+                sta     tmp_string      ; and put it in tmp_string. That way it
+                pla                     ; can be used for indirect addressing to
+                sta     tmp_string+1    ; read the string right after the JSR.
+
+@loop:          inc     tmp_string      ; inc low byte to point to the next byte
+                bne     @cont           ; of the string. Incr for the first byte
+                inc     tmp_string+1    ; works because JSR pushed the address to
+@cont:          lda     (tmp_string)    ; the last byte of the JSR instruction.
+                beq     @done           ; Done when 0 is read.
+                jsr     JMP_PUTC
+                bra     @loop
+
+@done:          lda     tmp_string+1    ; tmp_string was incremented to point to the
+                pha                     ; 0 which ended the string, which is the byte
+                lda     tmp_string      ; right before where RTS needs to go, which
+                pha                     ; perfectly mirrors how JSR/RTS work together.
                 rts
 
 

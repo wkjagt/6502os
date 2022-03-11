@@ -2,6 +2,7 @@
 .global print_formatted_byte_as_hex
 .global print_string_no_lf
 .global print_string
+.global print_string2
 .global hex_to_byte
 .global string_table
 .global print_byte_as_hex
@@ -14,6 +15,11 @@
 .macro print str_index
                 lda     #str_index
                 jsr     print_string_no_lf
+.endmacro
+
+.macro prn      string
+                jsr     print_string2
+                .byte   string,0
 .endmacro
 
 STR_STARTUP             = $00

@@ -1,6 +1,10 @@
 .include "../os/pager_os.inc"
 .include "file.inc"
 
+.zeropage
+tmp_string:     .res 2
+
+.code
 ;============================================================
 ;               Show the directory
 ;============================================================
@@ -19,12 +23,11 @@ output_dir:     ldx     #0
 
                 jsr     print_file_name
 
-                putc ' '
-                putc ' '
-                putc '('
+                prn     "  ("
                 lda     DIR_BUFFER+9,x
                 jsr     JMP_PRINT_HEX
-                putc ')'
+                prn     ")"
+
                 putc LF             ; todo: in ROM replace with cr routine
                 putc CR
 @skip:          txa
