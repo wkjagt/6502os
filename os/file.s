@@ -5,6 +5,8 @@
 .include "strings.inc"
 .include "screen.inc"
 
+.import __INPUTBFR_START__
+
 drive_page      = stor_eeprom_addr_h 
 ram_page        = stor_ram_addr_h
 READ_PAGE       = JMP_STOR_READ_PAGE
@@ -13,6 +15,7 @@ WRITE_PAGE      = JMP_STOR_WRITE_PAGE
 .zeropage
 dir_page:       .res 1
 next_empty_page:.res 1
+error_code:     .res 1
 
 .code
 
@@ -22,7 +25,83 @@ next_empty_page:.res 1
 ;*******************************************************************************
 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 save_file:      rts
-load_file:      rts
+
+;===========================================================================
+;               Load file
+;===========================================================================
+load_file:      jsr     find_file
+                bcs     @not_found
+                lda     DIR_BUFFER+8,x  ; start page
+
+                sta     drive_page      ; read from dir/fat
+                lda     #6              ; default start page, todo: don't hardcode
+                sta     ram_page
+                
+@next_page:     jsr     READ_PAGE
+
+                ldx     drive_page
+                lda     FAT_BUFFER,x    ; next page
+                cmp     #$FF            ; last page, todo: use constant
+                beq     @done
+
+                sta     drive_page
+                inc     ram_page
+                bra     @next_page
+@not_found:     lda     #ERR_FILE_NOT_FOUND
+                sta     error_code
+                sec
+                rts
+@done:          clc                     ; success
+                rts
+
+;===========================================================================
+;               Find a file in the directory buffer
+;               When the file is found, carry is clear
+;               and the X register points to the start of the entry.
+;               When the file is not found, carry is set, and X
+;               should be ignored.
+;===========================================================================
+find_file:      stz     dir_page
+@next_page:     inc     dir_page        ; set next dir page
+                jsr     JMP_LOAD_DIR    ; load dir page into buffer
+                jsr     @find_in_page
+                bcc     @done
+                lda     dir_page
+                cmp     #4
+                bne     @next_page
+@done:          rts
+@find_in_page:  ldx     #0
+@loop:          jsr     match_filename
+                bcc     @found          ; carry clear means file found
+                txa
+                clc
+                adc     #16
+                tax
+                bne     @loop
+                sec                     ; set carry to signal file not found
+@found:         rts
+
+; x: pointer to start of dir entry in RAM
+; return:
+;     carry set:   no match
+;     carry clear: matched
+match_filename: phx
+                phy
+                ldy     #0
+@loop:          lda    DIR_BUFFER,x
+                cmp    __INPUTBFR_START__,y
+                bne    @no_match
+                inx
+                iny
+                cpy     #MAX_FILE_NAME_LEN
+                bne     @loop
+                clc                     ; matched
+                bra     @done
+@no_match:      sec
+@done:          ply
+                plx
+                rts
+
 
 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 ;*******************************************************************************

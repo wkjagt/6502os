@@ -5,19 +5,26 @@
 
 .code
 
-load:           jsr     get_args
-                lda     TERM_ARG1
+load:           lda     TERM_ARG1
                 bne     @using_pages
+                
+                prn     " Filename: "
                 jsr     JMP_GET_INPUT
-                jmp     load_file
-@using_pages:   jmp     JMP_STOR_READ
+                jsr     load_file
+                bcc     @found
+                cr
+                prn     "Not found", 1
+@found:         rts
+@using_pages:   jsr     get_page_args
+                jmp     JMP_STOR_READ
 
-save:           jsr     get_args
-                lda     TERM_ARG1
+save:           lda     TERM_ARG1
                 bne     @using_pages
+                prn     " Filename: "
                 jsr     JMP_GET_INPUT
                 jmp     save_file
-@using_pages:   jmp     JMP_STOR_WRITE
+@using_pages:   jsr     get_page_args
+                jmp     JMP_STOR_WRITE
 
 ;=======================================================================
 ;               These are page related args, that are used when load
@@ -27,12 +34,12 @@ save:           jsr     get_args
 ;                   - RAM page
 ;=======================================================================
 
-get_args:       ldx     TERM_ARG1
+get_page_args:       ldx     TERM_ARG1
                 lda     TERM_ARG2
                 sta     stor_eeprom_addr_h  ; 0 is the default so no need to check
                 lda     TERM_ARG3
                 bne     @ram_page_given
-                lda     #4              ; page 4 by default todo: don't hardcode this here
+                lda     #6              ; page 4 by default todo: don't hardcode this here
 @ram_page_given:sta     stor_ram_addr_h
                 rts
 

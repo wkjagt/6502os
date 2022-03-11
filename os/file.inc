@@ -10,6 +10,7 @@
 .global format_drive
 .global save_file
 .global load_file
+.global error_code
 
 .globalzp dir_page
 .globalzp next_empty_page
@@ -18,3 +19,8 @@ LAST_PAGE               = $FF
 FAT_BUFFER              = $0400
 DIR_BUFFER              = $0500
 MAX_FILE_NAME_LEN       = 8
+
+ERR_DIR_FULL            = 1
+ERR_DRIVE_FULL          = 2
+ERR_FILE_NOT_FOUND      = 3
+ERR_FILE_EXISTS         = 4
