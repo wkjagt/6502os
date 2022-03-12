@@ -118,7 +118,7 @@ save_args:      phy
 ; where each next command definition starts in memory
 commands:       .word   cmd_dump, cmd_rcv, cmd_cls, cmd_run, cmd_reset
                 .word   cmd_d0, cmd_d1, cmd_d2, cmd_d3, cmd_load, cmd_save
-                .word   cmd_edit, cmd_dir, cmd_format, 0
+                .word   cmd_edit, cmd_dir, cmd_format, cmd_del, 0
 
 cmd_dump:       .byte   "dump", 0
                 .word   dump
@@ -148,3 +148,5 @@ cmd_dir:        .byte   "dir", 0
                 .word   show_dir
 cmd_format:     .byte   "format", 0
                 .word   format
+cmd_del:        .byte   "del", 0
+                .word   delete

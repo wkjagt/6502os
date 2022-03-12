@@ -4,3 +4,4 @@
 .global set_drive3
 .global load
 .global save
+.global delete

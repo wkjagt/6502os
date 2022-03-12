@@ -26,6 +26,11 @@ save:           lda     TERM_ARG1
 @using_pages:   jsr     get_page_args
                 jmp     JMP_STOR_WRITE
 
+
+delete:         prn     " Filename: "
+                jsr     JMP_GET_INPUT
+                jmp     delete_file
+
 ;=======================================================================
 ;               These are page related args, that are used when load
 ;               and save are used with hex args, in the following order:
