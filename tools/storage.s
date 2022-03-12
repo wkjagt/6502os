@@ -34,7 +34,7 @@ save:           lda     TERM_ARG1
 ;                   - RAM page
 ;=======================================================================
 
-get_page_args:       ldx     TERM_ARG1
+get_page_args:  ldx     TERM_ARG1
                 lda     TERM_ARG2
                 sta     stor_eeprom_addr_h  ; 0 is the default so no need to check
                 lda     TERM_ARG3

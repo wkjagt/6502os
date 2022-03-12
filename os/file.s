@@ -10,6 +10,8 @@
 
 drive_page      = stor_eeprom_addr_h 
 ram_page        = stor_ram_addr_h
+load_size       = rcv_page_count
+load_page       = rcv_start_page
 READ_PAGE       = JMP_STOR_READ_PAGE
 WRITE_PAGE      = JMP_STOR_WRITE_PAGE
 
@@ -25,8 +27,6 @@ error_code:     .res 1
 ;               FILE RELATED ROUTINES
 ;*******************************************************************************
 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-save_file:      rts
-
 ;===========================================================================
 ;               Load file
 ;===========================================================================
@@ -64,7 +64,7 @@ load_file:      jsr     find_file
 ;===========================================================================
 find_file:      stz     dir_page
 @next_page:     inc     dir_page        ; set next dir page
-                jsr     JMP_LOAD_DIR    ; load dir page into buffer
+                jsr     load_dir    ; load dir page into buffer
                 jsr     @find_in_page
                 bcc     @done
                 lda     dir_page
@@ -125,6 +125,58 @@ delete_file:    jsr     find_file
 @done:          jsr     save_dir
                 jsr     save_fat
                 clc
+                rts
+
+;====================================================================================
+;               Save a new file to EEPROM
+;               Start reading from RAM at page held at load_page
+;               Read number of pages held at load_size
+;               The filename is taken from the input buffer
+;====================================================================================
+save_file:      jsr     find_file       ; to see if it exists already
+                bcc     @file_exists    ; carry clear means file was found
+                jsr     find_empty_dir  ; x contains entry index
+                bcs     @dir_full       ; carry clear means empty spot was found
+                
+                jsr     add_to_dir      ; save the file to the directory
+                
+                ldy     load_size       ; the size of the file that was received over xmodem
+                ldx     load_page
+@save_page:     lda     next_empty_page ; pointer to the next empty page in the eeprom
+                sta     drive_page      ; used by the storage routine as target page
+                stx     ram_page        ; used by the storage routine as source page
+
+                jsr     WRITE_PAGE      ; write the page
+
+                lda     #LAST_PAGE      ; mark the page that was just written to as the last page of the file
+                phx
+                ldx     next_empty_page ; in the FAT for now. If it's not, it'll be overwritten after. But for
+                sta     FAT_BUFFER,x    ; now we want to avoid find_empty_page to still see it as empty.
+                plx
+
+                dey                     ; keep track of how many pages are left to save
+                beq     @done
+
+                inx
+                jsr     find_empty_page ; find the next available page in the EEPROM
+                phx
+                ldx     next_empty_page  
+                sta     FAT_BUFFER,x    ; current page in FAT points to next avail page
+                plx
+                sta     next_empty_page ; update the current page pointer for the next loop
+
+                bra     @save_page
+@done:          jsr     save_fat        ; all done, save the updated FAT back to the EEPROM
+                jsr     save_dir        ; save the updated directory
+                clc                     ; success
+                rts
+@file_exists:   lda     #ERR_FILE_EXISTS
+                sta     error_code
+                sec
+                rts
+@dir_full:      lda     #ERR_DIR_FULL
+                sta     error_code
+                sec
                 rts
 
 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -266,7 +318,7 @@ dir_args:       lda     dir_page
 ;===============================================================
 find_empty_dir: stz     dir_page
 @next_page:     inc     dir_page        ; set next dir page
-                jsr     JMP_LOAD_DIR    ; load dir page into buffer
+                jsr     load_dir    ; load dir page into buffer
                 jsr     @find_in_page
                 bcc     @done
                 lda     dir_page
