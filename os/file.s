@@ -103,6 +103,29 @@ match_filename: phx
                 plx
                 rts
 
+;===========================================================================
+;               Delete a file. This doesn't delete the actual data.
+;               It only frees up the entries in the directory and the
+;               FAT so the pages can be reused.
+;===========================================================================
+delete_file:    jsr     find_file
+                bcs     @not_found
+                lda     DIR_BUFFER+8,x  ; load start page from directory entry
+                jsr     delete_dir
+@loop:          tax                     ; A contains the FAT page number
+                lda     FAT_BUFFER,x
+                stz     FAT_BUFFER,x    ; overwrite the page entry with a 0
+                cmp     #LAST_PAGE      ; see if A (the page number)
+                beq     @done
+                bra     @loop
+@not_found:     lda     #ERR_FILE_NOT_FOUND
+                sta     error_code
+                sec
+                rts
+@done:          jsr     save_dir
+                jsr     save_fat
+                clc
+                rts
 
 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 ;*******************************************************************************
@@ -146,6 +169,22 @@ load_fat:       phx
                 ; set the current page to the first empty page
                 jsr     find_empty_page
                 sta     next_empty_page
+
+                pla
+                plx
+                rts
+
+;============================================================
+;               Save updated FAT to the drive
+;               This saves page 4 in RAM (the FAT buffer) to
+;               page 0 on the EEPROM (where the FAT is stored)
+;============================================================
+save_fat:       phx
+                pha
+                stz     drive_page      ; page 0 in eeprom
+                lda     #>FAT_BUFFER
+                sta     ram_page
+                jsr     WRITE_PAGE
 
                 pla
                 plx
@@ -249,6 +288,21 @@ find_empty_dir: stz     dir_page
 @not_in_page:   sec
                 rts
 
+;===========================================================================
+;               Delete an entry from the directory by overwriting the 16
+;               bytes of the entry with 0s. The active directory page needs
+;               to be set for this to work correctly
+;               X: the index to the start of the entry which can be set
+;               using find_file for example.
+;
+;               Overwrites X and Y
+;===========================================================================
+delete_dir:     ldy     #16             ; todo: replace with constant for entry length
+@loop:          stz     DIR_BUFFER,x
+                inx
+                dey
+                bne     @loop
+                rts
 ;============================================================
 ;               Print the file name in the directory at
 ;               index X

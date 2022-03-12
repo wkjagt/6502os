@@ -13,6 +13,9 @@
 .global error_code
 .global add_to_dir
 .global find_empty_dir
+.global delete_dir
+.global delete_file
+.global save_fat
 
 .globalzp dir_page
 .globalzp next_empty_page
