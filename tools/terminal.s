@@ -22,8 +22,7 @@ terminal:       cr
                 lda     current_drive
                 adc     #48              ; to ascii
                 jsr     JMP_PUTC
-                putc    '#'
-                putc    ' '
+                prn     "# "
                 jsr     get_input
 
                 lda     inputbuffer_ptr
@@ -60,9 +59,15 @@ find_command:   ldx     #0              ; index into list of commands
                 iny
                 lda     (tmp1), y
                 sta     command_vector+1
+                
+                lda     #>@ret          ; push the return address onto the stack so
+                pha                     ; the routine this jumps to can rts
+                lda     #<(@ret)-1      ; todo: account for page boundary
+                pha
                 cr
                 jmp     (command_vector)
-                rts
+@ret:           cr
+                rts                     ; todo: since the prev is a jmp, is this rts ever reached?
 @unknown:       prn     ": unknown command"
                 rts
 

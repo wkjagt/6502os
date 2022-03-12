@@ -377,7 +377,9 @@ print_file_name:phx
 ;
 ;               filename (size in pages)
 ;============================================================
-show_dir:       stz     dir_page
+show_dir:       prn     "name     start     pages",1
+                prn     "------------------------"
+                stz     dir_page
 @next_page:     inc     dir_page
                 jsr     load_dir        ; load dir page into buffer
                 jsr     output_dir
@@ -390,15 +392,17 @@ output_dir:     ldx     #0
 @next_item:     lda     DIR_BUFFER,x    ; first char of filename. If 0: empty entry
                 beq     @skip
 
+                cr
                 jsr     print_file_name
-
-                prn     "  ("
+                prn     " "
+                lda     DIR_BUFFER+8,x  ; todo: use constant
+                jsr     JMP_PRINT_HEX
+                prn     "        "
                 lda     DIR_BUFFER+9,x  ; todo: use constant
                 jsr     JMP_PRINT_HEX
-                prn     ")"
 
-                putc    LF
-                putc    CR
+
+
 @skip:          txa
                 clc
                 adc     #16
