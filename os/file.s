@@ -4,6 +4,7 @@
 .include "zeropage.inc"
 .include "strings.inc"
 .include "screen.inc"
+.include "xmodem.inc"                   ; todo: remove this dependency
 
 .import __INPUTBFR_START__
 
@@ -265,6 +266,34 @@ output_dir:     ldx     #0
                 tax
                 bra     @next_item      ; if 0: end of page
 @done:          rts
+
+;===============================================================
+;               Add a file to the directory
+;               X contains the start of the first free dir entry
+;                 in page 5 (ie 32 for the 3rd entry)
+;               The inputbuffer is used to read a filename
+;               next_empty_page was initialized by load_fat to point
+;               to the next empry page that can be written to
+;
+;               NOTE: this only interacts with the DIR buffer
+;               currently in RAM. It doesn't need to know anything
+;               about multiple DIR pages in a drive, because 
+;               find_empty_dir is called first and sets X and dir_page
+;===============================================================
+add_to_dir:     ldy     #0
+                phx                     ; keep this for a bit later when we save the page number
+@loop:          lda     __INPUTBFR_START__,y
+                sta     DIR_BUFFER,x
+                inx
+                iny
+                cpy     #MAX_FILE_NAME_LEN + 1
+                bne     @loop
+                plx                     ; the index to the start of the entry
+                lda     next_empty_page ; pointer to the first page where the file will be saved
+                sta     DIR_BUFFER+8,x  ; todo: constant for first page offset
+                lda     rcv_page_count  ; save the size in byte 9 of the dir entry
+                sta     DIR_BUFFER+9,x  ; todo: constant for size offset
+                rts
 
 ;============================================================
 ;               Format the current drive by clearing the FAT

@@ -11,6 +11,7 @@
 .global save_file
 .global load_file
 .global error_code
+.global add_to_dir
 
 .globalzp dir_page
 .globalzp next_empty_page

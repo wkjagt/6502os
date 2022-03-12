@@ -34,3 +34,4 @@
 .global JMP_SHOW_DIR
 .global JMP_FORMAT_DIVE
 .global JMP_PRINT_STRING
+.global JMP_ADD_TO_DIR

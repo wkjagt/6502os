@@ -34,3 +34,4 @@ JMP_SAVE_DIR:           .res 3          ; 87
 JMP_SHOW_DIR:           .res 3          ; 90
 JMP_FORMAT_DIVE:        .res 3          ; 93
 JMP_PRINT_STRING:       .res 3          ; 96
+JMP_ADD_TO_DIR:         .res 3          ; 99

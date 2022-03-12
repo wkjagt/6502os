@@ -91,6 +91,7 @@ jump_table:                             ; todo: remove all non OS things
                 jmp     show_dir
                 jmp     format_drive
                 jmp     print_string
+                jmp     add_to_dir
 end_jump_table:
 
 .segment "VECTORS"
