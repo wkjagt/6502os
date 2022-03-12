@@ -215,6 +215,40 @@ dir_args:       lda     dir_page
                 sta     ram_page        ; where we stored the 0s
                 rts
 
+
+;===============================================================
+;               Find an empty spot in the directory
+;               This traverses all 4 directory pages,
+;               loading each into RAM, until it finds
+;               an emptry entry.
+;               It leaves the carry flag clear if an entry is found,
+;               or set when no entry is found.
+;               TODO: can we reuse find_file with an empty file name?
+;===============================================================
+find_empty_dir: stz     dir_page
+@next_page:     inc     dir_page        ; set next dir page
+                jsr     JMP_LOAD_DIR    ; load dir page into buffer
+                jsr     @find_in_page
+                bcc     @done
+                lda     dir_page
+                cmp     #4              ; todo: constant for dir page count
+                bne     @next_page
+@done:          rts
+
+@find_in_page:  ldx     #0
+@next_entry:    lda     DIR_BUFFER,x
+                beq     @in_page
+                txa
+                clc
+                adc     #16             ; todo: constant for dir entry length
+                tax
+                beq     @not_in_page
+                bra     @next_entry
+@in_page:       clc                     ; "found" flag
+                rts
+@not_in_page:   sec
+                rts
+
 ;============================================================
 ;               Print the file name in the directory at
 ;               index X

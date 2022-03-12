@@ -35,3 +35,4 @@ JMP_SHOW_DIR:           .res 3          ; 90
 JMP_FORMAT_DIVE:        .res 3          ; 93
 JMP_PRINT_STRING:       .res 3          ; 96
 JMP_ADD_TO_DIR:         .res 3          ; 99
+JMP_FIND_EMPTY_DIR:     .res 3          ; 102
