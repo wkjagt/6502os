@@ -39,3 +39,4 @@ JMP_FIND_EMPTY_DIR:     .res 3          ; 102
 JMP_DELETE_DIR:         .res 3          ; 105
 JMP_DELETE_FILE:        .res 3          ; 108
 JMP_SAVE_FAT:           .res 3          ; 111
+JMP_FIND_FILE:          .res 3          ; 114

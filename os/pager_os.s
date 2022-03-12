@@ -96,6 +96,7 @@ jump_table:                             ; todo: remove all non OS things
                 jmp     delete_dir
                 jmp     delete_file
                 jmp     save_fat
+                jmp     find_file
 end_jump_table:
 
 .segment "VECTORS"
