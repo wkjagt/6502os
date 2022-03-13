@@ -30,3 +30,4 @@ ERR_DIR_FULL            = 1
 ERR_DRIVE_FULL          = 2
 ERR_FILE_NOT_FOUND      = 3
 ERR_FILE_EXISTS         = 4
+ERR_NO_DATA             = 5             ; No data to save because load_size is 0

@@ -19,7 +19,12 @@ load:           lda     TERM_ARG1
 save:           lda     TERM_ARG1
                 bne     @using_pages
                 jsr     get_file_name
-                jmp     save_file
+                jsr     save_file
+                bcs     @error                ; error
+                rts
+@error:         cr
+                prn     "Error saving"  ; todo: error handler
+                rts
 @using_pages:   jsr     get_page_args
                 jmp     JMP_STOR_WRITE
 

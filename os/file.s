@@ -136,7 +136,9 @@ delete_file:    jsr     find_file
 ;               Read number of pages held at load_size
 ;               The filename is taken from the input buffer
 ;====================================================================================
-save_file:      jsr     find_file       ; to see if it exists already
+save_file:      lda     load_size
+                beq     @no_data
+                jsr     find_file       ; to see if it exists already
                 bcc     @file_exists    ; carry clear means file was found
                 jsr     find_empty_dir  ; x contains entry index
                 bcs     @dir_full       ; carry clear means empty spot was found
@@ -178,6 +180,10 @@ save_file:      jsr     find_file       ; to see if it exists already
                 sec
                 rts
 @dir_full:      lda     #ERR_DIR_FULL
+                sta     error_code
+                sec
+                rts
+@no_data:       lda     #ERR_NO_DATA
                 sta     error_code
                 sec
                 rts
@@ -403,9 +409,6 @@ output_dir:     ldx     #0
                 prn     "        "
                 lda     DIR_BUFFER+9,x  ; todo: use constant
                 jsr     JMP_PRINT_HEX
-
-
-
 @skip:          txa
                 clc
                 adc     #16
