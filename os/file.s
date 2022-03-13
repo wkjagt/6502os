@@ -258,11 +258,17 @@ save_fat:       phx
 find_empty_page:phx
                 ldx     #0
 @loop:          lda     FAT_BUFFER,x
-                beq     found
+                beq     @found
                 inx
-                bra     @loop
-found:          txa
+                bne     @loop
+                lda     #ERR_DRIVE_FULL ; drive full
+                sta     error_code
                 plx
+                sec                     ; error
+                rts
+@found:         txa
+                plx
+                clc                     ; success
                 rts
 
 

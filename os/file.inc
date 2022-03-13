@@ -10,7 +10,6 @@
 .global format_drive
 .global save_file
 .global load_file
-.global error_code
 .global add_to_dir
 .global find_empty_dir
 .global delete_dir
@@ -18,6 +17,7 @@
 .global save_fat
 .global find_file
 
+.globalzp error_code
 .globalzp dir_page
 .globalzp next_empty_page
 
