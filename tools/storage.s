@@ -9,10 +9,7 @@ load:           lda     TERM_ARG1
                 bne     @using_pages
                 jsr     get_file_name
                 jsr     load_file
-                bcc     @found
-                cr
-                prn     "Not found"
-@found:         rts
+                rts
 @using_pages:   jsr     get_page_args
                 jmp     JMP_STOR_READ
 
@@ -20,14 +17,9 @@ save:           lda     TERM_ARG1
                 bne     @using_pages
                 jsr     get_file_name
                 jsr     save_file
-                bcs     @error                ; error
-                rts
-@error:         cr
-                prn     "Error saving"  ; todo: error handler
                 rts
 @using_pages:   jsr     get_page_args
                 jmp     JMP_STOR_WRITE
-
 
 delete:         jsr     get_file_name
                 jmp     delete_file

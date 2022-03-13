@@ -19,7 +19,14 @@ terminal_args:          .res 6
 
 .code
 terminal:       cr
-                lda     current_drive
+                lda     error_code
+                beq     @no_error
+                adc     #48              ; to ascii
+                jsr     JMP_PUTC
+                prn     "! "
+                stz     error_code
+
+@no_error:      lda     current_drive
                 adc     #48              ; to ascii
                 jsr     JMP_PUTC
                 prn     "# "
