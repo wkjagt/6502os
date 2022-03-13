@@ -40,7 +40,7 @@ copy_jumptable: ldx     #(end_jump_table-jump_table)
                 jsr     JMP_INIT_SERIAL
                 jsr     JMP_INIT_STORAGE
 
-                prn     "                           -- Pager OS --", 1 ; centered on 80 columns
+                prn     "                                  -- OkaDOS --", 1 ; centered on 80 columns
 
                 jsr     terminal
                 bra     reset

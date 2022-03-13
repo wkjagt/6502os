@@ -24,7 +24,7 @@ receive:        prn     "Initiate transfer on transmitter and then press any key
                 lda     #PROGRAM_START_PAGE
                 jsr     JMP_XMODEM_RCV
 
-                lda     rcv_page_count
+                lda     load_page_count
                 jsr     JMP_PRINT_HEX
                 prn     " page(s) received.", 1
                 rts

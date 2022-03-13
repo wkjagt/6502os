@@ -10,8 +10,6 @@
 
 drive_page      = stor_eeprom_addr_h 
 ram_page        = stor_ram_addr_h
-load_size       = rcv_page_count
-load_page       = rcv_start_page
 READ_PAGE       = JMP_STOR_READ_PAGE
 WRITE_PAGE      = JMP_STOR_WRITE_PAGE
 
@@ -35,7 +33,7 @@ load_file:      jsr     find_file
                 lda     DIR_BUFFER+8,x  ; start page
                 sta     drive_page      ; read from dir/fat
                 lda     DIR_BUFFER+9,x  ; size
-                sta     load_size
+                sta     load_page_count
 
                 lda     #6              ; default start page, todo: don't hardcode
                 sta     ram_page        ; for storage routine
@@ -45,7 +43,7 @@ load_file:      jsr     find_file
 
                 ldx     drive_page
                 lda     FAT_BUFFER,x    ; next page
-                cmp     #$FF            ; last page, todo: use constant
+                cmp     #LAST_PAGE
                 beq     @done
 
                 sta     drive_page
@@ -67,7 +65,7 @@ load_file:      jsr     find_file
 ;===========================================================================
 find_file:      stz     dir_page
 @next_page:     inc     dir_page        ; set next dir page
-                jsr     load_dir    ; load dir page into buffer
+                jsr     load_dir        ; load dir page into buffer
                 jsr     @find_in_page
                 bcc     @done
                 lda     dir_page
@@ -133,10 +131,10 @@ delete_file:    jsr     find_file
 ;====================================================================================
 ;               Save a new file to EEPROM
 ;               Start reading from RAM at page held at load_page
-;               Read number of pages held at load_size
+;               Read number of pages held at load_page_count
 ;               The filename is taken from the input buffer
 ;====================================================================================
-save_file:      lda     load_size
+save_file:      lda     load_page_count
                 beq     @no_data
                 jsr     find_file       ; to see if it exists already
                 bcc     @file_exists    ; carry clear means file was found
@@ -145,7 +143,7 @@ save_file:      lda     load_size
                 
                 jsr     add_to_dir      ; save the file to the directory
                 
-                ldy     load_size       ; the size of the file that was received over xmodem
+                ldy     load_page_count ; the size of the file that was received over xmodem
                 ldx     load_page
 @save_page:     lda     next_empty_page ; pointer to the next empty page in the eeprom
                 sta     drive_page      ; used by the storage routine as target page
@@ -333,11 +331,11 @@ dir_args:       lda     dir_page
 ;===============================================================
 find_empty_dir: stz     dir_page
 @next_page:     inc     dir_page        ; set next dir page
-                jsr     load_dir    ; load dir page into buffer
+                jsr     load_dir        ; load dir page into buffer
                 jsr     @find_in_page
                 bcc     @done
                 lda     dir_page
-                cmp     #4              ; todo: constant for dir page count
+                cmp     #DIR_PAGE_COUNT
                 bne     @next_page
 @done:          rts
 
@@ -346,7 +344,7 @@ find_empty_dir: stz     dir_page
                 beq     @in_page
                 txa
                 clc
-                adc     #16             ; todo: constant for dir entry length
+                adc     #DIR_ENTRY_SIZE
                 tax
                 beq     @not_in_page
                 bra     @next_entry
@@ -364,7 +362,7 @@ find_empty_dir: stz     dir_page
 ;
 ;               Overwrites X and Y
 ;===========================================================================
-delete_dir:     ldy     #16             ; todo: replace with constant for entry length
+delete_dir:     ldy     #DIR_ENTRY_SIZE
 @loop:          stz     DIR_BUFFER,x
                 inx
                 dey
@@ -399,7 +397,7 @@ show_dir:       prn     "name     start     pages",1
                 jsr     load_dir        ; load dir page into buffer
                 jsr     output_dir
                 lda     dir_page
-                cmp     #4              ; todo: use constant
+                cmp     #DIR_PAGE_COUNT
                 bne     @next_page
 @done:          rts
 
@@ -410,14 +408,14 @@ output_dir:     ldx     #0
                 cr
                 jsr     print_file_name
                 prn     " "
-                lda     DIR_BUFFER+8,x  ; todo: use constant
+                lda     DIR_BUFFER+DIR_START_PAGE_OFFSET,x
                 jsr     JMP_PRINT_HEX
                 prn     "        "
-                lda     DIR_BUFFER+9,x  ; todo: use constant
+                lda     DIR_BUFFER+DIR_FILE_SIZE_OFFSET,x
                 jsr     JMP_PRINT_HEX
 @skip:          txa
                 clc
-                adc     #16
+                adc     #DIR_ENTRY_SIZE
                 beq     @done
                 tax
                 bra     @next_item      ; if 0: end of page
@@ -446,9 +444,9 @@ add_to_dir:     ldy     #0
                 bne     @loop
                 plx                     ; the index to the start of the entry
                 lda     next_empty_page ; pointer to the first page where the file will be saved
-                sta     DIR_BUFFER+8,x  ; todo: constant for first page offset
-                lda     rcv_page_count  ; save the size in byte 9 of the dir entry
-                sta     DIR_BUFFER+9,x  ; todo: constant for size offset
+                sta     DIR_BUFFER+DIR_START_PAGE_OFFSET,x
+                lda     load_page_count
+                sta     DIR_BUFFER+DIR_FILE_SIZE_OFFSET,x
                 rts
 
 ;============================================================

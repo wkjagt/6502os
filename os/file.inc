@@ -25,6 +25,11 @@ LAST_PAGE               = $FF
 FAT_BUFFER              = $0400
 DIR_BUFFER              = $0500
 MAX_FILE_NAME_LEN       = 8
+DIR_ENTRY_SIZE          = 16
+DIR_PAGE_COUNT          = 4
+DIR_START_PAGE_OFFSET   = 8
+DIR_FILE_SIZE_OFFSET    = 9
+
 
 ERR_DIR_FULL            = 1
 ERR_DRIVE_FULL          = 2

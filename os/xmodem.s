@@ -2,16 +2,16 @@
 .include "acia.inc"
 
 .zeropage
-rcv_page_count:         .res 1
-rcv_start_page:         .res 1
+load_page_count:        .res 1
+load_page:              .res 1
 rcv_buffer_pointer:     .res 2
 
 .code
 ; A: the page to start saving received data
-xmodem_receive: stz     rcv_page_count
+xmodem_receive: stz     load_page_count
                 stz     rcv_buffer_pointer
                 sta     rcv_buffer_pointer+1
-                sta     rcv_start_page  ; this one doesn't get updated
+                sta     load_page  ; this one doesn't get updated
 
                 ; tell the sender to start sending
                 ldx     #0              ; packet counter
@@ -53,7 +53,7 @@ xmodem_receive: stz     rcv_page_count
                 txa
                 ina
                 lsr                     ; packet count to page count
-                sta     rcv_page_count
+                sta     load_page_count
 
                 rts
 
