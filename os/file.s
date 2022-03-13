@@ -33,10 +33,13 @@ error_code:     .res 1
 load_file:      jsr     find_file
                 bcs     @not_found
                 lda     DIR_BUFFER+8,x  ; start page
-
                 sta     drive_page      ; read from dir/fat
+                lda     DIR_BUFFER+9,x  ; size
+                sta     load_size
+
                 lda     #6              ; default start page, todo: don't hardcode
-                sta     ram_page
+                sta     ram_page        ; for storage routine
+                sta     load_page
                 
 @next_page:     jsr     READ_PAGE
 
@@ -237,7 +240,7 @@ save_fat:       phx
                 lda     #>FAT_BUFFER
                 sta     ram_page
                 jsr     WRITE_PAGE
-
+                jsr     load_fat        ; initializes some variables
                 pla
                 plx
                 rts
