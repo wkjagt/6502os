@@ -20,18 +20,18 @@
 .globalzp error_code
 .globalzp dir_page
 
-LAST_PAGE               = $FF
-FAT_BUFFER              = $0400
-DIR_BUFFER              = $0500
-MAX_FILE_NAME_LEN       = 8
-DIR_ENTRY_SIZE          = 16
-DIR_PAGE_COUNT          = 4
-DIR_START_PAGE_OFFSET   = 8
-DIR_FILE_SIZE_OFFSET    = 9
+LAST_PAGE               = $FF           ; the marker used in the FAT to mark the last page of a file
+FAT_BUFFER              = $0400         ; where the FAT lives in RAM. todo: use segment
+DIR_BUFFER              = $0500         ; where the directory lives in RAM. todo: use segment
+MAX_FILE_NAME_LEN       = 8             ; the maximum length of a file name
+DIR_ENTRY_SIZE          = 16            ; the number of bytes taken up by one entry in the directory
+DIR_PAGE_COUNT          = 4             ; the number of pages on a drive reserved for the directory
+DIR_START_PAGE_OFFSET   = 8             ; the offset in an entry where the first page of the data is stored
+DIR_FILE_SIZE_OFFSET    = 9             ; the offset in an entry where the file size is stored
 
 
-ERR_DIR_FULL            = 1
-ERR_DRIVE_FULL          = 2
-ERR_FILE_NOT_FOUND      = 3
-ERR_FILE_EXISTS         = 4
-ERR_NO_DATA             = 5             ; No data to save because load_size is 0
+ERR_DIR_FULL            = 1             ; no more space available for new directory entries
+ERR_DRIVE_FULL          = 2             ; no more space available in the FAT
+ERR_FILE_NOT_FOUND      = 3             ; no file matching a name was found in the directory
+ERR_FILE_EXISTS         = 4             ; a file with the specified name when saving already exists
+ERR_NO_DATA             = 5             ; No data to save because load_size (in zero page) is 0
