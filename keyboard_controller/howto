@@ -1,0 +1,5 @@
+1. Compile using Arduino IDE: Sketch > Export compiled binary
+
+2. Burn hex and fuses to Atmega238P usingh XGecu TL866II Plus:
+`minipro -p "ATMEGA328P@DIP28" -c config -w fuses.cfg -e`
+`minipro -p "ATMEGA328P@DIP28" -c code -w [hexfilename] -e`
