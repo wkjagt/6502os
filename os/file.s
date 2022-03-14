@@ -1,10 +1,9 @@
 .include "file.inc"
 .include "jump_table.inc"
 .include "zeropage.inc"
-.include "zeropage.inc"
 .include "strings.inc"
 .include "screen.inc"
-.include "xmodem.inc"                   ; todo: remove this dependency
+.include "storage.inc"
 
 .import __INPUTBFR_START__
 
@@ -30,9 +29,9 @@ error_code:     .res 1
 ;===========================================================================
 load_file:      jsr     find_file
                 bcs     @not_found
-                lda     DIR_BUFFER+8,x  ; start page
+                lda     DIR_BUFFER+DIR_START_PAGE_OFFSET,x
                 sta     drive_page      ; read from dir/fat
-                lda     DIR_BUFFER+9,x  ; size
+                lda     DIR_BUFFER+DIR_FILE_SIZE_OFFSET,x  ; size
                 sta     load_page_count
 
                 lda     #6              ; default start page, todo: don't hardcode
@@ -69,7 +68,7 @@ find_file:      stz     dir_page
                 jsr     @find_in_page
                 bcc     @done
                 lda     dir_page
-                cmp     #4
+                cmp     #DIR_PAGE_COUNT
                 bne     @next_page
 @done:          rts
 @find_in_page:  ldx     #0
@@ -77,7 +76,7 @@ find_file:      stz     dir_page
                 bcc     @found          ; carry clear means file found
                 txa
                 clc
-                adc     #16
+                adc     #DIR_ENTRY_SIZE
                 tax
                 bne     @loop
                 sec                     ; set carry to signal file not found
@@ -111,7 +110,7 @@ match_filename: phx
 ;===========================================================================
 delete_file:    jsr     find_file
                 bcs     @not_found
-                lda     DIR_BUFFER+8,x  ; load start page from directory entry
+                lda     DIR_BUFFER+DIR_START_PAGE_OFFSET,x
                 jsr     delete_dir
 @loop:          tax                     ; A contains the FAT page number
                 lda     FAT_BUFFER,x
@@ -201,7 +200,7 @@ clear_fat:      ldx     #0
                 bne     @clear_buffer
 
                 ; don't make the first 5 pages available
-                lda     #$FF
+                lda     #LAST_PAGE
                 sta     FAT_BUFFER+0    ; FAT
                 sta     FAT_BUFFER+1    ; DIR 1
                 sta     FAT_BUFFER+2    ; DIR 2
@@ -285,7 +284,7 @@ clear_dir:      ldx     #0
                 inx
                 bne     @clear_buffer
 
-                ldy     #4              ; dir takes up 4 pages
+                ldy     #DIR_PAGE_COUNT
 @clear_page:    sty     drive_page
                 lda     #>DIR_BUFFER
                 sta     ram_page

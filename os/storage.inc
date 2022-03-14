@@ -4,6 +4,13 @@
 .global write_page
 .global read_page
 
+.globalzp stor_eeprom_block
+.globalzp stor_eeprom_addr_l
+.globalzp stor_eeprom_addr_h
+.globalzp stor_ram_addr_h
+.globalzp stor_ram_addr_l
+.globalzp stor_byte_in
+
 DATA_PIN                = %01            
 CLOCK_PIN               = %10
 

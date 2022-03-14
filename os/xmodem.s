@@ -1,9 +1,8 @@
 .include "xmodem.inc"
 .include "acia.inc"
+.include "zeropage.inc"
 
 .zeropage
-load_page_count:        .res 1
-load_page:              .res 1
 rcv_buffer_pointer:     .res 2
 
 .code

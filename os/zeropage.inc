@@ -3,11 +3,7 @@
 .globalzp tmp2
 .globalzp tmp3
 .globalzp dump_start
-.globalzp stor_eeprom_block
-.globalzp stor_eeprom_addr_l
-.globalzp stor_eeprom_addr_h
-.globalzp stor_ram_addr_h
-.globalzp stor_ram_addr_l
-.globalzp stor_byte_in
 .globalzp stor_byte_out
 .globalzp current_drive
+.globalzp load_page
+.globalzp load_page_count

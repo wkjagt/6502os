@@ -19,7 +19,6 @@
 
 .globalzp error_code
 .globalzp dir_page
-.globalzp next_empty_page
 
 LAST_PAGE               = $FF
 FAT_BUFFER              = $0400

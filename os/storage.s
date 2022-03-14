@@ -3,6 +3,17 @@
 .include "via.inc"
 .include "file.inc"
 
+.zeropage
+stor_eeprom_block:      .res 1
+stor_eeprom_addr_l:     .res 1
+stor_eeprom_addr_h:     .res 1
+stor_ram_addr_l:        .res 1
+stor_ram_addr_h:        .res 1
+stor_byte_in:           .res 1
+stor_byte_out:          .res 1
+
+.code
+
 init_storage:   lda     VIA1_DDRA
                 ora     #(DATA_PIN | CLOCK_PIN)
                 sta     VIA1_DDRA
