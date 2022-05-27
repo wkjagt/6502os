@@ -77,8 +77,8 @@ VDP_REGISTER_7_DEFAULT            = BG_BLACK | FG_WHITE
 
 
 .macro          vdp_write_register value, register
-                lda     value
+                lda     #value
                 sta     VDP_REG
-                lda     register | VDP_REGISTER_BITS
+                lda     #(register | VDP_REGISTER_BITS)
                 sta     VDP_REG
 .endmacro
