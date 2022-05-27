@@ -7,6 +7,7 @@
 .include "storage.inc"
 .include "input.inc"
 .include "file.inc"
+.include "graphic_screen.inc"
 .include "../tools/edit.inc"
 .include "../tools/terminal.inc"
 .include "../tools/receive.inc"
@@ -36,6 +37,7 @@ copy_jumptable: ldx     #(end_jump_table-jump_table)
                 bne     @loop
 
                 jsr     JMP_INIT_SCREEN
+                jsr     JMP_INIT_GRAPHIC_SCREEN
                 jsr     JMP_INIT_KB
                 jsr     JMP_INIT_SERIAL
                 jsr     JMP_INIT_STORAGE
@@ -95,6 +97,7 @@ jump_table:                             ; todo: remove all non OS things
                 jmp     delete_file
                 jmp     save_fat
                 jmp     find_file
+                jmp     vdp_init
 end_jump_table:
 
 .segment "VECTORS"

@@ -37,3 +37,4 @@
 .global JMP_ADD_TO_DIR
 .global JMP_FIND_EMPTY_DIR
 .global JMP_FIND_FILE
+.global JMP_INIT_GRAPHIC_SCREEN
