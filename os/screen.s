@@ -85,19 +85,19 @@ cursor_off:     putc    CHOOSE_CURSOR
 clear_screen:   putc    CLEAR_SCREEN
                 rts
 
-cursor_home:    putc CURSOR_HOME
+cursor_home:    putc    CURSOR_HOME
                 rts
 
-cursor_right:   putc CURSOR_RIGHT
+cursor_right:   putc    CURSOR_RIGHT
                 rts
 
-cursor_left:    putc CURSOR_LEFT
+cursor_left:    putc    CURSOR_LEFT
                 rts
 
-cursor_up:      putc CURSOR_UP
+cursor_up:      putc    CURSOR_UP
                 rts
 
-cursor_down:    putc CURSOR_DOWN
+cursor_down:    putc    CURSOR_DOWN
                 rts
 
 draw_pixel:     lda     #DRAW_PIXEL
