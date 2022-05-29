@@ -2,13 +2,14 @@
 .global vdp_sprite_pattern_table_write
 .global vdp_pattern_table_write
 .global vdp_color_table_write
+.global graphics_on
 .globalzp vdp_write_ptr                   ; todo: this is only to have these in the map file
 .globalzp vdp_write_end                   ; together with fake using them somewhere else (pager_os.s)
 
 VDP_VRAM                          = $4400
 VDP_REG                           = $4401
 VDP_WRITE_VRAM_BIT                = %01000000  ; pattern of second vram address write: 01AAAAAA
-VDP_REGISTER_BITS                 = %10000000  ; pattern of second register write: 10000RRR
+VDP_REGISTER_SELECT               = %10000000  ; pattern of second register write: 10000RRR
 VDP_NAME_TABLE_BASE               = $0400
 VDP_PATTERN_TABLE_BASE            = $0800
 VDP_COLOR_TABLE_BASE              = $0200
@@ -56,6 +57,7 @@ EXTVDP_OFF                        = 0 << 0
 ; Register 1
 VRAM_16K                          = 1 << 7
 VIDEO_BLANK                       = 0 << 6
+VIDEO_ENABLE                      = 1 << 6
 INTERRUPT_ENABLE                  = 1 << 5
 GRAPHIC_MODE_1_M1                 = 0 << 4
 GRAPHIC_MODE_1_M2                 = 0 << 3
@@ -84,6 +86,6 @@ VDP_REGISTER_7_DEFAULT            = BG_BLACK | FG_WHITE
 .macro          vdp_write_register value, register
                 lda     #value
                 sta     VDP_REG
-                lda     #(register | VDP_REGISTER_BITS)
+                lda     #(register | VDP_REGISTER_SELECT)
                 sta     VDP_REG
 .endmacro

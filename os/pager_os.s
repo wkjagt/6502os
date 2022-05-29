@@ -103,6 +103,7 @@ jump_table:                             ; todo: remove all non OS things
                 jmp     vdp_sprite_pattern_table_write
                 jmp     vdp_pattern_table_write
                 jmp     vdp_color_table_write
+                jmp     graphics_on
 end_jump_table:
 
 .segment "VECTORS"

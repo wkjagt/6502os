@@ -4,13 +4,13 @@
 
 vdp_write_ptr:  .res 2
 vdp_write_end:  .res 2
+vdp_register_1: .res 1
 
 .code
 
 vdp_init:       jsr     clear_vram
                 jsr     init_regs
                 rts
-
 
 clear_vram:     vdp_write_addr $0000
                 ldx #$ff                ; VRAM size
@@ -20,6 +20,14 @@ clear_vram:     vdp_write_addr $0000
                 bne @loop
                 dey
                 bne @loop
+                rts
+
+graphics_on:    lda     vdp_register_1
+                ora     #VIDEO_ENABLE
+                sta     vdp_register_1
+                sta     VDP_REG
+                lda     #(1 | VDP_REGISTER_SELECT)
+                sta     VDP_REG
                 rts
 
 vdp_sprite_pattern_table_write:
@@ -59,4 +67,7 @@ init_regs:      vdp_write_register VDP_REGISTER_0_DEFAULT, 0
                 vdp_write_register VDP_REGISTER_5_DEFAULT, 5
                 vdp_write_register VDP_REGISTER_6_DEFAULT, 6
                 vdp_write_register VDP_REGISTER_7_DEFAULT, 7
+
+                lda     #VDP_REGISTER_1_DEFAULT  ; keep a local copy because these are
+                sta     vdp_register_1          ; write only registers on the TMS9918A
                 rts
