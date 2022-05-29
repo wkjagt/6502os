@@ -41,3 +41,6 @@ JMP_DELETE_FILE:        .res 3          ; 108
 JMP_SAVE_FAT:           .res 3          ; 111
 JMP_FIND_FILE:          .res 3          ; 114
 JMP_INIT_GRAPHIC_SCREEN:.res 3          ; 117
+JMP_SPRITE_PATTERNS_WRT:.res 3          ; 120
+JMP_PATTERNS_WRITE:     .res 3          ; 123
+JMP_COLORS_WRITE:       .res 3          ; 126

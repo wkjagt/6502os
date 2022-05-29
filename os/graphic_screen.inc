@@ -1,4 +1,9 @@
 .global vdp_init
+.global vdp_sprite_pattern_table_write
+.global vdp_pattern_table_write
+.global vdp_color_table_write
+.globalzp vdp_write_ptr                   ; todo: this is only to have these in the map file
+.globalzp vdp_write_end                   ; together with fake using them somewhere else (pager_os.s)
 
 VDP_VRAM                          = $4400
 VDP_REG                           = $4401

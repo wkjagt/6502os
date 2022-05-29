@@ -17,7 +17,9 @@
 
 .code
 
-reset:          sei                     ; no interrupts, but user programs can enable them
+reset:          lda     vdp_write_ptr  ; this is only to have these show in the map file
+                lda     vdp_write_end  ; todo: find a way to remove this
+                sei                     ; no interrupts, but user programs can enable them
                 ldx     #$ff
                 txs
 clear_ram:      stz     tmp1            ; low byte, always 0, index into it using y
@@ -98,6 +100,9 @@ jump_table:                             ; todo: remove all non OS things
                 jmp     save_fat
                 jmp     find_file
                 jmp     vdp_init
+                jmp     vdp_sprite_pattern_table_write
+                jmp     vdp_pattern_table_write
+                jmp     vdp_color_table_write
 end_jump_table:
 
 .segment "VECTORS"
