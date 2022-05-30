@@ -1,10 +1,61 @@
 .include "graphic_screen.inc"
+.export BG_TRANSPARENT
+.export BG_BLACK
+.export BG_MEDIUM_GREEN
+.export BG_LIGHT_GREEN
+.export BG_DARK_BLUE
+.export BG_LIGHT_BLUE
+.export BG_DARK_RED
+.export BG_CYAN
+.export BG_MEDIUM_RED
+.export BG_LIGHT_RED
+.export BG_DARK_YELLOW
+.export BG_LIGHT_YELLOW
+.export BG_DARK_GREEN
+.export BG_MAGENTA
+.export BG_GRAY
+.export BG_WHITE
+
+.export FG_TRANSPARENT
+.export FG_BLACK
+.export FG_MEDIUM_GREEN
+.export FG_LIGHT_GREEN
+.export FG_DARK_BLUE
+.export FG_LIGHT_BLUE
+.export FG_DARK_RED
+.export FG_CYAN
+.export FG_MEDIUM_RED
+.export FG_LIGHT_RED
+.export FG_DARK_YELLOW
+.export FG_LIGHT_YELLOW
+.export FG_DARK_GREEN
+.export FG_MAGENTA
+.export FG_GRAY
+.export FG_WHITE
+.export VDP_REGISTER_SELECT
+.export VDP_REG
+.export VDP_VRAM
+.export VDP_NAME_TABLE_BASE
+.export VDP_SPRITE_ATTR_TABLE_BASE
+
+; name table:           contains a value for each 8x8 region on the screen,
+;                       and points to one of the patterns
+; color table:          32 bytes, each defining the colors for 8 patterns in 
+;                       the pattern table
+; pattern table:        a list of patterns to be used as background, selected by
+;                       the name table
+; sprite pattern table: a list of patterns to be used as sprites
+; sprite attr table:    table containing position, color etc for each of the
+;                       32 sprites
 
 .zeropage
 
 vdp_write_ptr:  .res 2
 vdp_write_end:  .res 2
 vdp_register_1: .res 1
+
+.export vdp_write_ptr                   ; todo: this is only to have these in the map file
+.export vdp_write_end                   ; together with fake using them somewhere else (pager_os.s)
 
 .code
 

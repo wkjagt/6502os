@@ -9,7 +9,6 @@
 .include        "input.inc"
 .include        "xmodem.inc"
 .include        "file.inc"
-.include        "graphic_screen.inc"
 
 PROGRAM_START           = $0600
 PROGRAM_START_PAGE      = $06
