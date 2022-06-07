@@ -14,21 +14,32 @@
 
 .import xmodem_receive
 .import __INPUTBFR_START__
+.import __RAM_SIZE__
+
 
 .code
 
 reset:          sei                     ; no interrupts, but user programs can enable them
                 ldx     #$ff
                 txs
+
+
 clear_ram:      stz     tmp1            ; low byte, always 0, index into it using y
-                stz     tmp1+1          ; high byte, start at last page of RAM
+                lda     #>__RAM_SIZE__
+                sta     tmp1+1          ; page number of first page after RAM
+
                 ldy     #0
-                lda     #0
-@loop:          sta     (tmp1), y
+
+@page_loop:     dec     tmp1+1          ; previous RAM page
+@loop:          lda     #0
+                sta     (tmp1), y
                 iny
                 bne     @loop
-                inc     tmp1+1
-                bne     @loop
+
+                lda     tmp1+1
+                bne     @page_loop
+
+
 copy_jumptable: ldx     #(end_jump_table-jump_table)
 @loop:          lda     jump_table,x
                 sta     __JUMPTABLE_START__,x
@@ -38,14 +49,27 @@ copy_jumptable: ldx     #(end_jump_table-jump_table)
 
                 jsr     JMP_INIT_SCREEN
                 jsr     JMP_INIT_GRAPHIC_SCREEN
+                
+                prn     "Initializing keyboard... "
                 jsr     JMP_INIT_KB
+                prn     "OK.", 1
+                
+                prn     "Initializing serial port... "
                 jsr     JMP_INIT_SERIAL
-                jsr     JMP_INIT_STORAGE
+                prn     "OK.", 1
 
-                prn     "                                  -- OkaDOS --", 1 ; centered on 80 columns
+                prn     "Initializing storage... "
+                jsr     JMP_INIT_STORAGE
+                prn     "OK.", 1
 
                 jsr     terminal
-                bra     reset
+                jmp     reset
+
+
+
+
+
+
 
 ; Interrupt handlers don't do anything for now, but they jump 
 ; through the jump table so they can be overriden in software

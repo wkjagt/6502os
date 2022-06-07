@@ -1,4 +1,5 @@
 .include "graphic_screen.inc"
+
 .export BG_TRANSPARENT
 .export BG_BLACK
 .export BG_MEDIUM_GREEN
@@ -37,6 +38,7 @@
 .export VDP_VRAM
 .export VDP_NAME_TABLE_BASE
 .export VDP_SPRITE_ATTR_TABLE_BASE
+.export VDP_WRITE_VRAM_BIT
 
 ; name table:           contains a value for each 8x8 region on the screen,
 ;                       and points to one of the patterns
