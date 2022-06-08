@@ -24,7 +24,8 @@ terminal:       cr
                 adc     #48              ; to ascii
                 jsr     JMP_PUTC
                 prn     "! "
-                stz     error_code
+                lda     #error_codes::no_error
+                sta     error_code
 
 @no_error:      lda     current_drive
                 adc     #48              ; to ascii

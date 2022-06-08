@@ -30,9 +30,11 @@ DIR_PAGE_COUNT          = 4             ; the number of pages on a drive reserve
 DIR_START_PAGE_OFFSET   = 8             ; the offset in an entry where the first page of the data is stored
 DIR_FILE_SIZE_OFFSET    = 9             ; the offset in an entry where the file size is stored
 
-; todo, use: https://www.cc65.org/doc/ca65-11.html#ss11.33
-ERR_DIR_FULL            = 1             ; no more space available for new directory entries
-ERR_DRIVE_FULL          = 2             ; no more space available in the FAT
-ERR_FILE_NOT_FOUND      = 3             ; no file matching a name was found in the directory
-ERR_FILE_EXISTS         = 4             ; a file with the specified name when saving already exists
-ERR_NO_DATA             = 5             ; No data to save because load_size (in zero page) is 0
+.enum                   error_codes
+                        no_error
+                        dir_full        ; no more space available for new directory entries
+                        drive_full      ; no more space available in the fat
+                        file_not_found  ; no file matching a name was found in the directory
+                        file_exists     ; a file with the specified name when saving already exists
+                        no_data         ; no data to save because load_size (in zero page) is 0
+.endenum

@@ -48,7 +48,7 @@ load_file:      jsr     find_file
                 sta     drive_page
                 inc     ram_page
                 bra     @next_page
-@not_found:     lda     #ERR_FILE_NOT_FOUND
+@not_found:     lda     #error_codes::file_not_found
                 sta     error_code
                 sec
                 rts
@@ -118,7 +118,7 @@ delete_file:    jsr     find_file
                 cmp     #LAST_PAGE      ; see if A (the page number)
                 beq     @done
                 bra     @loop
-@not_found:     lda     #ERR_FILE_NOT_FOUND
+@not_found:     lda     #error_codes::file_not_found
                 sta     error_code
                 sec
                 rts
@@ -172,15 +172,15 @@ save_file:      lda     load_page_count
                 jsr     save_dir        ; save the updated directory
                 clc                     ; success
                 rts
-@file_exists:   lda     #ERR_FILE_EXISTS
+@file_exists:   lda     #error_codes::file_exists
                 sta     error_code
                 sec
                 rts
-@dir_full:      lda     #ERR_DIR_FULL
+@dir_full:      lda     #error_codes::dir_full
                 sta     error_code
                 sec
                 rts
-@no_data:       lda     #ERR_NO_DATA
+@no_data:       lda     #error_codes::no_data
                 sta     error_code
                 sec
                 rts
@@ -258,7 +258,7 @@ find_empty_page:phx
                 beq     @found
                 inx
                 bne     @loop
-                lda     #ERR_DRIVE_FULL ; drive full
+                lda     #error_codes::drive_full ; drive full
                 sta     error_code
                 plx
                 sec                     ; error
