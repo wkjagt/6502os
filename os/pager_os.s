@@ -13,31 +13,16 @@
 .include "../tools/receive.inc"
 
 .import xmodem_receive
-.import __INPUTBFR_START__
-.import __RAM_SIZE__
+.import __PROGRAM_START__
+.import __PROGRAM_SIZE__
 
+PROGRAM_LAST_PAGE = __PROGRAM_START__ + __PROGRAM_SIZE__ - 1
 
 .code
 
 reset:          sei                     ; no interrupts, but user programs can enable them
                 ldx     #$ff
                 txs
-
-
-clear_ram:      stz     tmp1            ; low byte, always 0, index into it using y
-                lda     #>__RAM_SIZE__
-                sta     tmp1+1          ; page number of first page after RAM
-
-                ldy     #0
-
-@page_loop:     dec     tmp1+1          ; previous RAM page
-@loop:          lda     #0
-                sta     (tmp1), y
-                iny
-                bne     @loop
-
-                lda     tmp1+1
-                bne     @page_loop
 
 
 copy_jumptable: ldx     #(end_jump_table-jump_table)
@@ -49,7 +34,14 @@ copy_jumptable: ldx     #(end_jump_table-jump_table)
 
                 jsr     JMP_INIT_SCREEN
                 jsr     JMP_INIT_GRAPHIC_SCREEN
-                
+
+                prn     "Starting OkaDOS.",1
+                cr
+
+                prn     "Initializing RAM... "
+                jsr     clear_ram
+                prn     "OK.", 1
+                                
                 prn     "Initializing keyboard... "
                 jsr     JMP_INIT_KB
                 prn     "OK.", 1
@@ -62,12 +54,29 @@ copy_jumptable: ldx     #(end_jump_table-jump_table)
                 jsr     JMP_INIT_STORAGE
                 prn     "OK.", 1
 
+                cr
+                prn     "Ready.",1
+                cr
+
                 jsr     terminal
                 jmp     reset
 
+clear_ram:      stz     tmp1            ; low byte, always 0, index into it using y
+                lda     #>PROGRAM_LAST_PAGE
+                sta     tmp1+1          ; page number of first page after RAM
 
+                ldy     #0
 
+@page_loop:     dec     tmp1+1          ; previous RAM page
+@loop:          lda     #0
+                sta     (tmp1), y
+                iny
+                bne     @loop
 
+                lda     tmp1+1
+                cmp     #>__PROGRAM_START__
+                bne     @page_loop
+                rts
 
 
 
