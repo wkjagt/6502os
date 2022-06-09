@@ -4,7 +4,6 @@
 
 .global         terminal
 .global         run                     ; todo: remove
-.global         rcv                     ; todo: remove
 .global         reset                   ; todo: remove
 
 TERM_ARG_ADDR1  = terminal_args + 0
