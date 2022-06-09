@@ -8,6 +8,7 @@
 .import __INPUTBFR_START__
 .import __FAT_BUFFER_START__
 .import __DIR_BUFFER_START__
+.import __PROGRAM_START__
 
 drive_page      = stor_eeprom_addr_h 
 ram_page        = stor_ram_addr_h
@@ -36,7 +37,7 @@ load_file:      jsr     find_file
                 lda     __DIR_BUFFER_START__+DIR_FILE_SIZE_OFFSET,x  ; size
                 sta     load_page_count
 
-                lda     #6              ; default start page, todo: don't hardcode
+                lda     #>__PROGRAM_START__
                 sta     ram_page        ; for storage routine
                 sta     load_page
                 
