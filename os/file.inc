@@ -20,10 +20,7 @@
 .globalzp error_code
 .globalzp dir_page
 
-;todo: use segments for buffers
 LAST_PAGE               = $FF           ; the marker used in the FAT to mark the last page of a file
-FAT_BUFFER              = $0400         ; where the FAT lives in RAM. todo: use segment
-DIR_BUFFER              = $0500         ; where the directory lives in RAM. todo: use segment
 MAX_FILE_NAME_LEN       = 8             ; the maximum length of a file name
 DIR_ENTRY_SIZE          = 16            ; the number of bytes taken up by one entry in the directory
 DIR_PAGE_COUNT          = 4             ; the number of pages on a drive reserved for the directory

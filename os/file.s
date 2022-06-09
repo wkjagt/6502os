@@ -6,6 +6,8 @@
 .include "storage.inc"
 
 .import __INPUTBFR_START__
+.import __FAT_BUFFER_START__
+.import __DIR_BUFFER_START__
 
 drive_page      = stor_eeprom_addr_h 
 ram_page        = stor_ram_addr_h
@@ -29,9 +31,9 @@ error_code:     .res 1
 ;===========================================================================
 load_file:      jsr     find_file
                 bcs     @not_found
-                lda     DIR_BUFFER+DIR_START_PAGE_OFFSET,x
+                lda     __DIR_BUFFER_START__+DIR_START_PAGE_OFFSET,x
                 sta     drive_page      ; read from dir/fat
-                lda     DIR_BUFFER+DIR_FILE_SIZE_OFFSET,x  ; size
+                lda     __DIR_BUFFER_START__+DIR_FILE_SIZE_OFFSET,x  ; size
                 sta     load_page_count
 
                 lda     #6              ; default start page, todo: don't hardcode
@@ -41,7 +43,7 @@ load_file:      jsr     find_file
 @next_page:     jsr     READ_PAGE
 
                 ldx     drive_page
-                lda     FAT_BUFFER,x    ; next page
+                lda     __FAT_BUFFER_START__,x    ; next page
                 cmp     #LAST_PAGE
                 beq     @done
 
@@ -89,7 +91,7 @@ find_file:      stz     dir_page
 match_filename: phx
                 phy
                 ldy     #0
-@loop:          lda    DIR_BUFFER,x
+@loop:          lda    __DIR_BUFFER_START__,x
                 cmp    __INPUTBFR_START__,y
                 bne    @no_match
                 inx
@@ -110,11 +112,11 @@ match_filename: phx
 ;===========================================================================
 delete_file:    jsr     find_file
                 bcs     @not_found
-                lda     DIR_BUFFER+DIR_START_PAGE_OFFSET,x
+                lda     __DIR_BUFFER_START__+DIR_START_PAGE_OFFSET,x
                 jsr     delete_dir
 @loop:          tax                     ; A contains the FAT page number
-                lda     FAT_BUFFER,x
-                stz     FAT_BUFFER,x    ; overwrite the page entry with a 0
+                lda     __FAT_BUFFER_START__,x
+                stz     __FAT_BUFFER_START__,x    ; overwrite the page entry with a 0
                 cmp     #LAST_PAGE      ; see if A (the page number)
                 beq     @done
                 bra     @loop
@@ -153,7 +155,7 @@ save_file:      lda     load_page_count
                 lda     #LAST_PAGE      ; mark the page that was just written to as the last page of the file
                 phx
                 ldx     next_empty_page ; in the FAT for now. If it's not, it'll be overwritten after. But for
-                sta     FAT_BUFFER,x    ; now we want to avoid find_empty_page to still see it as empty.
+                sta     __FAT_BUFFER_START__,x    ; now we want to avoid find_empty_page to still see it as empty.
                 plx
 
                 dey                     ; keep track of how many pages are left to save
@@ -163,7 +165,7 @@ save_file:      lda     load_page_count
                 jsr     find_empty_page ; find the next available page in the EEPROM
                 phx
                 ldx     next_empty_page  
-                sta     FAT_BUFFER,x    ; current page in FAT points to next avail page
+                sta     __FAT_BUFFER_START__,x    ; current page in FAT points to next avail page
                 plx
                 sta     next_empty_page ; update the current page pointer for the next loop
 
@@ -195,21 +197,21 @@ save_file:      lda     load_page_count
 ;               Clear the FAT
 ;============================================================
 clear_fat:      ldx     #0
-@clear_buffer:  stz     FAT_BUFFER,x
+@clear_buffer:  stz     __FAT_BUFFER_START__,x
                 inx
                 bne     @clear_buffer
 
                 ; don't make the first 5 pages available
                 lda     #LAST_PAGE
-                sta     FAT_BUFFER+0    ; FAT
-                sta     FAT_BUFFER+1    ; DIR 1
-                sta     FAT_BUFFER+2    ; DIR 2
-                sta     FAT_BUFFER+3    ; DIR 3
-                sta     FAT_BUFFER+4    ; DIR 4
+                sta     __FAT_BUFFER_START__+0    ; FAT
+                sta     __FAT_BUFFER_START__+1    ; DIR 1
+                sta     __FAT_BUFFER_START__+2    ; DIR 2
+                sta     __FAT_BUFFER_START__+3    ; DIR 3
+                sta     __FAT_BUFFER_START__+4    ; DIR 4
 
                 ; write this new clear FAT buffer from RAM to the drive
                 stz     drive_page      ; page 0 in eeprom
-                lda     #>FAT_BUFFER
+                lda     #>__FAT_BUFFER_START__
                 sta     ram_page        ; where we stored the 0s
                 jsr     WRITE_PAGE
                 rts
@@ -220,7 +222,7 @@ clear_fat:      ldx     #0
 load_fat:       phx
                 pha
                 stz     drive_page      ; page 0 in eeprom
-                lda     #>FAT_BUFFER
+                lda     #>__FAT_BUFFER_START__
                 sta     ram_page        ; where we stored the 0s
                 jsr     READ_PAGE
 
@@ -240,7 +242,7 @@ load_fat:       phx
 save_fat:       phx
                 pha
                 stz     drive_page      ; page 0 in eeprom
-                lda     #>FAT_BUFFER
+                lda     #>__FAT_BUFFER_START__
                 sta     ram_page
                 jsr     WRITE_PAGE
                 jsr     load_fat        ; initializes some variables
@@ -254,7 +256,7 @@ save_fat:       phx
 ;============================================================
 find_empty_page:phx
                 ldx     #0
-@loop:          lda     FAT_BUFFER,x
+@loop:          lda     __FAT_BUFFER_START__,x
                 beq     @found
                 inx
                 bne     @loop
@@ -280,13 +282,13 @@ find_empty_page:phx
 ;               Used when formatting a drive
 ;============================================================
 clear_dir:      ldx     #0
-@clear_buffer:  stz     DIR_BUFFER,x
+@clear_buffer:  stz     __DIR_BUFFER_START__,x
                 inx
                 bne     @clear_buffer
 
                 ldy     #DIR_PAGE_COUNT
 @clear_page:    sty     drive_page
-                lda     #>DIR_BUFFER
+                lda     #>__DIR_BUFFER_START__
                 sta     ram_page
                 jsr     WRITE_PAGE
                 dey
@@ -314,7 +316,7 @@ save_dir:       phx                     ; todo: document why this is needed
 ; private routine used by the two routines above
 dir_args:       lda     dir_page
                 sta     drive_page
-                lda     #>DIR_BUFFER
+                lda     #>__DIR_BUFFER_START__
                 sta     ram_page        ; where we stored the 0s
                 rts
 
@@ -339,7 +341,7 @@ find_empty_dir: stz     dir_page
 @done:          rts
 
 @find_in_page:  ldx     #0
-@next_entry:    lda     DIR_BUFFER,x
+@next_entry:    lda     __DIR_BUFFER_START__,x
                 beq     @in_page
                 txa
                 clc
@@ -362,7 +364,7 @@ find_empty_dir: stz     dir_page
 ;               Overwrites X and Y
 ;===========================================================================
 delete_dir:     ldy     #DIR_ENTRY_SIZE
-@loop:          stz     DIR_BUFFER,x
+@loop:          stz     __DIR_BUFFER_START__,x
                 inx
                 dey
                 bne     @loop
@@ -373,7 +375,7 @@ delete_dir:     ldy     #DIR_ENTRY_SIZE
 ;============================================================
 print_file_name:phx
                 ldy     #MAX_FILE_NAME_LEN
-@next_char:     lda     DIR_BUFFER,x
+@next_char:     lda     __DIR_BUFFER_START__,x
                 bne     @not_a_space    ; spaces are decoded as 0s
                 lda     #' '
 @not_a_space:   jsr     JMP_PUTC
@@ -401,16 +403,16 @@ show_dir:       prn     "name     start     pages",1
 @done:          rts
 
 output_dir:     ldx     #0
-@next_item:     lda     DIR_BUFFER,x    ; first char of filename. If 0: empty entry
+@next_item:     lda     __DIR_BUFFER_START__,x    ; first char of filename. If 0: empty entry
                 beq     @skip
 
                 cr
                 jsr     print_file_name
                 prn     " "
-                lda     DIR_BUFFER+DIR_START_PAGE_OFFSET,x
+                lda     __DIR_BUFFER_START__+DIR_START_PAGE_OFFSET,x
                 jsr     JMP_PRINT_HEX
                 prn     "        "
-                lda     DIR_BUFFER+DIR_FILE_SIZE_OFFSET,x
+                lda     __DIR_BUFFER_START__+DIR_FILE_SIZE_OFFSET,x
                 jsr     JMP_PRINT_HEX
 @skip:          txa
                 clc
@@ -436,16 +438,16 @@ output_dir:     ldx     #0
 add_to_dir:     ldy     #0
                 phx                     ; keep this for a bit later when we save the page number
 @loop:          lda     __INPUTBFR_START__,y
-                sta     DIR_BUFFER,x
+                sta     __DIR_BUFFER_START__,x
                 inx
                 iny
                 cpy     #MAX_FILE_NAME_LEN + 1
                 bne     @loop
                 plx                     ; the index to the start of the entry
                 lda     next_empty_page ; pointer to the first page where the file will be saved
-                sta     DIR_BUFFER+DIR_START_PAGE_OFFSET,x
+                sta     __DIR_BUFFER_START__+DIR_START_PAGE_OFFSET,x
                 lda     load_page_count
-                sta     DIR_BUFFER+DIR_FILE_SIZE_OFFSET,x
+                sta     __DIR_BUFFER_START__+DIR_FILE_SIZE_OFFSET,x
                 rts
 
 ;============================================================
