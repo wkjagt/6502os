@@ -105,7 +105,7 @@ write_pages:    pha
                 pla
                 rts
 
-write_page :    pha
+write_page:     pha
                 phy
                 phx
                 

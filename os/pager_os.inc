@@ -10,7 +10,7 @@
 .include        "xmodem.inc"
 .include        "file.inc"
 
-PROGRAM_START           = $0600
-PROGRAM_START_PAGE      = $06
+; PROGRAM_START           = $0600
+; PROGRAM_START_PAGE      = $06
 
 .global         reset

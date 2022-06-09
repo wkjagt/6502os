@@ -2,6 +2,8 @@
 .include "terminal.inc"
 .include "../os/pager_os.inc"
 
+.import __PROGRAM_START__
+
 ; The rcv command. It waits for a keypress to give the user the opportunity to start
 ; the transmission on the transmitting computer. A key press sends the initial NAK
 ; and starts receiving. It uses xmodem_byte_sink_vector as a vector to a routine that
@@ -21,7 +23,7 @@ receive:        prn     "Initiate transfer on transmitter and then press any key
                 prn     "Starting transfer...", 1
                 cr
 
-                lda     #PROGRAM_START_PAGE
+                lda     #>__PROGRAM_START__
                 jsr     JMP_XMODEM_RCV
 
                 lda     load_page_count
