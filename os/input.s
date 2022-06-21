@@ -16,6 +16,8 @@ get_input:      stz     inputbuffer_ptr
                 beq     @backspace
                 cmp     #LF                
                 beq     @enter
+                cmp     #ESC
+                beq     @esc
 
                 jsr     JMP_PUTC
                 cmp     #SPACE
@@ -39,7 +41,10 @@ get_input:      stz     inputbuffer_ptr
                 stz     <__INPUTBFR_START__,x
 
                 bra     @next_key
-@enter:         rts
+@esc:           sec                     ; so a routine calling get_input knows if ESC
+                rts                     ; or ENTER was pressed to either submit the
+@enter:         clc                     ; input or cancel.
+                rts
 
 
 clear_input:    ldx     #<__INPUTBFR_SIZE__-1   ; -1 bcause otherwise it wraps to addr 00
