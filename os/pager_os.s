@@ -24,6 +24,11 @@ reset:          sei                     ; no interrupts, but user programs can e
                 ldx     #$ff
                 txs
 
+clear_zeropage: ldx     #0
+@loop:          stz     0,x
+                stz     1,x
+                inx
+                bne     @loop
 
 copy_jumptable: ldx     #(end_jump_table-jump_table)
 @loop:          lda     jump_table,x
