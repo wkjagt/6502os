@@ -6,6 +6,9 @@
 
 .zeropage
 inputbuffer_ptr:        .res 2
+input_flags:            .res 1
+
+.export input_flags
 
 .code
 
@@ -19,7 +22,9 @@ get_input:      stz     inputbuffer_ptr
                 cmp     #ESC
                 beq     @esc
 
-                jsr     JMP_PUTC
+                bbr0    input_flags, @no_upper
+                jsr     uppercase
+@no_upper:      jsr     JMP_PUTC
                 cmp     #SPACE
                 bne     @not_a_space
                 lda     #0              ; save 0 instead of space into buffer, so it 
@@ -45,6 +50,14 @@ get_input:      stz     inputbuffer_ptr
                 rts                     ; or ENTER was pressed to either submit the
 @enter:         clc                     ; input or cancel.
                 rts
+
+
+uppercase:      cmp     #'a'
+                bcc     @not_lower
+                cmp     #'z' + 1        ; can only test >=
+                bcs     @not_lower
+                eor     #%00100000      ; to upper: flip bit 5
+@not_lower:     rts
 
 
 clear_input:    ldx     #<__INPUTBFR_SIZE__-1   ; -1 bcause otherwise it wraps to addr 00
