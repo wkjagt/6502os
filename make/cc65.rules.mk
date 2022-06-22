@@ -30,7 +30,7 @@ VICE_FILE=$(TEMP_FOLDER)/$(ROM_NAME).vice
 ASM_OBJECTS=$(ASM_SOURCES:%.s=$(TEMP_FOLDER)/%.o)
 
 # Default target
-all: clean $(ROM_FILE)
+all: clean $(ROM_FILE) headerfile
 
 # Compile assembler sources
 $(TEMP_FOLDER)/%.o: %.s
@@ -41,6 +41,9 @@ $(TEMP_FOLDER)/%.o: %.s
 $(ROM_FILE): $(ASM_OBJECTS) $(FIRMWARE_CFG)
 	@$(MKDIR_BINARY) $(MKDIR_FLAGS) $(BUILD_FOLDER)
 	$(LD65_BINARY) $(LD65_FLAGS) -C $(FIRMWARE_CFG) -o $@ -Ln $(VICE_FILE) -m $(MAP_FILE) $(ASM_OBJECTS)
+
+headerfile:
+	python header/header.py
 
 # Build and dump output
 test: all
