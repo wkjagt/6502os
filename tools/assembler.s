@@ -2,20 +2,20 @@
 .export mnemonics_size
 
                 ; pattern string, null byte, arg size, arg offset in string
-mode_iax:       .byte "($****,x)", 0, 2, 2
-mode_izp:       .byte "($**)", 0, 1, 2
-mode_zpx:       .byte "$**,x", 0, 1, 1
-mode_zpy:       .byte "$**,y", 0, 1, 1
-mode_izx:       .byte "($**,x)", 0, 1, 2
-mode_imm:       .byte "#$**", 0, 1, 2
-mode_izy:       .byte "($**),y", 0, 1, 2
-mode_ind:       .byte "($****)", 0, 2, 2
-mode_abs:       .byte "$****", 0, 2, 1
-mode_rel:       .byte "", 0, 0, 0
-mode_aby:       .byte "$****,y", 0, 2, 1
-mode_abx:       .byte "$****,x", 0, 2, 1
-mode_zp:        .byte "$**", 0, 1, 1
-mode_impl:      .byte "", 0, 0, 1
+mode_iax:       .byte "($****,x)",  0, 2, 2
+mode_izp:       .byte "($**)",      0, 1, 2
+mode_zpx:       .byte "$**,x",      0, 1, 1
+mode_zpy:       .byte "$**,y",      0, 1, 1
+mode_izx:       .byte "($**,x)",    0, 1, 2
+mode_imm:       .byte "#$**",       0, 1, 2
+mode_izy:       .byte "($**),y",    0, 1, 2
+mode_ind:       .byte "($****)",    0, 2, 2
+mode_abs:       .byte "$****",      0, 2, 1
+mode_rel:       .byte "",           0, 0, 0
+mode_aby:       .byte "$****,y",    0, 2, 1
+mode_abx:       .byte "$****,x",    0, 2, 1
+mode_zp:        .byte "$**",        0, 1, 1
+mode_impl:      .byte "",           0, 0, 1
 
 ; this table is 64 words / 128 bytes long, so we can index into it
 ; using one byte

@@ -25,8 +25,8 @@ reset:          sei                     ; no interrupts, but user programs can e
                 txs
 
 clear_zeropage: ldx     #0
-@loop:          stz     0,x
-                stz     1,x
+@loop:          stz     0,x             ; clear 0 page
+                stz     1,x             ; clear stack
                 inx
                 bne     @loop
 
@@ -95,7 +95,7 @@ irqnmi:         rti
 ; That are copied to the JUMPTABLE segment in RAM on reset, and can be overriden
 ; from user software.
 ; todo: move to jumptable.s
-jump_table:                             ; todo: remove all non OS things
+jump_table:     ; todo: remove all non OS things
                 jmp     receive
                 jmp     init_screen
                 jmp     run
