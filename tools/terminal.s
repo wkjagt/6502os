@@ -76,7 +76,7 @@ find_command:   ldx     #0              ; index into list of commands
                 cr
                 jmp     (command_vector)
 @ret:           cr
-                rts                     ; todo: since the prev is a jmp, is this rts ever reached?
+                rts
 @unknown:       prn     ": unknown command"
                 rts
 

@@ -39,7 +39,7 @@ get_page_args:  ldx     TERM_ARG1
                 sta     stor_eeprom_addr_h  ; 0 is the default so no need to check
                 lda     TERM_ARG3
                 bne     @ram_page_given
-                lda     #6              ; page 4 by default todo: don't hardcode this here
+                lda     #6              ; page 6 by default todo: don't hardcode this here
 @ram_page_given:sta     stor_ram_addr_h
                 rts
 
