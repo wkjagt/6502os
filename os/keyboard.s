@@ -5,7 +5,7 @@
 
 .zeropage
 
-kb_char_in:             .res 2
+kb_char_in:             .res 2          ; todo: why two bytes?
 
 .code
 

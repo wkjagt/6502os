@@ -2,6 +2,9 @@
 .include "terminal.inc"
 .include "../os/pager_os.inc"
 
+.zeropage
+dump_start:             .res 2          ; 2 bytes because this is an address
+
 .code
 
 ; The dump command. It dumps one page of memory. It takes a hex page number as parameter.
