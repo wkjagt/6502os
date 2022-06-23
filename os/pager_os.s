@@ -11,7 +11,7 @@
 .include "../tools/edit.inc"
 .include "../tools/terminal.inc"
 .include "../tools/receive.inc"
-
+.export reset
 .import xmodem_receive
 .import __PROGRAM_START__
 .import __PROGRAM_SIZE__
@@ -98,8 +98,6 @@ irqnmi:         rti
 jump_table:     ; todo: remove all non OS things
                 jmp     receive
                 jmp     init_screen
-                jmp     run
-                jmp     reset
                 jmp     putchar
                 jmp     print_byte_as_hex
                 jmp     xmodem_receive

@@ -3,8 +3,6 @@
 .global JMP_DUMP
 .global JMP_RCV
 .global JMP_INIT_SCREEN
-.global JMP_RUN
-.global JMP_RESET
 .global JMP_PUTC
 .global JMP_PRINT_HEX
 .global JMP_XMODEM_RCV

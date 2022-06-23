@@ -1,5 +1,6 @@
 .include "terminal.inc"
 .include "../os/pager_os.inc"
+.export run
 
 .import __PROGRAM_START__
 

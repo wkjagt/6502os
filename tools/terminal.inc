@@ -3,8 +3,6 @@
 .globalzp       terminal_args
 
 .global         terminal
-.global         run                     ; todo: remove
-.global         reset                   ; todo: remove
 
 TERM_ARG_ADDR1  = terminal_args + 0
 TERM_ARG_ADDR2  = terminal_args + 2

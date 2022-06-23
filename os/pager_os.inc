@@ -10,4 +10,4 @@
 .include        "xmodem.inc"
 .include        "file.inc"
 
-.global         reset
+; .global         reset

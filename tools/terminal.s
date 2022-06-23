@@ -4,8 +4,9 @@
 .include "receive.inc"
 .include "dump.inc"
 .include "storage.inc"
-.include "run.inc"
 .include "file.inc"
+.import run
+.import reset
 
 .import __INPUTBFR_START__
 .importzp current_drive
