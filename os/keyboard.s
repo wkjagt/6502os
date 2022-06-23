@@ -2,7 +2,12 @@
 .include "via.inc"
 .include "zeropage.inc"
 
-                .code
+
+.zeropage
+
+kb_char_in:             .res 2
+
+.code
 
 init_keyboard:  ; data direction on port B
                 lda     #KB_ACK         ; only the ack pin is output

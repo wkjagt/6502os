@@ -2,7 +2,6 @@
 ; todo: move this to files that need these vars, except global ones
 .zeropage
 
-kb_char_in:             .res 2
 tmp1:                   .res 2
 tmp2:                   .res 2
 tmp3:                   .res 2

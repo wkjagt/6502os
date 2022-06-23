@@ -1,4 +1,3 @@
-.globalzp kb_char_in
 .globalzp tmp1
 .globalzp tmp2
 .globalzp tmp3
