@@ -2,6 +2,7 @@
 .include "zeropage.inc"
 .include "via.inc"
 .include "file.inc"
+.importzp current_drive
 
 .zeropage
 stor_eeprom_block:      .res 1

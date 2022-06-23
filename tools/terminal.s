@@ -8,6 +8,7 @@
 .include "file.inc"
 
 .import __INPUTBFR_START__
+.importzp current_drive
 
 command_vector          = tmp2
 

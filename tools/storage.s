@@ -1,7 +1,10 @@
 .include "storage.inc"
 .include "terminal.inc"
 .include "../os/pager_os.inc"
+.exportzp current_drive
 
+.zeropage
+current_drive:          .res 1
 
 .code
 
