@@ -9,5 +9,3 @@
 .include        "input.inc"
 .include        "xmodem.inc"
 .include        "file.inc"
-
-; .global         reset
