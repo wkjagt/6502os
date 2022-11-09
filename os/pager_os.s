@@ -3,6 +3,7 @@
 .include "keyboard.inc"
 .include "screen.inc"
 .include "acia.inc"
+.include "via.inc"
 .include "zeropage.inc"
 .include "storage.inc"
 .include "input.inc"
@@ -17,6 +18,10 @@
 .import __PROGRAM_SIZE__
 
 PROGRAM_LAST_PAGE = __PROGRAM_START__ + __PROGRAM_SIZE__ - 1
+
+.zeropage
+
+ticks:                  .res 4
 
 .code
 
@@ -59,6 +64,10 @@ copy_jumptable: ldx     #(end_jump_table-jump_table)
                 jsr     JMP_INIT_STORAGE
                 prn     "OK.", 1
 
+                prn     "Initializing timer... "
+                jsr     init_timer
+                prn     "OK.", 1
+
                 cr
                 prn     "Ready.",1
                 cr
@@ -83,11 +92,30 @@ clear_ram:      stz     tmp1            ; low byte, always 0, index into it usin
                 bne     @page_loop
                 rts
 
+init_timer:     lda     #%01000000      ; T1 free run mode
+                sta     VIA1_ACR
+                lda     #$0e            ; every 10ms @ 1Mhz
+                sta     VIA1_T1CL
+                lda     #$27
+                sta     VIA1_T1CH
+                lda     #%11000000      ; enable interrupt for T1
+                sta     VIA1_IER
+                stz     ticks
+                stz     ticks + 1
+                stz     ticks + 2
+                stz     ticks + 3
+                cli
+                rts
 
-
-; Interrupt handlers don't do anything for now, but they jump 
-; through the jump table so they can be overriden in software
-irq:            jmp     JMP_IRQ_HANDLER
+irq:            bit     VIA1_T1CL            ; clear T1 interrupt
+                inc     ticks
+                bne     @done
+                inc     ticks + 1
+                bne     @done
+                inc     ticks + 2
+                bne     @done
+                inc     ticks + 3
+@done:          jmp     JMP_IRQ_HANDLER
 nmi:            jmp     JMP_NMI_HANDLER
 irqnmi:         rti
 
