@@ -23,7 +23,9 @@ init_timer:     lda     #VIA_ACR_TIMER1_FREE_RUN
                 cli
                 rts
 
-inc_timer:      bit     VIA1_T1CL            ; clear T1 interrupt
+inc_timer:      bit     VIA1_IFR
+                bvc     @done
+                bit     VIA1_T1CL            ; clear T1 interrupt
                 inc     ticks
                 bne     @done
                 inc     ticks + 1
