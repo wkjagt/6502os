@@ -9,6 +9,7 @@
 .include "file.inc"
 .include "graphic_screen.inc"
 .include "timer.inc"
+.include "i2c.inc"
 .include "../tools/edit.inc"
 .include "../tools/terminal.inc"
 .include "../tools/receive.inc"
@@ -54,6 +55,10 @@ copy_jumptable: ldx     #(end_jump_table-jump_table)
                 
                 prn     "Initializing serial port... "
                 jsr     JMP_INIT_SERIAL
+                prn     "OK.", 1
+
+                prn     "Initializing I2C... "
+                jsr     i2c_init
                 prn     "OK.", 1
 
                 prn     "Initializing storage... "

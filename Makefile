@@ -13,6 +13,7 @@ ASM_SOURCES=os/pager_os.s\
 			os/file.s\
 			os/graphic_screen.s\
 			os/timer.s\
+			os/i2c.s\
 			tools/dump.s\
 			tools/edit.s\
 			tools/terminal.s\

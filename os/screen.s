@@ -9,11 +9,9 @@ init_screen:    lda     VIA1_DDRA
                 and     #(SCRN_OUT_PINS | SCRN_UNUSED)
                 sta     VIA1_DDRA
 
-                ; start with all pins low. Not needed (maybe) but
-                ; it's nice to start with clean outputs
-                lda     VIA1_PORTA
-                and     #SCRN_UNUSED
-                sta     VIA1_PORTA
+                ; clear output pins
+                lda     #(SCRN_DATA_PINS|SCRN_AVAILABLE)
+                trb     VIA1_PORTA
                 
                 jsr     clear_screen
                 jsr     JMP_CURSOR_ON
@@ -24,9 +22,8 @@ putchar:        pha                     ; we pull off the arg 3 times, once for 
                 pha                     ; nibble, once for low nibble and once to put
                 pha                     ; back the original value
 
-                lda     VIA1_PORTA
-                and     #!SCRN_DATA_PINS; clear data
-                sta     VIA1_PORTA
+                lda     #SCRN_DATA_PINS; clear data
+                trb     VIA1_PORTA
 
                 jsr     wait_ack_low
                 pla
