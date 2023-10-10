@@ -5,7 +5,9 @@ i2c_data:               .res 1
 
 .code
 
-i2c_start:      i2c_data_up
+i2c_start:      lda #I2C_DATABIT
+                trb I2C_PORT
+                i2c_data_up
                 i2c_clock_up
                 i2c_data_down
                 i2c_clock_down

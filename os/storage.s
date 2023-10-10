@@ -121,11 +121,7 @@ write_page:     pha
 
 ;=================================================================================
 ; Write a sequence of bytes to the EEPROM
-write_sequence: lda #(I2C_CLOCKBIT | I2C_DATABIT) 
-                ; tsb I2C_DDR             ;0:input,1:output
-                trb I2C_PORT
-
-                jsr     init_access
+write_sequence: jsr     init_access
 
                 ; send 128 bytes
                 ldy     #0              ; start at 0
@@ -147,10 +143,6 @@ write_sequence: lda #(I2C_CLOCKBIT | I2C_DATABIT)
 ;=================================================================================
 ; Read a sequence of bytes from the EEPROM
 read_sequence:  phx
-                lda #(I2C_CLOCKBIT | I2C_DATABIT) 
-                ; tsb I2C_DDR             ;0:input,1:output
-                trb I2C_PORT
-
                 jsr     init_access
 
                 jsr     i2c_start

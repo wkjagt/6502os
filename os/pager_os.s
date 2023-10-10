@@ -10,6 +10,7 @@
 .include "graphic_screen.inc"
 .include "timer.inc"
 .include "i2c.inc"
+.include "lcd.inc"
 .include "../tools/edit.inc"
 .include "../tools/terminal.inc"
 .include "../tools/receive.inc"
@@ -65,6 +66,14 @@ copy_jumptable: ldx     #(end_jump_table-jump_table)
                 jsr     JMP_INIT_STORAGE
                 prn     "OK.", 1
 
+                prn     "Initializing LCD... "
+                jsr     lcd_init
+                jsr     lcd_clear
+                jsr     lcd_home
+                jsr     lcd_on
+                jsr     lcd_ready
+                prn     "OK.", 1
+
                 prn     "Initializing timer... "
                 jsr     init_timer
                 prn     "OK.", 1
@@ -92,6 +101,17 @@ clear_ram:      stz     tmp1            ; low byte, always 0, index into it usin
                 cmp     #>__PROGRAM_START__
                 bne     @page_loop
                 rts
+
+
+lcd_ready:      ldy     #0
+@loop:          lda     lcd_ready_msg,y
+                beq     @done
+                jsr     lcd_putc
+                iny
+                bne     @loop
+@done:          rts
+
+lcd_ready_msg:  .byte "Ready.",0
 
 irq:            jsr     inc_timer
                 jmp     JMP_IRQ_HANDLER
