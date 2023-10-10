@@ -53,8 +53,8 @@ find_command:   ldx     #0              ; index into list of commands
                 lda     commands,x
                 sta     tmp1+1
 
-                lda     (tmp1)          ; see if this is the last entry
-                ora     (tmp1+1)        ; check two bytes for 0.
+                lda     tmp1          ; see if this is the last entry
+                ora     tmp1+1        ; check two bytes for 0.
                 beq     @unknown
 
                 jsr     match_command
