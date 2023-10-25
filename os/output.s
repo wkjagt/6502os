@@ -21,4 +21,4 @@ set_output_dev: phx
 cout:           jmp     (output_dev)
 
 
-output_devs:    .word   putchar, lcd_putc
+output_devs:    .word   screen_cout, lcd_cout

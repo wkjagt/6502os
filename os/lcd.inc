@@ -1,5 +1,5 @@
 .global lcd_init
-.global lcd_putc
+.global lcd_cout
 .global lcd_clear
 .global lcd_home
 .global lcd_on

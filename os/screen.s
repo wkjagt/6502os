@@ -22,7 +22,7 @@ init_screen:    lda     VIA1_DDRA
 
                 rts
 
-putchar:        pha                     ; we pull off the arg 3 times, once for high
+screen_cout:    pha                     ; we pull off the arg 3 times, once for high
                 pha                     ; nibble, once for low nibble and once to put
                 pha                     ; back the original value
 

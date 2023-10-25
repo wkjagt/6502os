@@ -1,5 +1,5 @@
 .global init_screen
-.global putchar
+.global screen_cout
 .global cursor_on
 .global cursor_off
 .global draw_pixel
