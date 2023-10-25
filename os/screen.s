@@ -1,6 +1,7 @@
 .include "screen.inc"
 .include "via.inc"
 .include "jump_table.inc"
+.include "output.inc"
 
 .code
                 ; Set up data pins to communicate with the screen controller
@@ -13,6 +14,9 @@ init_screen:    lda     VIA1_DDRA
                 lda     #(SCRN_DATA_PINS|SCRN_AVAILABLE)
                 trb     VIA1_PORTA
                 
+                lda     #0
+                jsr     set_output_dev
+
                 jsr     clear_screen
                 jsr     JMP_CURSOR_ON
 

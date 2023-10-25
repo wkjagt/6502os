@@ -11,6 +11,7 @@
 .include "timer.inc"
 .include "i2c.inc"
 .include "lcd.inc"
+.include "output.inc"
 .include "../tools/edit.inc"
 .include "../tools/terminal.inc"
 .include "../tools/receive.inc"
@@ -104,12 +105,16 @@ clear_ram:      stz     tmp1            ; low byte, always 0, index into it usin
 
 
 lcd_ready:      ldy     #0
+                lda     #1
+                jsr     set_output_dev
 @loop:          lda     lcd_ready_msg,y
                 beq     @done
-                jsr     lcd_putc
+                jsr     JMP_PUTC
                 iny
                 bne     @loop
-@done:          rts
+@done:          lda     #0
+                jsr     set_output_dev
+                rts
 
 lcd_ready_msg:  .byte "Ready.",0
 
@@ -125,7 +130,7 @@ irqnmi:         rti
 jump_table:     ; todo: remove all non OS things
                 jmp     receive
                 jmp     init_screen
-                jmp     putchar
+                jmp     cout
                 jmp     print_byte_as_hex
                 jmp     xmodem_receive
                 jmp     read_key
