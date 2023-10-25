@@ -3,6 +3,7 @@
 .global lcd_clear
 .global lcd_home
 .global lcd_on
+.global lcd_write_4bit
 
 LCD_I2C_ADDRESS         = $27           ; i2c address of LCD display
 
