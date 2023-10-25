@@ -70,8 +70,11 @@ lcd_send_i2c:   pha
                 jsr     i2c_stop
                 rts
 
-lcd_putc:       ldx     #LCD_RS_DATA
-                jmp     lcd_write_4bit
+lcd_putc:       phx
+                ldx     #LCD_RS_DATA
+                jsr     lcd_write_4bit
+                plx
+                rts
 
 lcd_write_4bit: phy                     ; save y
                 phx                     ; save x

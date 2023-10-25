@@ -22,7 +22,7 @@ ASM_SOURCES=os/pager_os.s\
 			tools/storage.s\
 			tools/run.s\
 			tools/file.s\
-			tools/assembler.s
+			tools/disassembler.s
 
 FIRMWARE_CFG=firmware.cfg
 
